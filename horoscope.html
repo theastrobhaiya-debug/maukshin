@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Daily Horoscope | Kaaldarpan</title>
+  <meta name="description"
+        content="Today's Vedic daily horoscope for all zodiac signs by Kaaldarpan, an initiative by Mauksh.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: #fffaf2;
+      color: #3b2414;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #fff8e9, #f8e5bd);
+      border-bottom: 1px solid #e2c58d;
+      text-align: center;
+      padding: 22px 16px 18px;
+    }
+
+    .logo {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 7px;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #a85b08;
+      margin: 0;
+    }
+
+    .by-mauksh {
+      margin-top: 4px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: #765536;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: #fffdf8;
+      border-bottom: 1px solid #ead9ba;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #77430b;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      padding: 8px 13px;
+      border-radius: 20px;
+    }
+
+    .nav a:hover {
+      background: #f5e3c1;
+    }
+
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 35px 18px 20px;
+    }
+
+    .om {
+      font-size: 28px;
+      color: #c87508;
+      margin-bottom: 7px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      color: #6f3907;
+    }
+
+    .subtitle {
+      margin: 10px auto 0;
+      max-width: 650px;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #765f48;
+      font-size: 14px;
+    }
+
+    .date-box {
+      margin: 22px auto 5px;
+      display: inline-block;
+      background: #fff;
+      border: 1px solid #dfc18a;
+      border-radius: 12px;
+      padding: 10px 17px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #70420e;
+    }
+
+    .container {
+      width: min(100% - 28px, 1000px);
+      margin: 10px auto 50px;
+    }
+
+    .zodiac-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #ead7b5;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(112, 71, 20, 0.07);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .symbol {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff3d8;
+      border: 1px solid #e4c58b;
+      font-size: 25px;
+    }
+
+    .sign {
+      margin: 0;
+      font-size: 21px;
+      color: #7a4107;
+    }
+
+    .sanskrit {
+      margin-top: 3px;
+      font-family: Arial, sans-serif;
+      color: #9b7952;
+      font-size: 11px;
+    }
+
+    .prediction {
+      font-size: 15px;
+      line-height: 1.75;
+      color: #4d3927;
+      margin: 0;
+    }
+
+    .section-title {
+      margin-top: 38px;
+      margin-bottom: 14px;
+      text-align: center;
+      color: #783f06;
+      font-size: 24px;
+    }
+
+    .note {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #806d58;
+      margin: 30px 0;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      background: #f6e6c8;
+      border-top: 1px solid #dfc18a;
+      padding: 25px 15px;
+      color: #765536;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+
+    footer strong {
+      color: #9b5307;
+    }
+
+    @media (max-width: 650px) {
+      .zodiac-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 29px;
+      }
+
+      .brand {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <img
+    src="assets/kaaldarpan-logo.png"
+    alt="Kaaldarpan"
+    class="logo"
+  >
+
+  <h2 class="brand">Kaaldarpan</h2>
+
+  <div class="by-mauksh">
+    An initiative by Mauksh
+  </div>
+
+</header>
+
+<nav class="nav">
+  <a href="index.html">Panchang</a>
+  <a href="horoscope.html">Daily Horoscope</a>
+</nav>
+
+<section class="hero">
+
+  <div class="om">ॐ</div>
+
+  <h1>Daily Horoscope</h1>
+
+  <p class="subtitle">
+    Vedic astrology insights for your day, based on the planetary
+    influences and traditional Jyotish principles.
+  </p>
+
+  <div class="date-box" id="todayDate"></div>
+
+</section>
+
+<main class="container">
+
+  <div class="zodiac-grid">
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♈</div>
+        <div>
+          <h2 class="sign">Aries</h2>
+          <div class="sanskrit">Mesha</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Today favors decisive action, but avoid rushing important
+        conversations. A practical approach to work can bring steady
+        progress. In relationships, sincerity matters more than grand
+        gestures. Keep financial decisions measured.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♉</div>
+        <div>
+          <h2 class="sign">Taurus</h2>
+          <div class="sanskrit">Vrishabha</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Patience becomes your strength today. Work already underway can
+        begin showing results. Give relationships enough space to develop
+        naturally. Avoid unnecessary spending driven by temporary desires.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♊</div>
+        <div>
+          <h2 class="sign">Gemini</h2>
+          <div class="sanskrit">Mithuna</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Communication is highlighted. A conversation may open a useful
+        opportunity, especially in professional matters. In love, listen
+        carefully before responding. Keep your attention focused rather
+        than scattering it across too many plans.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♋</div>
+        <div>
+          <h2 class="sign">Cancer</h2>
+          <div class="sanskrit">Karka</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Emotional clarity improves when you slow down. Family matters may
+        require your attention. Professionally, trust consistent effort
+        rather than immediate recognition. A calm approach can prevent a
+        minor disagreement from becoming larger.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♌</div>
+        <div>
+          <h2 class="sign">Leo</h2>
+          <div class="sanskrit">Simha</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Confidence is useful today, provided it is balanced with patience.
+        You may find yourself taking the lead at work. In personal matters,
+        avoid expecting others to immediately understand your position.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♍</div>
+        <div>
+          <h2 class="sign">Virgo</h2>
+          <div class="sanskrit">Kanya</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Organization brings noticeable benefits. Finish pending tasks
+        before taking on new commitments. Financially, reviewing small
+        expenses can reveal where money is slipping away. Relationships
+        benefit from practical support.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♎</div>
+        <div>
+          <h2 class="sign">Libra</h2>
+          <div class="sanskrit">Tula</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Balance is the central theme of the day. Partnerships can become
+        more productive when responsibilities are clearly shared. Avoid
+        delaying a decision simply to keep everyone comfortable.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♏</div>
+        <div>
+          <h2 class="sign">Scorpio</h2>
+          <div class="sanskrit">Vrishchika</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Your focus is strong today. Use it for one important objective
+        instead of trying to control every situation around you. A deeper
+        conversation may bring clarity in love or family matters.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♐</div>
+        <div>
+          <h2 class="sign">Sagittarius</h2>
+          <div class="sanskrit">Dhanu</div>
+        </div>
+      </div>
+      <p class="prediction">
+        A desire for movement and change may be strong. Before committing
+        to a new direction, check the practical details. Career discussions
+        can be promising when you speak clearly about your expectations.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♑</div>
+        <div>
+          <h2 class="sign">Capricorn</h2>
+          <div class="sanskrit">Makara</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Responsibility brings progress today. A task that seemed slow may
+        finally move forward. Keep your commitments realistic. In love,
+        showing reliability may communicate more than words.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♒</div>
+        <div>
+          <h2 class="sign">Aquarius</h2>
+          <div class="sanskrit">Kumbha</div>
+        </div>
+      </div>
+      <p class="prediction">
+        New ideas can emerge unexpectedly. Write them down, but give major
+        decisions enough time. Professional networking may prove useful.
+        Personal relationships improve when you avoid becoming overly
+        detached.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="symbol">♓</div>
+        <div>
+          <h2 class="sign">Pisces</h2>
+          <div class="sanskrit">Meena</div>
+        </div>
+      </div>
+      <p class="prediction">
+        Intuition can guide you, but verify important details before acting.
+        Creative work is favored when you protect your concentration.
+        Emotionally, expressing what you actually need can bring greater
+        understanding.
+      </p>
+    </article>
+
+  </div>
+
+  <p class="note">
+    Daily horoscope interpretations are based on traditional Vedic
+    astrology principles and are intended for general guidance.
+  </p>
+
+</main>
+
+<footer>
+  <strong>Kaaldarpan</strong><br>
+  An initiative by Mauksh
+</footer>
+
+<script>
+  const today = new Date();
+
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  };
+
+  document.getElementById("todayDate").textContent =
+    today.toLocaleDateString("en-IN", options);
+</script>
+
+</body>
+</html>
