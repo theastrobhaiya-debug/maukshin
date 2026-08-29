@@ -7,7 +7,6 @@
 <title>Kaaldarpan | Vedic Panchang</title>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
@@ -15,50 +14,50 @@
 body {
   margin: 0;
   background: #faf7f0;
-  color: #2d2118;
+  color: #33261b;
   font-family: Arial, sans-serif;
 }
 
 /* HEADER */
 
-.header {
-  height: 72px;
+header {
+  height: 74px;
+  padding: 0 18px;
   background: #fffdf8;
-  border-bottom: 1px solid #eee4d4;
+  border-bottom: 1px solid #eadfce;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 0 18px;
 }
 
-.brand-area {
+.brand {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .logo {
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
-.brand {
+.brand-name {
   font-family: Georgia, serif;
-  font-size: 23px;
+  font-size: 24px;
   color: #8b520f;
 }
+
+/* MENU BUTTON */
 
 .menu-button {
   width: 43px;
   height: 43px;
 
-  border: 1px solid #dfcba9;
+  background: #fff;
+  border: 1px solid #ddccb0;
   border-radius: 9px;
-
-  background: white;
 
   font-size: 23px;
   color: #76501d;
@@ -72,17 +71,17 @@ body {
   display: none;
 
   position: absolute;
-  top: 72px;
-  right: 12px;
+  right: 15px;
+  top: 68px;
 
-  width: 235px;
+  width: 245px;
 
-  background: white;
+  background: #fff;
 
-  border: 1px solid #e4d6bf;
+  border: 1px solid #e4d7c3;
   border-radius: 12px;
 
-  box-shadow: 0 8px 25px rgba(60,40,20,.12);
+  box-shadow: 0 10px 28px rgba(60,40,20,.12);
 
   z-index: 1000;
 }
@@ -94,7 +93,7 @@ body {
 .menu a {
   display: block;
 
-  padding: 15px 18px;
+  padding: 16px 18px;
 
   text-decoration: none;
 
@@ -102,7 +101,7 @@ body {
 
   font-size: 14px;
 
-  border-bottom: 1px solid #f0e8db;
+  border-bottom: 1px solid #f0e8dc;
 }
 
 .menu a:last-child {
@@ -110,15 +109,14 @@ body {
 }
 
 .menu a:hover {
-  background: #fff8eb;
+  background: #fff8ec;
 }
 
 /* HERO */
 
 .hero {
   text-align: center;
-
-  padding: 45px 18px 25px;
+  padding: 42px 18px 28px;
 }
 
 .om {
@@ -127,10 +125,9 @@ body {
 }
 
 h1 {
-  margin: 10px 0;
+  margin: 9px 0;
 
   font-family: Georgia, serif;
-
   font-size: 36px;
   font-weight: normal;
 
@@ -139,53 +136,130 @@ h1 {
 
 .subtitle {
   max-width: 650px;
-
   margin: auto;
 
   color: #776a5d;
-
   font-size: 14px;
-
   line-height: 1.7;
 }
 
-.date {
-  margin-top: 16px;
-
-  color: #8a6a40;
-
-  font-size: 13px;
-}
-
-/* PANCHANG */
+/* CONTROLS */
 
 .container {
-  width: min(94%, 900px);
-
+  width: min(94%, 760px);
   margin: auto;
-
   padding-bottom: 60px;
 }
 
-.card {
-  background: white;
+.controls {
+  background: #fff;
 
-  border: 1px solid #eee3d1;
+  border: 1px solid #eadfce;
+  border-radius: 14px;
 
+  padding: 22px;
+
+  margin-bottom: 22px;
+}
+
+.field {
+  margin-bottom: 17px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 13px;
+  color: #665747;
+}
+
+input,
+select {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  border: 1px solid #d8c6a8;
+  border-radius: 9px;
+
+  background: #fff;
+
+  color: #3d3024;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+button.get-panchang {
+  width: 100%;
+
+  margin-top: 4px;
+
+  padding: 14px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #8b520f;
+  color: white;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+button.get-panchang:hover {
+  background: #75440b;
+}
+
+/* RESULT */
+
+.result {
+  background: #fff;
+
+  border: 1px solid #eadfce;
   border-radius: 14px;
 
   padding: 25px;
-
-  margin-bottom: 18px;
 }
 
-.card-title {
-  margin: 0 0 18px;
+.result-title {
+  margin: 0 0 20px;
+
+  text-align: center;
 
   font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: normal;
 
-  font-size: 22px;
+  color: #86500f;
+}
 
+.section {
+  margin-top: 24px;
+  padding-top: 18px;
+
+  border-top: 1px solid #eee4d5;
+}
+
+.section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.section h2 {
+  margin: 0 0 10px;
+
+  font-family: Georgia, serif;
+  font-size: 19px;
   font-weight: normal;
 
   color: #86500f;
@@ -193,41 +267,29 @@ h1 {
 
 .row {
   display: flex;
-
   justify-content: space-between;
 
   gap: 20px;
 
-  padding: 12px 0;
-
-  border-bottom: 1px solid #f0e8dc;
+  padding: 9px 0;
 
   font-size: 14px;
 }
 
-.row:last-child {
-  border-bottom: none;
+.row .label {
+  color: #786a5b;
 }
 
-.label {
-  color: #766756;
-}
-
-.value {
+.row .value {
   text-align: right;
-
-  color: #3f3022;
+  color: #3d3024;
 }
-
-/* LOADING */
 
 .loading {
   text-align: center;
+  padding: 30px 10px;
 
-  padding: 35px;
-
-  color: #8a7b6b;
-
+  color: #897a69;
   font-size: 14px;
 }
 
@@ -236,7 +298,7 @@ h1 {
 footer {
   text-align: center;
 
-  padding: 25px;
+  padding: 26px 15px;
 
   background: #f1e7d7;
 
@@ -249,20 +311,20 @@ footer strong {
   color: #8b520f;
 }
 
-/* MOBILE */
-
-@media (max-width: 600px) {
+@media(max-width:600px) {
 
   h1 {
     font-size: 30px;
   }
 
-  .card {
+  .result {
     padding: 20px;
   }
 
+  .controls {
+    padding: 18px;
+  }
 }
-
 </style>
 </head>
 
@@ -272,9 +334,9 @@ footer strong {
 
 <!-- HEADER -->
 
-<header class="header">
+<header>
 
-  <div class="brand-area">
+  <div class="brand">
 
     <img
       src="assets/kaaldarpan-logo.png"
@@ -282,7 +344,7 @@ footer strong {
       alt="Kaaldarpan"
     >
 
-    <div class="brand">
+    <div class="brand-name">
       Kaaldarpan
     </div>
 
@@ -292,7 +354,7 @@ footer strong {
   <button
     class="menu-button"
     onclick="toggleMenu()"
-    aria-label="Open menu">
+    aria-label="Menu">
 
     ☰
 
@@ -307,24 +369,20 @@ footer strong {
   class="menu"
   id="menu">
 
-  <a href="index.html">
-    🏠 Panchang
-  </a>
-
   <a href="horoscope.html">
     🔮 Daily Horoscope
   </a>
 
-  <a href="transits.html">
-    🪐 Planetary Transits
+  <a href="monthly-horoscope.html">
+    📅 Monthly Horoscope
   </a>
 
-  <a href="muhurat.html">
-    🕉️ Muhurat
+  <a href="yearly-horoscope.html">
+    ✨ Yearly Horoscope
   </a>
 
-  <a href="about.html">
-    ℹ️ About Kaaldarpan
+  <a href="founder.html">
+    👤 Our Founder
   </a>
 
 </div>
@@ -343,35 +401,92 @@ footer strong {
   </h1>
 
   <p class="subtitle">
-    Vedic Panchang calculated using the Mauksh
-    Panchang Engine and Swiss Ephemeris.
+    Vedic Panchang calculated using the
+    Mauksh Panchang Engine.
   </p>
-
-  <div
-    class="date"
-    id="date">
-  </div>
 
 </section>
 
 
-<!-- PANCHANG -->
+<!-- MAIN -->
 
 <main class="container">
 
 
-  <div class="card">
+  <!-- DATE + LOCATION -->
 
-    <h2 class="card-title">
-      Panchang
-    </h2>
+  <div class="controls">
 
-    <div id="panchang">
+    <div class="field">
 
-      <div class="loading">
-        Loading today's Panchang...
-      </div>
+      <label for="date">
+        Date
+      </label>
 
+      <input
+        type="date"
+        id="date"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="location">
+        Location
+      </label>
+
+      <select id="location">
+
+        <option value="30.0869,78.2676,Asia/Kolkata">
+          Rishikesh
+        </option>
+
+        <option value="28.6139,77.2090,Asia/Kolkata">
+          New Delhi
+        </option>
+
+        <option value="19.0760,72.8777,Asia/Kolkata">
+          Mumbai
+        </option>
+
+        <option value="12.9716,77.5946,Asia/Kolkata">
+          Bengaluru
+        </option>
+
+        <option value="22.5726,88.3639,Asia/Kolkata">
+          Kolkata
+        </option>
+
+        <option value="13.0827,80.2707,Asia/Kolkata">
+          Chennai
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      class="get-panchang"
+      onclick="loadPanchang()">
+
+      Get Panchang
+
+    </button>
+
+  </div>
+
+
+  <!-- RESULT -->
+
+  <div
+    class="result"
+    id="result">
+
+    <div class="loading">
+      Select a date and location to view Panchang.
     </div>
 
   </div>
@@ -397,8 +512,11 @@ footer strong {
 
 <script>
 
-
-/* MENU */
+/*
+--------------------------------------------------
+MENU
+--------------------------------------------------
+*/
 
 function toggleMenu() {
 
@@ -410,33 +528,390 @@ function toggleMenu() {
 }
 
 
-/* DATE */
+/*
+--------------------------------------------------
+DEFAULT DATE
+--------------------------------------------------
+*/
 
-document.getElementById("date").textContent =
-new Date().toLocaleDateString(
-  "en-IN",
-  {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  }
-);
+const dateInput =
+  document.getElementById("date");
+
+const today =
+  new Date();
+
+const yyyy =
+  today.getFullYear();
+
+const mm =
+  String(today.getMonth() + 1)
+    .padStart(2, "0");
+
+const dd =
+  String(today.getDate())
+    .padStart(2, "0");
+
+dateInput.value =
+  `${yyyy}-${mm}-${dd}`;
 
 
 /*
-  IMPORTANT
+--------------------------------------------------
+YOUR MAUKSH PANCHANG API
+--------------------------------------------------
 
-  Keep your existing live Panchang
-  JavaScript/API code here.
-
-  The menu above does not change
-  your existing Panchang engine.
+If your current working API URL is different,
+change ONLY this line.
 */
 
+const PANCHANG_API =
+  "https://mauksh-kundali-engine.onrender.com/api/panchang";
+
+
+/*
+--------------------------------------------------
+LOAD PANCHANG
+--------------------------------------------------
+*/
+
+async function loadPanchang() {
+
+  const date =
+    document.getElementById("date").value;
+
+  const location =
+    document.getElementById("location").value;
+
+  const parts =
+    location.split(",");
+
+  const latitude =
+    parts[0];
+
+  const longitude =
+    parts[1];
+
+  const timezone =
+    parts[2];
+
+
+  const result =
+    document.getElementById("result");
+
+
+  result.innerHTML = `
+    <div class="loading">
+      Calculating Panchang...
+    </div>
+  `;
+
+
+  try {
+
+    const url =
+      `${PANCHANG_API}?date=${encodeURIComponent(date)}&latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&timezone=${encodeURIComponent(timezone)}`;
+
+
+    const response =
+      await fetch(url);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Panchang API error"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    displayPanchang(data);
+
+
+  } catch(error) {
+
+    console.error(error);
+
+    result.innerHTML = `
+
+      <div class="loading">
+
+        Unable to load Panchang.
+        Please try again.
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/*
+--------------------------------------------------
+DISPLAY PANCHANG
+--------------------------------------------------
+*/
+
+function displayPanchang(data) {
+
+  const result =
+    document.getElementById("result");
+
+
+  if (!data || data.success === false) {
+
+    result.innerHTML = `
+
+      <div class="loading">
+        Panchang data unavailable.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <h2 class="result-title">
+      Panchang
+    </h2>
+
+  `;
+
+
+  /*
+  BASIC PANCHANG
+  */
+
+  html += `
+
+    <div class="section">
+
+      <h2>
+        Panchang Details
+      </h2>
+
+      ${row("Vara", data.vara?.name)}
+      ${row("Tithi", data.tithi?.name)}
+      ${row("Paksha", data.paksha)}
+      ${row("Nakshatra", data.nakshatra?.name)}
+      ${row("Yoga", data.yoga?.name)}
+      ${row("Karana", data.karana?.name)}
+      ${row("Ritu", data.ritu)}
+      ${row("Ayana", data.ayana)}
+
+    </div>
+
+  `;
+
+
+  /*
+  SUN
+  */
+
+  if (data.sun) {
+
+    html += `
+
+      <div class="section">
+
+        <h2>
+          Sun
+        </h2>
+
+        ${row("Sunrise", data.sun.rise)}
+        ${row("Sunset", data.sun.set)}
+        ${row("Sun Rashi", data.sun.rashi?.name)}
+
+      </div>
+
+    `;
+
+  }
+
+
+  /*
+  MOON
+  */
+
+  if (data.moon) {
+
+    html += `
+
+      <div class="section">
+
+        <h2>
+          Moon
+        </h2>
+
+        ${row("Moonrise", data.moon.rise)}
+        ${row("Moonset", data.moon.set)}
+        ${row("Moon Rashi", data.moon.rashi?.name)}
+        ${row("Nakshatra", data.moon.nakshatra?.name)}
+
+      </div>
+
+    `;
+
+  }
+
+
+  /*
+  IMPORTANT TIMINGS
+  */
+
+  if (data.timings) {
+
+    html += `
+
+      <div class="section">
+
+        <h2>
+          Auspicious & Inauspicious Timings
+        </h2>
+
+        ${row("Abhijit", data.timings.abhijit)}
+        ${row("Brahma Muhurta", data.timings.brahma)}
+        ${row("Rahu Kaal", data.timings.rahuKaal)}
+        ${row("Gulika", data.timings.gulika)}
+        ${row("Yamaganda", data.timings.yamaganda)}
+
+      </div>
+
+    `;
+
+  }
+
+
+  /*
+  CHOGHADIYA
+  */
+
+  if (
+    data.choghadiya &&
+    data.choghadiya.day
+  ) {
+
+    html += `
+
+      <div class="section">
+
+        <h2>
+          Day Choghadiya
+        </h2>
+
+    `;
+
+
+    data.choghadiya.day.forEach(item => {
+
+      html += row(
+        item.name,
+        `${item.start} – ${item.end}`
+      );
+
+    });
+
+
+    html += `
+
+      </div>
+
+    `;
+
+  }
+
+
+  result.innerHTML =
+    html;
+
+}
+
+
+/*
+--------------------------------------------------
+ROW HELPER
+--------------------------------------------------
+*/
+
+function row(label, value) {
+
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+
+    return "";
+
+  }
+
+
+  return `
+
+    <div class="row">
+
+      <span class="label">
+        ${escapeHtml(label)}
+      </span>
+
+      <span class="value">
+        ${escapeHtml(String(value))}
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/*
+--------------------------------------------------
+ESCAPE HTML
+--------------------------------------------------
+*/
+
+function escapeHtml(value) {
+
+  return String(value).replace(
+    /[&<>"']/g,
+    function(char) {
+
+      return {
+
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+
+      }[char];
+
+    }
+  );
+
+}
+
+
+/*
+--------------------------------------------------
+LOAD TODAY AUTOMATICALLY
+--------------------------------------------------
+*/
+
+loadPanchang();
 
 </script>
-
 
 </body>
 </html>
