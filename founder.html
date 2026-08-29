@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Founder | Kaaldarpan</title>
+  <title>Founder | Mauksh</title>
 
-  <meta
-    name="description"
-    content="Meet the founder of Kaaldarpan, an initiative by Mauksh."
-  >
+  <meta name="description"
+        content="Meet Shivam Bansal, Founder of Mauksh, Vedic Astrologer, Numerologist and Life Coach.">
 
   <style>
     * {
@@ -24,86 +22,75 @@
         BlinkMacSystemFont,
         "Segoe UI",
         Roboto,
-        Helvetica,
         Arial,
         sans-serif;
 
-      background: #f7f5f0;
-      color: #292621;
-      line-height: 1.6;
+      background: #faf8f3;
+      color: #29231e;
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
     /* =========================
-       NAVIGATION
+       HEADER
     ========================= */
 
-    nav {
-      width: 100%;
-      background: #fffdf9;
-      border-bottom: 1px solid #e6e0d6;
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e8e1d7;
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
-    .nav-inner {
-      max-width: 1100px;
+    .header-inner {
+      max-width: 1180px;
       margin: auto;
-      padding: 14px 20px;
+      padding: 16px 22px;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
-
-      gap: 20px;
     }
 
-    .brand {
-      text-decoration: none;
-      color: #292621;
-
-      font-size: 20px;
+    .logo {
+      font-size: 27px;
       font-weight: 700;
-      letter-spacing: -0.4px;
+      letter-spacing: 1px;
+      color: #2c241d;
     }
 
-    .menu {
+    .logo span {
+      color: #9a7445;
+    }
+
+    nav {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
-
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .menu a {
-      text-decoration: none;
-      color: #625d55;
-
+      gap: 24px;
       font-size: 14px;
-      font-weight: 500;
-
-      transition: color 0.2s ease;
+      color: #5b5249;
     }
 
-    .menu a:hover {
-      color: #9a6b32;
+    nav a {
+      transition: 0.2s ease;
     }
 
-    .menu a.active {
-      color: #9a6b32;
-      font-weight: 650;
+    nav a:hover {
+      color: #9a7445;
     }
 
-    /* =========================
-       MAIN
-    ========================= */
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-
-      padding: 55px 20px 70px;
+    .menu-btn {
+      display: none;
+      border: none;
+      background: transparent;
+      font-size: 27px;
+      cursor: pointer;
+      color: #29231e;
     }
 
     /* =========================
@@ -111,187 +98,198 @@
     ========================= */
 
     .hero {
-      text-align: center;
-      margin-bottom: 42px;
+      max-width: 1180px;
+      margin: auto;
+      padding: 70px 22px 65px;
+
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: center;
+      gap: 70px;
+    }
+
+    .founder-photo {
+      display: flex;
+      justify-content: center;
+    }
+
+    .founder-photo img {
+      width: 100%;
+      max-width: 430px;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+
+      border-radius: 24px;
+      border: 8px solid #ffffff;
+
+      box-shadow:
+        0 20px 50px rgba(45, 35, 25, 0.14);
     }
 
     .eyebrow {
-      display: inline-block;
-
-      margin-bottom: 12px;
-
-      color: #9a6b32;
-
+      color: #9a7445;
       font-size: 13px;
       font-weight: 700;
-
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: clamp(36px, 7vw, 56px);
-
-      line-height: 1.1;
-      letter-spacing: -1.6px;
-
-      margin-bottom: 15px;
+      font-size: clamp(44px, 6vw, 70px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: #211b16;
+      margin-bottom: 18px;
     }
 
-    .subtitle {
-      max-width: 670px;
-      margin: auto;
-
-      color: #6d675f;
-
-      font-size: 17px;
-    }
-
-    /* =========================
-       FOUNDER CARD
-    ========================= */
-
-    .founder-card {
-      background: #fffdf9;
-
-      border: 1px solid #e5dfd5;
-      border-radius: 22px;
-
-      padding: 40px;
-
-      box-shadow:
-        0 10px 35px rgba(50, 42, 32, 0.06);
-    }
-
-    /* =========================
-       FOUNDER IMAGE
-    ========================= */
-
-    .founder-top {
-      text-align: center;
-
-      margin-bottom: 34px;
-    }
-
-    .founder-image {
-      width: 170px;
-      height: 170px;
-
-      margin: 0 auto 20px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-      display: block;
-
-      border: 4px solid #eee7db;
-
-      box-shadow:
-        0 8px 25px rgba(50, 42, 32, 0.10);
-    }
-
-    .founder-name {
-      font-size: 30px;
-      font-weight: 700;
-
-      line-height: 1.2;
-
-      margin-bottom: 6px;
-    }
-
-    .founder-role {
-      color: #9a6b32;
-
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    /* =========================
-       CONTENT
-    ========================= */
-
-    .content {
-      max-width: 720px;
-      margin: auto;
-    }
-
-    .content h2 {
-      color: #292621;
-
-      font-size: 23px;
-      line-height: 1.3;
-
-      margin-top: 30px;
-      margin-bottom: 11px;
-    }
-
-    .content h2:first-child {
-      margin-top: 0;
-    }
-
-    .content p {
-      color: #5f5a53;
-
-      font-size: 16px;
-
-      margin-bottom: 16px;
-    }
-
-    .content strong {
-      color: #292621;
-    }
-
-    /* =========================
-       MAUKSH BOX
-    ========================= */
-
-    .mauksh-box {
-      margin-top: 35px;
-
-      padding: 26px;
-
-      border-radius: 17px;
-
-      background: #f3eee5;
-
-      border: 1px solid #e1d8ca;
-
-      text-align: center;
-    }
-
-    .mauksh-title {
-      color: #292621;
-
+    .role {
       font-size: 20px;
-      font-weight: 700;
-
-      margin-bottom: 7px;
+      color: #776b60;
+      margin-bottom: 25px;
     }
 
-    .mauksh-subtitle {
-      color: #6b655c;
+    .hero-text {
+      max-width: 650px;
+      font-size: 17px;
+      color: #574f47;
+    }
 
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 13px 22px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #2d251e;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #9a7445;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      border: 1px solid #ded5ca;
+      color: #3d352e;
+    }
+
+    .btn-secondary:hover {
+      border-color: #9a7445;
+    }
+
+    /* =========================
+       SECTIONS
+    ========================= */
+
+    .section {
+      padding: 70px 22px;
+    }
+
+    .section-white {
+      background: #ffffff;
+    }
+
+    .section-inner {
+      max-width: 980px;
+      margin: auto;
+    }
+
+    .section-title {
+      font-size: 34px;
+      line-height: 1.2;
+      color: #2a221c;
+      margin-bottom: 22px;
+    }
+
+    .section p {
+      font-size: 16px;
+      color: #5d554d;
+      margin-bottom: 18px;
+    }
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 32px;
+    }
+
+    .card {
+      background: #faf8f3;
+      border: 1px solid #e8e0d6;
+      border-radius: 17px;
+      padding: 28px 24px;
+    }
+
+    .icon {
+      font-size: 29px;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      color: #2d251e;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #6b6259;
+      margin-bottom: 0;
     }
 
     /* =========================
        QUOTE
     ========================= */
 
+    .quote-section {
+      padding: 75px 22px;
+      background: #faf8f3;
+      text-align: center;
+    }
+
     .quote {
-      margin-top: 30px;
+      max-width: 900px;
+      margin: auto;
+    }
 
-      padding: 25px 28px;
+    .quote-mark {
+      font-size: 52px;
+      line-height: 1;
+      color: #b18a5b;
+    }
 
-      background: #faf7f1;
+    .quote-text {
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.45;
+      color: #342a22;
+      margin-top: 12px;
+    }
 
-      border-left: 3px solid #b4874a;
-
-      color: #4f4a43;
-
-      font-size: 17px;
-      font-style: italic;
+    .quote-author {
+      margin-top: 18px;
+      color: #887b6d;
+      font-size: 13px;
     }
 
     /* =========================
@@ -299,100 +297,113 @@
     ========================= */
 
     footer {
-      border-top: 1px solid #e6e0d6;
-
-      background: #fffdf9;
-
+      background: #29231e;
+      color: #eee8df;
       text-align: center;
-
-      padding: 28px 20px;
-
-      color: #777168;
-
-      font-size: 13px;
+      padding: 38px 22px;
     }
 
-    footer strong {
-      color: #9a6b32;
+    .footer-logo {
+      font-size: 25px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    footer p {
+      color: #bcb2a8;
+      font-size: 13px;
+      margin-top: 6px;
     }
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
 
-      .nav-inner {
+      .header-inner {
+        padding: 14px 18px;
+      }
+
+      .menu-btn {
+        display: block;
+      }
+
+      nav {
+        display: none;
+
+        position: absolute;
+        top: 65px;
+        left: 15px;
+        right: 15px;
+
+        background: #ffffff;
+
+        border: 1px solid #e6ded4;
+        border-radius: 14px;
+
+        padding: 18px;
+
         flex-direction: column;
         align-items: flex-start;
+        gap: 14px;
+
+        box-shadow:
+          0 15px 35px rgba(0, 0, 0, 0.08);
       }
 
-      .menu {
-        width: 100%;
-
-        justify-content: flex-start;
-
-        gap: 12px 16px;
-      }
-
-      .container {
-        padding: 40px 16px 55px;
+      nav.active {
+        display: flex;
       }
 
       .hero {
-        margin-bottom: 30px;
+        grid-template-columns: 1fr;
+        gap: 38px;
+        padding-top: 45px;
       }
 
-      .subtitle {
-        font-size: 15px;
+      .founder-photo img {
+        max-width: 360px;
       }
 
-      .founder-card {
-        padding: 28px 20px;
-
-        border-radius: 18px;
+      h1 {
+        font-size: 48px;
+        letter-spacing: -1px;
       }
 
-      .founder-image {
-        width: 145px;
-        height: 145px;
+      .cards {
+        grid-template-columns: 1fr;
       }
 
-      .founder-name {
-        font-size: 27px;
-      }
-
-      .content h2 {
-        font-size: 21px;
-      }
-
-      .content p {
-        font-size: 15px;
-      }
-
-      .quote {
-        padding: 20px;
-        font-size: 15px;
+      .section {
+        padding: 55px 20px;
       }
     }
   </style>
 </head>
 
-
 <body>
 
   <!-- =========================
-       NAVIGATION
+       HEADER
   ========================= -->
 
-  <nav>
-    <div class="nav-inner">
+  <header>
 
-      <a href="index.html" class="brand">
-        Kaaldarpan
+    <div class="header-inner">
+
+      <a href="index.html" class="logo">
+        Mauksh<span>.</span>
       </a>
 
-      <div class="menu">
+      <button
+        class="menu-btn"
+        onclick="toggleMenu()"
+        aria-label="Open menu">
+        ☰
+      </button>
+
+      <nav id="mainNav">
 
         <a href="index.html">
           Home
@@ -410,138 +421,264 @@
           Yearly Horoscope
         </a>
 
-        <a href="founder.html" class="active">
+        <a href="founder.html">
           Founder
         </a>
 
-      </div>
+      </nav>
 
     </div>
-  </nav>
+
+  </header>
 
 
   <!-- =========================
-       MAIN CONTENT
+       MAIN
   ========================= -->
 
-  <main class="container">
+  <main>
 
     <!-- HERO -->
 
     <section class="hero">
 
-      <div class="eyebrow">
-        The Person Behind Kaaldarpan
+      <div class="founder-photo">
+
+        <!--
+          IMPORTANT:
+          GitHub filename is Founder.JPG
+          Folder is assets
+        -->
+
+        <img
+          src="assets/Founder.JPG"
+          alt="Shivam Bansal, Founder of Mauksh"
+        >
+
       </div>
 
-      <h1>
-        Meet the Founder
-      </h1>
 
-      <p class="subtitle">
-        Kaaldarpan is an initiative created to make the depth of
-        Vedic astrology easier to explore through thoughtful technology
-        and meaningful interpretation.
-      </p>
+      <div>
+
+        <div class="eyebrow">
+          Founder of Mauksh
+        </div>
+
+        <h1>
+          Shivam Bansal
+        </h1>
+
+        <div class="role">
+          Vedic Astrologer · Numerologist · Life Coach
+        </div>
+
+        <p class="hero-text">
+          Shivam Bansal is the founder of Mauksh, a platform created
+          to bring traditional spiritual knowledge into a modern,
+          accessible and meaningful experience.
+        </p>
+
+        <div class="buttons">
+
+          <a
+            href="index.html"
+            class="btn btn-primary">
+            Explore Mauksh
+          </a>
+
+          <a
+            href="#about"
+            class="btn btn-secondary">
+            About Shivam
+          </a>
+
+        </div>
+
+      </div>
 
     </section>
 
 
-    <!-- FOUNDER -->
+    <!-- ABOUT -->
 
-    <section class="founder-card">
+    <section
+      class="section section-white"
+      id="about">
 
-      <div class="founder-top">
+      <div class="section-inner">
 
-        <img
-          src="assets/Founder.jpg"
-          alt="Founder of Kaaldarpan"
-          class="founder-image"
-        >
-
-        <div class="founder-name">
-          Shivam Bansal
+        <div class="eyebrow">
+          About the Founder
         </div>
 
-        <div class="founder-role">
-          Founder, Mauksh · Creator of Kaaldarpan
+        <h2 class="section-title">
+          A modern approach to ancient wisdom
+        </h2>
+
+        <p>
+          Shivam Bansal's work brings together his interest in
+          Vedic astrology, numerology, spirituality and practical
+          life guidance with his experience in entrepreneurship,
+          digital marketing, business development and communication.
+        </p>
+
+        <p>
+          Through Mauksh, his vision is to make spiritual tools
+          easier to understand and more accessible to people living
+          in a fast-moving modern world.
+        </p>
+
+        <p>
+          Rather than treating astrology as something distant or
+          complicated, Mauksh aims to present it in a way that feels
+          personal, clear and relevant to everyday life.
+        </p>
+
+        <p>
+          The platform combines traditional systems with modern
+          technology, creating tools that can help people explore
+          their birth charts, planetary influences, numerology and
+          other areas of spiritual self-understanding.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- EXPERTISE -->
+
+    <section class="section">
+
+      <div class="section-inner">
+
+        <div class="eyebrow">
+          Areas of Work
+        </div>
+
+        <h2 class="section-title">
+          The foundation of his work
+        </h2>
+
+        <div class="cards">
+
+          <div class="card">
+
+            <div class="icon">
+              ✦
+            </div>
+
+            <h3>
+              Vedic Astrology
+            </h3>
+
+            <p>
+              Exploring planetary positions, birth charts,
+              timing and traditional Vedic astrological
+              principles.
+            </p>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="icon">
+              ◈
+            </div>
+
+            <h3>
+              Numerology
+            </h3>
+
+            <p>
+              Understanding the symbolism of numbers and
+              how numerological patterns can provide another
+              perspective on life.
+            </p>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="icon">
+              ◎
+            </div>
+
+            <h3>
+              Life Guidance
+            </h3>
+
+            <p>
+              Translating spiritual insights into practical
+              reflections that can support everyday decisions
+              and personal growth.
+            </p>
+
+          </div>
+
         </div>
 
       </div>
 
-
-      <div class="content">
-
-        <h2>
-          The Vision
-        </h2>
-
-        <p>
-          Kaaldarpan was created from a simple idea:
-          astrology should not feel complicated, inaccessible,
-          or disconnected from everyday life.
-        </p>
-
-        <p>
-          The vision is to combine the depth of traditional
-          Vedic astrology with modern technology and create
-          experiences that are simple, thoughtful and useful.
-        </p>
+    </section>
 
 
-        <h2>
-          About Kaaldarpan
-        </h2>
+    <!-- MAUKSH VISION -->
 
-        <p>
-          Kaaldarpan brings together Panchang calculations,
-          horoscopes and other Vedic astrology tools in one
-          simple experience.
-        </p>
+    <section class="section section-white">
 
-        <p>
-          Its calculations are built around traditional
-          Vedic principles while using modern astronomical
-          computation where appropriate.
-        </p>
+      <div class="section-inner">
 
-
-        <h2>
-          Built by Mauksh
-        </h2>
-
-        <p>
-          Kaaldarpan is an initiative by
-          <strong>Mauksh</strong>.
-        </p>
-
-        <p>
-          Mauksh is the platform behind the technology,
-          ideas and development powering these experiences.
-        </p>
-
-
-        <!-- MAUKSH -->
-
-        <div class="mauksh-box">
-
-          <div class="mauksh-title">
-            An Initiative by Mauksh
-          </div>
-
-          <div class="mauksh-subtitle">
-            Technology, ideas and tools designed to make
-            ancient wisdom easier to explore.
-          </div>
-
+        <div class="eyebrow">
+          The Mauksh Vision
         </div>
 
+        <h2 class="section-title">
+          Making spirituality easier to explore
+        </h2>
 
-        <!-- QUOTE -->
+        <p>
+          Mauksh was built around a simple idea: spiritual
+          knowledge should be accessible without losing the
+          depth of the traditions from which it comes.
+        </p>
 
-        <div class="quote">
-          “The purpose is not simply to predict the future,
-          but to understand the present with greater clarity.”
+        <p>
+          Technology can make calculations faster, charts easier
+          to explore and information easier to access. But the
+          human element of interpretation, reflection and
+          understanding remains at the heart of the experience.
+        </p>
+
+        <p>
+          This balance between ancient knowledge and modern
+          technology is at the centre of the Mauksh vision.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- PHILOSOPHY -->
+
+    <section class="quote-section">
+
+      <div class="quote">
+
+        <div class="quote-mark">
+          “
+        </div>
+
+        <div class="quote-text">
+          Technology can help us understand the map,
+          but the journey remains deeply personal.
+        </div>
+
+        <div class="quote-author">
+          Shivam Bansal · Founder, Mauksh
         </div>
 
       </div>
@@ -557,16 +694,36 @@
 
   <footer>
 
-    <div>
-      Kaaldarpan · An initiative by
-      <strong>Mauksh</strong>
+    <div class="footer-logo">
+      Mauksh.
     </div>
 
-    <div style="margin-top: 6px;">
-      © 2026 Kaaldarpan. All rights reserved.
-    </div>
+    <p>
+      Astrology · Numerology · Spiritual Self-Understanding
+    </p>
+
+    <p>
+      © 2026 Mauksh. All rights reserved.
+    </p>
 
   </footer>
+
+
+  <!-- =========================
+       MOBILE MENU
+  ========================= -->
+
+  <script>
+
+    function toggleMenu() {
+
+      const nav = document.getElementById("mainNav");
+
+      nav.classList.toggle("active");
+
+    }
+
+  </script>
 
 </body>
 </html>
