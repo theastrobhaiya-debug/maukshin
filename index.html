@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Kaaldarpan — Today's Panchang</title>
+<title>Kaaldarpan — Today's Vedic Panchang</title>
 
 <meta name="description"
-content="Today's Vedic Panchang with Tithi, Nakshatra, Yoga, Karana, Choghadiya and auspicious timings.">
+content="Today's Vedic Panchang with Tithi, Nakshatra, Yoga, Karana, Choghadiya, Rahu Kaal, Muhurat and planetary details.">
 
 <style>
 *{box-sizing:border-box}
@@ -15,177 +15,280 @@ content="Today's Vedic Panchang with Tithi, Nakshatra, Yoga, Karana, Choghadiya 
 body{
 margin:0;
 font-family:Georgia,"Times New Roman",serif;
-background:#faf7f0;
+background:#f8f5ef;
 color:#29231d
 }
 
 header{
-background:#fffdf8;
-border-bottom:1px solid #e6ded1;
+background:#fffdf9;
+border-bottom:1px solid #e5ddd1;
 position:sticky;
 top:0;
-z-index:10
+z-index:20
 }
 
 .header{
-max-width:1100px;
+max-width:1150px;
 margin:auto;
-padding:18px 20px;
+padding:16px 20px;
 display:flex;
 align-items:center;
-justify-content:space-between
+justify-content:space-between;
+gap:20px
 }
 
-.logo{
-font-size:25px;
+.brand{
+font-size:26px;
 font-weight:bold;
 letter-spacing:2px
 }
 
-.subtitle{
+.tagline{
 font-size:12px;
-color:#8a8175;
+color:#84796c;
 margin-top:3px
 }
 
 nav{
 display:flex;
-gap:18px;
+gap:20px;
+font-family:Arial,sans-serif;
 font-size:14px
 }
 
 nav a{
-text-decoration:none;
-color:#51483e
+color:#51483e;
+text-decoration:none
 }
 
 main{
-max-width:1100px;
+max-width:1150px;
 margin:auto;
-padding:28px 18px 60px
+padding:25px 18px 60px
 }
 
 .hero{
 text-align:center;
-margin:15px 0 28px
+margin:12px 0 25px
 }
 
 .hero h1{
-font-size:34px;
+font-size:36px;
 margin:0 0 8px
 }
 
 .hero p{
-color:#756c61;
-margin:0
+margin:0;
+color:#766c61
 }
 
 .controls{
 display:flex;
-gap:12px;
-flex-wrap:wrap;
 justify-content:center;
-margin:25px 0
+align-items:center;
+gap:10px;
+flex-wrap:wrap;
+margin:24px 0
 }
 
-select,input{
-padding:12px 14px;
-border:1px solid #ddd4c7;
-border-radius:9px;
-background:white;
-font-family:inherit
+input,select{
+font-family:Arial,sans-serif;
+font-size:14px;
+padding:11px 13px;
+border:1px solid #dcd3c6;
+border-radius:8px;
+background:#fff
+}
+
+.location{
+text-align:center;
+font-size:13px;
+color:#81766a;
+margin-bottom:28px
 }
 
 .section-title{
 font-size:22px;
-margin:32px 0 15px
+margin:30px 0 14px;
+padding-bottom:8px;
+border-bottom:1px solid #e1d9cd
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-gap:14px
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:13px
 }
 
 .card{
-background:white;
-border:1px solid #e5ddd1;
-border-radius:13px;
-padding:20px;
-box-shadow:0 2px 8px rgba(50,40,30,.04)
+background:#fff;
+border:1px solid #e4dcd0;
+border-radius:12px;
+padding:19px;
+box-shadow:0 2px 8px rgba(50,40,30,.035)
 }
 
 .card h3{
-margin:0 0 10px;
-font-size:16px
+font-family:Arial,sans-serif;
+font-size:13px;
+font-weight:normal;
+color:#80766b;
+margin:0 0 9px;
+text-transform:uppercase;
+letter-spacing:.5px
 }
 
 .value{
 font-size:19px;
-font-weight:bold
+font-weight:bold;
+line-height:1.35
 }
 
-.label{
+.sub{
+font-family:Arial,sans-serif;
 font-size:12px;
-color:#877d71;
-margin-top:5px
+color:#8b8176;
+margin-top:6px
 }
 
-.choghadiya{
+.highlight{
+background:#fffdf8
+}
+
+.timing-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:13px
+}
+
+.timing{
+background:#fff;
+border:1px solid #e4dcd0;
+border-radius:12px;
+padding:18px
+}
+
+.timing h3{
+margin:0 0 8px;
+font-size:16px
+}
+
+.timing div{
+font-family:Arial,sans-serif;
+font-size:14px;
+color:#62594f
+}
+
+.tables{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px
+}
+
+.tablebox{
 overflow-x:auto
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
-border:1px solid #e5ddd1;
+background:#fff;
+border:1px solid #e4dcd0;
 border-radius:12px;
 overflow:hidden
 }
 
 th,td{
-padding:13px;
-border-bottom:1px solid #eee7dc;
+padding:12px 10px;
+border-bottom:1px solid #eee8df;
+font-family:Arial,sans-serif;
+font-size:13px;
 text-align:left;
-font-size:14px
+white-space:nowrap
 }
 
 th{
-font-weight:bold;
-background:#fbf8f2
+background:#fbf8f3;
+font-weight:bold
+}
+
+td:last-child{
+font-weight:bold
+}
+
+.loading{
+text-align:center;
+padding:30px;
+color:#847a70
+}
+
+.error{
+background:#fff;
+border:1px solid #e4dcd0;
+border-radius:12px;
+padding:20px;
+text-align:center;
+color:#765
 }
 
 footer{
-border-top:1px solid #e5ddd1;
+border-top:1px solid #e4dcd0;
 text-align:center;
-padding:30px;
-font-size:13px;
-color:#857b70
+padding:30px 20px;
+font-family:Arial,sans-serif;
+font-size:12px;
+color:#81776c
 }
 
-@media(max-width:700px){
+@media(max-width:750px){
 
 .header{
-align-items:flex-start
+padding:14px 15px
+}
+
+.brand{
+font-size:21px
 }
 
 nav{
 display:none
 }
 
-.logo{
-font-size:21px
+main{
+padding:20px 13px 45px
 }
 
 .hero h1{
 font-size:29px
 }
 
-main{
-padding-left:14px;
-padding-right:14px
+.tables{
+grid-template-columns:1fr
 }
+
+.grid{
+grid-template-columns:1fr 1fr
+}
+
+.timing-grid{
+grid-template-columns:1fr
+}
+
+.card{
+padding:15px
+}
+
+.value{
+font-size:17px
+}
+}
+
+@media(max-width:430px){
+
+.grid{
+grid-template-columns:1fr
+}
+
 }
 </style>
 </head>
@@ -193,14 +296,16 @@ padding-right:14px
 <body>
 
 <header>
+
 <div class="header">
 
 <div>
-<div class="logo">KAAL DARPAN</div>
-<div class="subtitle">The Mirror of Time</div>
+<div class="brand">KAAL DARPAN</div>
+<div class="tagline">The Mirror of Time</div>
 </div>
 
 <nav>
+<a href="/">Panchang</a>
 <a href="/daily-horoscope">Horoscope</a>
 <a href="/kundali">Kundali</a>
 <a href="/muhurat">Muhurat</a>
@@ -208,7 +313,9 @@ padding-right:14px
 </nav>
 
 </div>
+
 </header>
+
 
 <main>
 
@@ -216,199 +323,487 @@ padding-right:14px
 
 <h1>Today's Panchang</h1>
 
-<p id="dateText">Vedic Panchang</p>
+<p id="dateTitle">Vedic Panchang</p>
 
 <div class="controls">
 
 <input type="date" id="date">
 
 <select id="location">
-<option value="30.0869,78.2676">Rishikesh</option>
-<option value="28.6139,77.2090">Delhi</option>
-<option value="19.0760,72.8777">Mumbai</option>
-<option value="12.9716,77.5946">Bengaluru</option>
+
+<option value="30.0869,78.2676">
+Rishikesh
+</option>
+
+<option value="28.6139,77.2090">
+Delhi
+</option>
+
+<option value="19.0760,72.8777">
+Mumbai
+</option>
+
+<option value="12.9716,77.5946">
+Bengaluru
+</option>
+
 </select>
 
 </div>
 
+<div class="location" id="locationText">
+Rishikesh · India
+</div>
+
 </section>
+
+
+<div id="loading" class="loading">
+Loading Panchang...
+</div>
+
+
+<div id="content" style="display:none">
+
+
+<!-- MAIN PANCHANG -->
 
 <h2 class="section-title">Panchang</h2>
 
 <div class="grid">
 
-<div class="card">
+<div class="card highlight">
+
 <h3>Vara</h3>
-<div class="value" id="vara">—</div>
-<div class="label">Weekday</div>
+
+<div class="value" id="vara">
+—
 </div>
 
-<div class="card">
+<div class="sub">
+Weekday
+</div>
+
+</div>
+
+
+<div class="card highlight">
+
 <h3>Tithi</h3>
-<div class="value" id="tithi">—</div>
-<div class="label">Lunar day</div>
+
+<div class="value" id="tithi">
+—
 </div>
 
-<div class="card">
+<div class="sub" id="tithiEnd">
+—
+</div>
+
+</div>
+
+
+<div class="card highlight">
+
 <h3>Nakshatra</h3>
-<div class="value" id="nakshatra">—</div>
-<div class="label">Birth star</div>
+
+<div class="value" id="nakshatra">
+—
 </div>
 
+<div class="sub" id="nakshatraEnd">
+—
+</div>
+
+</div>
+
+
 <div class="card">
+
+<h3>Nakshatra Pada</h3>
+
+<div class="value" id="pada">
+—
+</div>
+
+<div class="sub">
+Pada
+</div>
+
+</div>
+
+
+<div class="card">
+
 <h3>Yoga</h3>
-<div class="value" id="yoga">—</div>
-<div class="label">Sun–Moon yoga</div>
+
+<div class="value" id="yoga">
+—
 </div>
 
+<div class="sub" id="yogaEnd">
+—
+</div>
+
+</div>
+
+
 <div class="card">
+
 <h3>Karana</h3>
-<div class="value" id="karana">—</div>
-<div class="label">Half tithi</div>
+
+<div class="value" id="karana">
+—
+</div>
+
+<div class="sub" id="karanaEnd">
+—
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Paksha</h3>
+
+<div class="value" id="paksha">
+—
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Ritu</h3>
+
+<div class="value" id="ritu">
+—
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Ayana</h3>
+
+<div class="value" id="ayana">
+—
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SAMVAT -->
+
+<h2 class="section-title">Samvat</h2>
+
+<div class="grid">
+
+<div class="card">
+
+<h3>Vikram Samvat</h3>
+
+<div class="value" id="vikram">
+—
+</div>
+
 </div>
 
 <div class="card">
-<h3>Paksha</h3>
-<div class="value" id="paksha">—</div>
-<div class="label">Lunar fortnight</div>
+
+<h3>Shaka Samvat</h3>
+
+<div class="value" id="shaka">
+—
 </div>
 
 </div>
+
+</div>
+
+
+<!-- SUN & MOON -->
 
 <h2 class="section-title">Sun & Moon</h2>
 
 <div class="grid">
 
 <div class="card">
+
 <h3>Sunrise</h3>
-<div class="value" id="sunrise">—</div>
+
+<div class="value" id="sunrise">
+—
+</div>
+
 </div>
 
 <div class="card">
+
 <h3>Sunset</h3>
-<div class="value" id="sunset">—</div>
+
+<div class="value" id="sunset">
+—
+</div>
+
 </div>
 
 <div class="card">
+
+<h3>Sun Rashi</h3>
+
+<div class="value" id="sunRashi">
+—
+</div>
+
+</div>
+
+<div class="card">
+
 <h3>Moonrise</h3>
-<div class="value" id="moonrise">—</div>
+
+<div class="value" id="moonrise">
+—
+</div>
+
 </div>
 
 <div class="card">
+
 <h3>Moonset</h3>
-<div class="value" id="moonset">—</div>
+
+<div class="value" id="moonset">
+—
 </div>
 
 </div>
 
-<h2 class="section-title">Choghadiya</h2>
+<div class="card">
 
-<div class="choghadiya">
+<h3>Moon Rashi</h3>
+
+<div class="value" id="moonRashi">
+—
+</div>
+
+</div>
+
+</div>
+
+
+<!-- IMPORTANT TIMINGS -->
+
+<h2 class="section-title">
+Important Timings
+</h2>
+
+<div class="timing-grid">
+
+<div class="timing">
+<h3>Abhijit Muhurat</h3>
+<div id="abhijit">—</div>
+</div>
+
+<div class="timing">
+<h3>Brahma Muhurta</h3>
+<div id="brahma">—</div>
+</div>
+
+<div class="timing">
+<h3>Rahu Kaal</h3>
+<div id="rahu">—</div>
+</div>
+
+<div class="timing">
+<h3>Yamaganda</h3>
+<div id="yamaganda">—</div>
+</div>
+
+<div class="timing">
+<h3>Gulika</h3>
+<div id="gulika">—</div>
+</div>
+
+</div>
+
+
+<!-- CHOGHADIYA -->
+
+<h2 class="section-title">
+Choghadiya
+</h2>
+
+<div class="tables">
+
+<div class="tablebox">
+
+<h3>Day Choghadiya</h3>
 
 <table>
 
 <thead>
+
 <tr>
-<th>Period</th>
 <th>Start</th>
 <th>End</th>
-<th>Choghadiya</th>
+<th>Name</th>
 </tr>
+
 </thead>
 
-<tbody id="choghadiyaBody">
-
-<tr>
-<td colspan="4">Loading Panchang...</td>
-</tr>
-
+<tbody id="dayChoghadiya">
 </tbody>
 
 </table>
 
 </div>
 
+
+<div class="tablebox">
+
+<h3>Night Choghadiya</h3>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Start</th>
+<th>End</th>
+<th>Name</th>
+</tr>
+
+</thead>
+
+<tbody id="nightChoghadiya">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- LOCATION -->
+
+<h2 class="section-title">
+Panchang Location
+</h2>
+
+<div class="card">
+
+<div id="coordinates">
+—
+</div>
+
+<div class="sub">
+Calculations use Lahiri Ayanamsa and Swiss Ephemeris.
+</div>
+
+</div>
+
+</div>
+
+
+<div id="error" style="display:none" class="error">
+Unable to load Panchang. Please try again.
+</div>
+
+
 </main>
 
+
 <footer>
+
 © 2026 Kaaldarpan · Vedic Astrology
+
+<br><br>
+
+Powered by Mauksh Panchang Engine
+
 </footer>
+
 
 <script>
 
-const dateInput=document.getElementById("date");
+const API =
+"https://mauksh-kundali-engine.onrender.com/api/panchang";
 
-const today=new Date();
 
-dateInput.value=
+const dateInput =
+document.getElementById("date");
+
+const locationInput =
+document.getElementById("location");
+
+
+const today =
+new Date();
+
+dateInput.value =
 today.toISOString().split("T")[0];
 
-async function loadPanchang(){
 
-const coords=
-document.getElementById("location").value.split(",");
+function setText(id,value){
 
-const lat=coords[0];
-const lon=coords[1];
+document.getElementById(id).textContent =
+value || "—";
 
-const date=dateInput.value;
+}
 
-document.getElementById("dateText").textContent=date;
 
-try{
+function formatLocation(){
 
-const url=
-`https://mauksh-kundali-engine.onrender.com/api/panchang?date=${date}&latitude=${lat}&longitude=${lon}&timezone=Asia/Kolkata`;
+const value =
+locationInput.value.split(",");
 
-const response=await fetch(url);
+const lat =
+value[0];
 
-if(!response.ok)
-throw new Error("API error");
+const lon =
+value[1];
 
-const data=await response.json();
+let name =
+"Rishikesh";
 
-document.getElementById("vara").textContent=
-data.vara || data.weekday || "—";
+if(lat==="28.6139")
+name="Delhi";
 
-document.getElementById("tithi").textContent=
-data.tithi?.name || data.tithi || "—";
+if(lat==="19.0760")
+name="Mumbai";
 
-document.getElementById("nakshatra").textContent=
-data.nakshatra?.name || data.nakshatra || "—";
+if(lat==="12.9716")
+name="Bengaluru";
 
-document.getElementById("yoga").textContent=
-data.yoga?.name || data.yoga || "—";
+document.getElementById("locationText")
+.textContent =
+name + " · India";
 
-document.getElementById("karana").textContent=
-data.karana?.name || data.karana || "—";
+document.getElementById("coordinates")
+.textContent =
+"Latitude: " + lat +
+" · Longitude: " + lon +
+" · Timezone: Asia/Kolkata";
 
-document.getElementById("paksha").textContent=
-data.paksha || "—";
+}
 
-document.getElementById("sunrise").textContent=
-data.sunrise || data.sunriseTime || "—";
 
-document.getElementById("sunset").textContent=
-data.sunset || data.sunsetTime || "—";
+function fillChoghadiya(id,items){
 
-document.getElementById("moonrise").textContent=
-data.moonrise || "—";
-
-document.getElementById("moonset").textContent=
-data.moonset || "—";
-
-const body=
-document.getElementById("choghadiyaBody");
+const body =
+document.getElementById(id);
 
 body.innerHTML="";
 
-const items=
-data.choghadiya?.day || [];
+if(!items || !items.length){
 
-if(items.length===0){
-
-body.innerHTML=
-`<tr><td colspan="4">Choghadiya unavailable</td></tr>`;
+body.innerHTML =
+"<tr><td colspan='3'>Unavailable</td></tr>";
 
 return;
 
@@ -416,42 +811,297 @@ return;
 
 items.forEach(item=>{
 
-const row=document.createElement("tr");
+const row =
+document.createElement("tr");
 
-row.innerHTML=`
-<td>Day</td>
+row.innerHTML = `
+
 <td>${item.start || "—"}</td>
+
 <td>${item.end || "—"}</td>
+
 <td>${item.name || "—"}</td>
+
 `;
 
 body.appendChild(row);
 
 });
 
+}
+
+
+async function loadPanchang(){
+
+document.getElementById("loading")
+.style.display="block";
+
+document.getElementById("content")
+.style.display="none";
+
+document.getElementById("error")
+.style.display="none";
+
+
+const coords =
+locationInput.value.split(",");
+
+const latitude =
+coords[0];
+
+const longitude =
+coords[1];
+
+const date =
+dateInput.value;
+
+
+formatLocation();
+
+
+try{
+
+const url =
+`${API}?date=${date}&latitude=${latitude}&longitude=${longitude}&timezone=Asia/Kolkata`;
+
+
+const response =
+await fetch(url);
+
+
+if(!response.ok)
+throw new Error("API request failed");
+
+
+const data =
+await response.json();
+
+
+if(!data.success)
+throw new Error("Panchang unavailable");
+
+
+/* DATE */
+
+setText(
+"dateTitle",
+new Date(date+"T00:00:00")
+.toLocaleDateString(
+"en-IN",
+{
+weekday:"long",
+year:"numeric",
+month:"long",
+day:"numeric"
+}
+)
+);
+
+
+/* PANCHANG */
+
+setText(
+"vara",
+data.vara?.name
+);
+
+setText(
+"tithi",
+data.tithi?.name
+);
+
+setText(
+"tithiEnd",
+data.tithi?.ends
+? "Ends " + data.tithi.ends
+: ""
+);
+
+setText(
+"nakshatra",
+data.nakshatra?.name
+);
+
+setText(
+"nakshatraEnd",
+data.nakshatra?.ends
+? "Ends " + data.nakshatra.ends
+: ""
+);
+
+setText(
+"pada",
+data.moon?.nakshatra?.pada
+? "Pada " + data.moon.nakshatra.pada
+: ""
+);
+
+setText(
+"yoga",
+data.yoga?.name
+);
+
+setText(
+"yogaEnd",
+data.yoga?.ends
+? "Ends " + data.yoga.ends
+: ""
+);
+
+setText(
+"karana",
+data.karana?.name
+);
+
+setText(
+"karanaEnd",
+data.karana?.ends
+? "Ends " + data.karana.ends
+: ""
+);
+
+setText(
+"paksha",
+data.paksha
+);
+
+setText(
+"ritu",
+data.ritu
+);
+
+setText(
+"ayana",
+data.ayana
+);
+
+
+/* SAMVAT */
+
+setText(
+"vikram",
+data.vikramSamvat
+);
+
+setText(
+"shaka",
+data.shakaSamvat
+);
+
+
+/* SUN */
+
+setText(
+"sunrise",
+data.sun?.rise
+);
+
+setText(
+"sunset",
+data.sun?.set
+);
+
+setText(
+"sunRashi",
+data.sun?.rashi?.name
+);
+
+
+/* MOON */
+
+setText(
+"moonrise",
+data.moon?.rise
+);
+
+setText(
+"moonset",
+data.moon?.set
+);
+
+setText(
+"moonRashi",
+data.moon?.rashi?.name
+);
+
+
+/* TIMINGS */
+
+setText(
+"abhijit",
+data.timings?.abhijit
+);
+
+setText(
+"brahma",
+data.timings?.brahma
+);
+
+setText(
+"rahu",
+data.timings?.rahuKaal
+);
+
+setText(
+"yamaganda",
+data.timings?.yamaganda
+);
+
+setText(
+"gulika",
+data.timings?.gulika
+);
+
+
+/* CHOGHADIYA */
+
+fillChoghadiya(
+"dayChoghadiya",
+data.choghadiya?.day
+);
+
+fillChoghadiya(
+"nightChoghadiya",
+data.choghadiya?.night
+);
+
+
+/* SHOW */
+
+document.getElementById("loading")
+.style.display="none";
+
+document.getElementById("content")
+.style.display="block";
+
 }catch(error){
 
 console.error(error);
 
-document.getElementById("vara").textContent="—";
-document.getElementById("tithi").textContent="—";
-document.getElementById("nakshatra").textContent="—";
+document.getElementById("loading")
+.style.display="none";
 
-document.getElementById("choghadiyaBody").innerHTML=
-`<tr>
-<td colspan="4">
-Unable to load Panchang. Please try again.
-</td>
-</tr>`;
+document.getElementById("error")
+.style.display="block";
 
 }
 
 }
 
-dateInput.addEventListener("change",loadPanchang);
 
-document.getElementById("location")
-.addEventListener("change",loadPanchang);
+dateInput.addEventListener(
+"change",
+loadPanchang
+);
+
+
+locationInput.addEventListener(
+"change",
+loadPanchang
+);
+
+
+formatLocation();
 
 loadPanchang();
 
