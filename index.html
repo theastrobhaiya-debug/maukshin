@@ -7,7 +7,7 @@
 <title>Kaaldarpan — Today's Vedic Panchang</title>
 
 <meta name="description"
-content="Today's Vedic Panchang with Tithi, Nakshatra, Yoga, Karana, Choghadiya, Rahu Kaal, Muhurat and planetary details.">
+content="Today's Vedic Panchang with Tithi, Nakshatra, Yoga, Karana, Choghadiya and auspicious timings.">
 
 <style>
 *{box-sizing:border-box}
@@ -33,8 +33,7 @@ margin:auto;
 padding:16px 20px;
 display:flex;
 align-items:center;
-justify-content:space-between;
-gap:20px
+justify-content:space-between
 }
 
 .brand{
@@ -82,16 +81,85 @@ margin:0;
 color:#766c61
 }
 
+/* LOCATION */
+
+.location-box{
+max-width:650px;
+margin:25px auto 30px;
+position:relative
+}
+
+.search-row{
+display:flex;
+gap:8px
+}
+
+#citySearch{
+flex:1;
+padding:13px 15px;
+border:1px solid #dcd3c6;
+border-radius:9px;
+font-size:15px;
+background:white
+}
+
+#locationButton{
+padding:12px 15px;
+border:1px solid #dcd3c6;
+border-radius:9px;
+background:white;
+cursor:pointer;
+font-family:Arial,sans-serif
+}
+
+#locationButton:hover{
+background:#f5f1e9
+}
+
+.search-results{
+position:absolute;
+left:0;
+right:0;
+top:52px;
+background:white;
+border:1px solid #ddd4c8;
+border-radius:9px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+overflow:hidden;
+z-index:50
+}
+
+.result{
+padding:12px 15px;
+cursor:pointer;
+border-bottom:1px solid #eee8df;
+font-family:Arial,sans-serif;
+font-size:14px
+}
+
+.result:last-child{
+border-bottom:0
+}
+
+.result:hover{
+background:#f8f5ef
+}
+
+.selected-location{
+margin-top:12px;
+font-family:Arial,sans-serif;
+font-size:13px;
+color:#81766a;
+text-align:center
+}
+
 .controls{
 display:flex;
 justify-content:center;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
-margin:24px 0
+margin:18px 0
 }
 
-input,select{
+input[type="date"]{
 font-family:Arial,sans-serif;
 font-size:14px;
 padding:11px 13px;
@@ -100,12 +168,7 @@ border-radius:8px;
 background:#fff
 }
 
-.location{
-text-align:center;
-font-size:13px;
-color:#81766a;
-margin-bottom:28px
-}
+/* CONTENT */
 
 .section-title{
 font-size:22px;
@@ -187,6 +250,10 @@ gap:20px
 
 .tablebox{
 overflow-x:auto
+}
+
+.tablebox h3{
+margin-top:0
 }
 
 table{
@@ -281,6 +348,14 @@ padding:15px
 .value{
 font-size:17px
 }
+
+.search-row{
+flex-direction:column
+}
+
+#locationButton{
+width:100%
+}
 }
 
 @media(max-width:430px){
@@ -325,37 +400,52 @@ grid-template-columns:1fr
 
 <p id="dateTitle">Vedic Panchang</p>
 
+</section>
+
+
+<!-- LOCATION SEARCH -->
+
+<div class="location-box">
+
+<div class="search-row">
+
+<input
+id="citySearch"
+type="text"
+placeholder="Search city worldwide..."
+autocomplete="off"
+>
+
+<button id="locationButton">
+📍 Use my location
+</button>
+
+</div>
+
+<div
+id="searchResults"
+class="search-results"
+style="display:none">
+</div>
+
+<div
+id="selectedLocation"
+class="selected-location">
+Rishikesh, India
+</div>
+
+</div>
+
+
+<!-- DATE -->
+
 <div class="controls">
 
-<input type="date" id="date">
-
-<select id="location">
-
-<option value="30.0869,78.2676">
-Rishikesh
-</option>
-
-<option value="28.6139,77.2090">
-Delhi
-</option>
-
-<option value="19.0760,72.8777">
-Mumbai
-</option>
-
-<option value="12.9716,77.5946">
-Bengaluru
-</option>
-
-</select>
+<input
+type="date"
+id="date">
 
 </div>
-
-<div class="location" id="locationText">
-Rishikesh · India
-</div>
-
-</section>
 
 
 <div id="loading" class="loading">
@@ -366,236 +456,116 @@ Loading Panchang...
 <div id="content" style="display:none">
 
 
-<!-- MAIN PANCHANG -->
-
 <h2 class="section-title">Panchang</h2>
 
 <div class="grid">
 
 <div class="card highlight">
-
 <h3>Vara</h3>
-
-<div class="value" id="vara">
-—
+<div class="value" id="vara">—</div>
+<div class="sub">Weekday</div>
 </div>
-
-<div class="sub">
-Weekday
-</div>
-
-</div>
-
 
 <div class="card highlight">
-
 <h3>Tithi</h3>
-
-<div class="value" id="tithi">
-—
+<div class="value" id="tithi">—</div>
+<div class="sub" id="tithiEnd">—</div>
 </div>
-
-<div class="sub" id="tithiEnd">
-—
-</div>
-
-</div>
-
 
 <div class="card highlight">
-
 <h3>Nakshatra</h3>
-
-<div class="value" id="nakshatra">
-—
+<div class="value" id="nakshatra">—</div>
+<div class="sub" id="nakshatraEnd">—</div>
 </div>
-
-<div class="sub" id="nakshatraEnd">
-—
-</div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Nakshatra Pada</h3>
-
-<div class="value" id="pada">
-—
+<div class="value" id="pada">—</div>
 </div>
-
-<div class="sub">
-Pada
-</div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Yoga</h3>
-
-<div class="value" id="yoga">
-—
+<div class="value" id="yoga">—</div>
+<div class="sub" id="yogaEnd">—</div>
 </div>
-
-<div class="sub" id="yogaEnd">
-—
-</div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Karana</h3>
-
-<div class="value" id="karana">
-—
+<div class="value" id="karana">—</div>
+<div class="sub" id="karanaEnd">—</div>
 </div>
-
-<div class="sub" id="karanaEnd">
-—
-</div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Paksha</h3>
-
-<div class="value" id="paksha">
-—
+<div class="value" id="paksha">—</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Ritu</h3>
-
-<div class="value" id="ritu">
-—
+<div class="value" id="ritu">—</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
 <h3>Ayana</h3>
-
-<div class="value" id="ayana">
-—
+<div class="value" id="ayana">—</div>
 </div>
 
 </div>
 
-</div>
-
-
-<!-- SAMVAT -->
 
 <h2 class="section-title">Samvat</h2>
 
 <div class="grid">
 
 <div class="card">
-
 <h3>Vikram Samvat</h3>
-
-<div class="value" id="vikram">
-—
-</div>
-
+<div class="value" id="vikram">—</div>
 </div>
 
 <div class="card">
-
 <h3>Shaka Samvat</h3>
-
-<div class="value" id="shaka">
-—
+<div class="value" id="shaka">—</div>
 </div>
 
 </div>
 
-</div>
-
-
-<!-- SUN & MOON -->
 
 <h2 class="section-title">Sun & Moon</h2>
 
 <div class="grid">
 
 <div class="card">
-
 <h3>Sunrise</h3>
-
-<div class="value" id="sunrise">
-—
-</div>
-
+<div class="value" id="sunrise">—</div>
 </div>
 
 <div class="card">
-
 <h3>Sunset</h3>
-
-<div class="value" id="sunset">
-—
-</div>
-
+<div class="value" id="sunset">—</div>
 </div>
 
 <div class="card">
-
 <h3>Sun Rashi</h3>
-
-<div class="value" id="sunRashi">
-—
-</div>
-
+<div class="value" id="sunRashi">—</div>
 </div>
 
 <div class="card">
-
 <h3>Moonrise</h3>
-
-<div class="value" id="moonrise">
-—
-</div>
-
+<div class="value" id="moonrise">—</div>
 </div>
 
 <div class="card">
-
 <h3>Moonset</h3>
-
-<div class="value" id="moonset">
-—
-</div>
-
+<div class="value" id="moonset">—</div>
 </div>
 
 <div class="card">
-
 <h3>Moon Rashi</h3>
-
-<div class="value" id="moonRashi">
-—
+<div class="value" id="moonRashi">—</div>
 </div>
 
 </div>
 
-</div>
-
-
-<!-- IMPORTANT TIMINGS -->
 
 <h2 class="section-title">
 Important Timings
@@ -631,8 +601,6 @@ Important Timings
 </div>
 
 
-<!-- CHOGHADIYA -->
-
 <h2 class="section-title">
 Choghadiya
 </h2>
@@ -646,17 +614,14 @@ Choghadiya
 <table>
 
 <thead>
-
 <tr>
 <th>Start</th>
 <th>End</th>
 <th>Name</th>
 </tr>
-
 </thead>
 
-<tbody id="dayChoghadiya">
-</tbody>
+<tbody id="dayChoghadiya"></tbody>
 
 </table>
 
@@ -670,17 +635,14 @@ Choghadiya
 <table>
 
 <thead>
-
 <tr>
 <th>Start</th>
 <th>End</th>
 <th>Name</th>
 </tr>
-
 </thead>
 
-<tbody id="nightChoghadiya">
-</tbody>
+<tbody id="nightChoghadiya"></tbody>
 
 </table>
 
@@ -689,20 +651,16 @@ Choghadiya
 </div>
 
 
-<!-- LOCATION -->
-
 <h2 class="section-title">
 Panchang Location
 </h2>
 
 <div class="card">
 
-<div id="coordinates">
-—
-</div>
+<div id="coordinates">—</div>
 
 <div class="sub">
-Calculations use Lahiri Ayanamsa and Swiss Ephemeris.
+Lahiri Ayanamsa · Swiss Ephemeris · Mauksh Panchang Engine
 </div>
 
 </div>
@@ -735,11 +693,28 @@ const API =
 "https://mauksh-kundali-engine.onrender.com/api/panchang";
 
 
+let currentLocation = {
+lat:30.0869,
+lon:78.2676,
+name:"Rishikesh, India",
+timezone:"Asia/Kolkata"
+};
+
+
 const dateInput =
 document.getElementById("date");
 
-const locationInput =
-document.getElementById("location");
+const citySearch =
+document.getElementById("citySearch");
+
+const searchResults =
+document.getElementById("searchResults");
+
+const locationButton =
+document.getElementById("locationButton");
+
+const selectedLocation =
+document.getElementById("selectedLocation");
 
 
 const today =
@@ -749,6 +724,10 @@ dateInput.value =
 today.toISOString().split("T")[0];
 
 
+/* --------------------------------
+   DISPLAY HELPER
+-------------------------------- */
+
 function setText(id,value){
 
 document.getElementById(id).textContent =
@@ -757,41 +736,361 @@ value || "—";
 }
 
 
-function formatLocation(){
+/* --------------------------------
+   SAVE LOCATION
+-------------------------------- */
 
-const value =
-locationInput.value.split(",");
+function saveLocation(){
 
-const lat =
-value[0];
-
-const lon =
-value[1];
-
-let name =
-"Rishikesh";
-
-if(lat==="28.6139")
-name="Delhi";
-
-if(lat==="19.0760")
-name="Mumbai";
-
-if(lat==="12.9716")
-name="Bengaluru";
-
-document.getElementById("locationText")
-.textContent =
-name + " · India";
-
-document.getElementById("coordinates")
-.textContent =
-"Latitude: " + lat +
-" · Longitude: " + lon +
-" · Timezone: Asia/Kolkata";
+localStorage.setItem(
+"kaaldarpanLocation",
+JSON.stringify(currentLocation)
+);
 
 }
 
+
+/* --------------------------------
+   LOAD SAVED LOCATION
+-------------------------------- */
+
+function loadSavedLocation(){
+
+try{
+
+const saved =
+localStorage.getItem(
+"kaaldarpanLocation"
+);
+
+if(saved){
+
+const location =
+JSON.parse(saved);
+
+if(
+location.lat &&
+location.lon
+){
+
+currentLocation =
+location;
+
+selectedLocation.textContent =
+location.name;
+
+}
+
+}
+
+}catch(e){
+
+console.log("No saved location");
+
+}
+
+}
+
+
+/* --------------------------------
+   CITY SEARCH
+-------------------------------- */
+
+let searchTimer;
+
+
+citySearch.addEventListener(
+"input",
+function(){
+
+clearTimeout(searchTimer);
+
+const query =
+this.value.trim();
+
+if(query.length < 2){
+
+searchResults.style.display="none";
+
+return;
+
+}
+
+searchTimer =
+setTimeout(
+()=>searchCity(query),
+500
+);
+
+});
+
+
+async function searchCity(query){
+
+try{
+
+const url =
+"https://nominatim.openstreetmap.org/search" +
+"?format=json" +
+"&q=" +
+encodeURIComponent(query) +
+"&limit=8" +
+"&addressdetails=1";
+
+const response =
+await fetch(
+url,
+{
+headers:{
+"Accept-Language":"en"
+}
+}
+);
+
+const places =
+await response.json();
+
+searchResults.innerHTML="";
+
+
+if(!places.length){
+
+searchResults.innerHTML =
+`<div class="result">
+No locations found
+</div>`;
+
+searchResults.style.display="block";
+
+return;
+
+}
+
+
+places.forEach(place=>{
+
+const item =
+document.createElement("div");
+
+item.className="result";
+
+const address =
+place.address || {};
+
+const city =
+address.city ||
+address.town ||
+address.village ||
+address.municipality ||
+place.name ||
+"";
+
+const country =
+address.country || "";
+
+item.textContent =
+city +
+(country ? ", " + country : "");
+
+item.onclick =
+()=>selectCity(place);
+
+searchResults.appendChild(item);
+
+});
+
+searchResults.style.display="block";
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+
+/* --------------------------------
+   SELECT CITY
+-------------------------------- */
+
+function selectCity(place){
+
+const address =
+place.address || {};
+
+const city =
+address.city ||
+address.town ||
+address.village ||
+address.municipality ||
+place.name ||
+"Selected location";
+
+const country =
+address.country || "";
+
+currentLocation = {
+
+lat:parseFloat(place.lat),
+
+lon:parseFloat(place.lon),
+
+name:
+city +
+(country ? ", " + country : ""),
+
+timezone:"Asia/Kolkata"
+
+};
+
+
+selectedLocation.textContent =
+currentLocation.name;
+
+citySearch.value="";
+
+searchResults.style.display="none";
+
+saveLocation();
+
+loadPanchang();
+
+}
+
+
+/* --------------------------------
+   CURRENT LOCATION
+-------------------------------- */
+
+locationButton.onclick =
+function(){
+
+if(!navigator.geolocation){
+
+alert(
+"Your browser does not support location."
+);
+
+return;
+
+}
+
+
+locationButton.textContent =
+"Getting location...";
+
+
+navigator.geolocation.getCurrentPosition(
+
+async position=>{
+
+const lat =
+position.coords.latitude;
+
+const lon =
+position.coords.longitude;
+
+
+try{
+
+const url =
+"https://nominatim.openstreetmap.org/reverse" +
+"?format=json" +
+"&lat=" + lat +
+"&lon=" + lon +
+"&zoom=10" +
+"&addressdetails=1";
+
+
+const response =
+await fetch(url);
+
+const data =
+await response.json();
+
+const address =
+data.address || {};
+
+const city =
+address.city ||
+address.town ||
+address.village ||
+address.municipality ||
+"Your location";
+
+const country =
+address.country || "";
+
+
+currentLocation = {
+
+lat:lat,
+
+lon:lon,
+
+name:
+city +
+(country ? ", " + country : ""),
+
+timezone:"Asia/Kolkata"
+
+};
+
+
+selectedLocation.textContent =
+currentLocation.name;
+
+saveLocation();
+
+loadPanchang();
+
+
+}catch(error){
+
+currentLocation = {
+
+lat:lat,
+lon:lon,
+name:"Your current location",
+timezone:"Asia/Kolkata"
+
+};
+
+selectedLocation.textContent =
+"Your current location";
+
+saveLocation();
+
+loadPanchang();
+
+}
+
+
+locationButton.textContent =
+"📍 Use my location";
+
+},
+
+error=>{
+
+alert(
+"Location permission was not granted."
+);
+
+locationButton.textContent =
+"📍 Use my location";
+
+}
+
+);
+
+};
+
+
+/* --------------------------------
+   CHOGHADIYA
+-------------------------------- */
 
 function fillChoghadiya(id,items){
 
@@ -831,6 +1130,10 @@ body.appendChild(row);
 }
 
 
+/* --------------------------------
+   PANCHANG
+-------------------------------- */
+
 async function loadPanchang(){
 
 document.getElementById("loading")
@@ -843,26 +1146,17 @@ document.getElementById("error")
 .style.display="none";
 
 
-const coords =
-locationInput.value.split(",");
-
-const latitude =
-coords[0];
-
-const longitude =
-coords[1];
-
 const date =
 dateInput.value;
-
-
-formatLocation();
 
 
 try{
 
 const url =
-`${API}?date=${date}&latitude=${latitude}&longitude=${longitude}&timezone=Asia/Kolkata`;
+`${API}?date=${encodeURIComponent(date)}` +
+`&latitude=${encodeURIComponent(currentLocation.lat)}` +
+`&longitude=${encodeURIComponent(currentLocation.lon)}` +
+`&timezone=${encodeURIComponent(currentLocation.timezone)}`;
 
 
 const response =
@@ -881,12 +1175,10 @@ if(!data.success)
 throw new Error("Panchang unavailable");
 
 
-/* DATE */
-
-setText(
-"dateTitle",
-new Date(date+"T00:00:00")
-.toLocaleDateString(
+const displayDate =
+new Date(
+date+"T00:00:00"
+).toLocaleDateString(
 "en-IN",
 {
 weekday:"long",
@@ -894,7 +1186,12 @@ year:"numeric",
 month:"long",
 day:"numeric"
 }
-)
+);
+
+
+setText(
+"dateTitle",
+displayDate
 );
 
 
@@ -932,7 +1229,8 @@ data.nakshatra?.ends
 setText(
 "pada",
 data.moon?.nakshatra?.pada
-? "Pada " + data.moon.nakshatra.pada
+? "Pada " +
+data.moon.nakshatra.pada
 : ""
 );
 
@@ -1066,13 +1364,25 @@ data.choghadiya?.night
 );
 
 
-/* SHOW */
+/* COORDINATES */
+
+setText(
+"coordinates",
+"Latitude: " +
+Number(currentLocation.lat).toFixed(5) +
+" · Longitude: " +
+Number(currentLocation.lon).toFixed(5) +
+" · Timezone: " +
+currentLocation.timezone
+);
+
 
 document.getElementById("loading")
 .style.display="none";
 
 document.getElementById("content")
 .style.display="block";
+
 
 }catch(error){
 
@@ -1089,19 +1399,21 @@ document.getElementById("error")
 }
 
 
+/* --------------------------------
+   EVENTS
+-------------------------------- */
+
 dateInput.addEventListener(
 "change",
 loadPanchang
 );
 
 
-locationInput.addEventListener(
-"change",
-loadPanchang
-);
+/* --------------------------------
+   START
+-------------------------------- */
 
-
-formatLocation();
+loadSavedLocation();
 
 loadPanchang();
 
