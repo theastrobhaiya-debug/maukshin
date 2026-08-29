@@ -1,586 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Daily Horoscope | Kaaldarpan</title>
+<title>Daily Horoscope | Kaaldarpan</title>
 
-  <meta
-    name="description"
-    content="Daily Vedic horoscope for all zodiac signs by Kaaldarpan, an initiative by Mauksh."
-  >
+<style>
+* {
+  box-sizing: border-box;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+body {
+  margin: 0;
+  background: #fffaf2;
+  color: #3b2414;
+  font-family: Georgia, "Times New Roman", serif;
+}
 
-    body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      background: #fffaf2;
-      color: #3b2414;
-    }
+header {
+  text-align: center;
+  padding: 25px 15px 20px;
+  background: #fff4dc;
+  border-bottom: 1px solid #e3c58d;
+}
 
-    .header {
-      background: linear-gradient(135deg, #fff8e9, #f8e5bd);
-      border-bottom: 1px solid #e2c58d;
-      text-align: center;
-      padding: 24px 16px 18px;
-    }
+.logo {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+}
 
-    .logo {
-      width: 82px;
-      height: 82px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 8px;
-    }
+.brand {
+  margin: 8px 0 2px;
+  color: #a85b08;
+  font-size: 29px;
+}
 
-    .brand {
-      margin: 0;
-      font-size: 30px;
-      color: #a85b08;
-      letter-spacing: 1px;
-    }
+.by {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  color: #765536;
+  text-transform: uppercase;
+}
 
-    .by-mauksh {
-      margin-top: 5px;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      color: #765536;
-      text-transform: uppercase;
-    }
+nav {
+  text-align: center;
+  padding: 13px;
+  background: white;
+  border-bottom: 1px solid #ead9ba;
+}
 
-    .nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 14px;
-      background: #fffdf8;
-      border-bottom: 1px solid #ead9ba;
-    }
+nav a {
+  margin: 0 8px;
+  text-decoration: none;
+  color: #77430b;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
 
-    .nav a {
-      text-decoration: none;
-      color: #77430b;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 20px;
-    }
+.hero {
+  text-align: center;
+  padding: 35px 15px 25px;
+}
 
-    .nav a:hover {
-      background: #f5e3c1;
-    }
+.om {
+  font-size: 28px;
+  color: #c87508;
+}
 
-    .hero {
-      max-width: 900px;
-      margin: auto;
-      text-align: center;
-      padding: 38px 18px 22px;
-    }
+h1 {
+  margin: 8px 0;
+  font-size: 34px;
+  color: #6f3907;
+}
 
-    .om {
-      font-size: 30px;
-      color: #c87508;
-      margin-bottom: 8px;
-    }
+.subtitle {
+  max-width: 650px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #765f48;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 36px;
-      color: #6f3907;
-    }
+.date {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 9px 15px;
+  background: white;
+  border: 1px solid #dfc18a;
+  border-radius: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
 
-    .subtitle {
-      max-width: 680px;
-      margin: 12px auto 0;
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #765f48;
-      font-size: 14px;
-    }
+.status {
+  margin-top: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  color: #8a765f;
+}
 
-    .date-box {
-      display: inline-block;
-      margin-top: 22px;
-      background: #fff;
-      border: 1px solid #dfc18a;
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: #70420e;
-    }
+.container {
+  width: min(94%, 950px);
+  margin: auto;
+  padding-bottom: 45px;
+}
 
-    .status {
-      margin-top: 9px;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      color: #806d58;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 
-    .container {
-      width: min(100% - 28px, 1000px);
-      margin: 12px auto 50px;
-    }
+.card {
+  background: white;
+  border: 1px solid #ead7b5;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(100,70,30,.06);
+}
 
-    .zodiac-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 17px;
-    }
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
 
-    .card {
-      background: #ffffff;
-      border: 1px solid #ead7b5;
-      border-radius: 16px;
-      padding: 21px;
-      box-shadow: 0 4px 16px rgba(112, 71, 20, 0.07);
-    }
+.symbol {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #fff3d8;
+  border: 1px solid #e4c58b;
 
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      margin-bottom: 14px;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    .symbol {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff3d8;
-      border: 1px solid #e4c58b;
-      font-size: 25px;
-    }
+  font-size: 24px;
+}
 
-    .sign {
-      margin: 0;
-      font-size: 21px;
-      color: #7a4107;
-    }
+.sign {
+  margin: 0;
+  color: #7a4107;
+  font-size: 20px;
+}
 
-    .sanskrit {
-      margin-top: 3px;
-      font-family: Arial, sans-serif;
-      color: #9b7952;
-      font-size: 11px;
-    }
+.sanskrit {
+  margin-top: 3px;
+  color: #9b7952;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+}
 
-    .prediction {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.78;
-      color: #4d3927;
-    }
+.text {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #4d3927;
+}
 
-    .loading {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 45px 20px;
-      font-family: Arial, sans-serif;
-      color: #806d58;
-    }
+.loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  color: #806d58;
+}
 
-    .note {
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      color: #806d58;
-      margin: 30px 0;
-      line-height: 1.6;
-    }
+footer {
+  text-align: center;
+  padding: 25px;
+  background: #f6e6c8;
+  border-top: 1px solid #dfc18a;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #765536;
+}
 
-    footer {
-      text-align: center;
-      background: #f6e6c8;
-      border-top: 1px solid #dfc18a;
-      padding: 26px 15px;
-      color: #765536;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      line-height: 1.7;
-    }
+footer strong {
+  color: #9b5307;
+}
 
-    footer strong {
-      color: #9b5307;
-    }
+@media (max-width: 650px) {
 
-    @media (max-width: 650px) {
-      .zodiac-grid {
-        grid-template-columns: 1fr;
-      }
+  .grid {
+    grid-template-columns: 1fr;
+  }
 
-      h1 {
-        font-size: 30px;
-      }
+  h1 {
+    font-size: 29px;
+  }
 
-      .brand {
-        font-size: 27px;
-      }
-    }
-  </style>
+}
+</style>
 </head>
+
 
 <body>
 
-  <!-- HEADER -->
+<header>
 
-  <header class="header">
+  <img
+    src="assets/kaaldarpan-logo.png"
+    class="logo"
+    alt="Kaaldarpan"
+  >
 
-    <img
-      src="assets/kaaldarpan-logo.png"
-      alt="Kaaldarpan logo"
-      class="logo"
-    >
+  <h2 class="brand">
+    Kaaldarpan
+  </h2>
 
-    <h2 class="brand">Kaaldarpan</h2>
-
-    <div class="by-mauksh">
-      An initiative by Mauksh
-    </div>
-
-  </header>
-
-
-  <!-- NAVIGATION -->
-
-  <nav class="nav">
-
-    <a href="index.html">
-      Panchang
-    </a>
-
-    <a href="horoscope.html">
-      Daily Horoscope
-    </a>
-
-  </nav>
-
-
-  <!-- HERO -->
-
-  <section class="hero">
-
-    <div class="om">ॐ</div>
-
-    <h1>
-      Daily Horoscope
-    </h1>
-
-    <p class="subtitle">
-      Vedic astrology insights for your day, based on planetary
-      influences and traditional Jyotish principles.
-    </p>
-
-    <div
-      class="date-box"
-      id="todayDate">
-    </div>
-
-    <div
-      class="status"
-      id="status">
-      Loading today's horoscope…
-    </div>
-
-  </section>
-
-
-  <!-- HOROSCOPES -->
-
-  <main class="container">
-
-    <div
-      class="zodiac-grid"
-      id="zodiacGrid">
-
-      <div class="loading">
-        Loading today's horoscope…
-      </div>
-
-    </div>
-
-    <p class="note">
-      Daily horoscope interpretations are based on traditional
-      Vedic astrology principles and are intended for general guidance.
-    </p>
-
-  </main>
-
-
-  <!-- FOOTER -->
-
-  <footer>
-
-    <strong>Kaaldarpan</strong>
-
-    <br>
-
+  <div class="by">
     An initiative by Mauksh
+  </div>
 
-  </footer>
+</header>
 
 
-  <!-- LIVE MAUKSH HOROSCOPE CONNECTION -->
+<nav>
 
-  <script>
+  <a href="index.html">
+    Panchang
+  </a>
 
-    const DATA_URL =
-      "https://raw.githubusercontent.com/theastrobhaiya-debug/Mauksh-data/main/Horoscope.json";
+  <a href="horoscope.html">
+    Daily Horoscope
+  </a>
 
+</nav>
 
-    const signs = [
 
-      ["Aries", "Mesha", "♈"],
-      ["Taurus", "Vrishabha", "♉"],
-      ["Gemini", "Mithuna", "♊"],
-      ["Cancer", "Karka", "♋"],
-      ["Leo", "Simha", "♌"],
-      ["Virgo", "Kanya", "♍"],
-      ["Libra", "Tula", "♎"],
-      ["Scorpio", "Vrishchika", "♏"],
-      ["Sagittarius", "Dhanu", "♐"],
-      ["Capricorn", "Makara", "♑"],
-      ["Aquarius", "Kumbha", "♒"],
-      ["Pisces", "Meena", "♓"]
+<section class="hero">
 
-    ];
+  <div class="om">ॐ</div>
 
+  <h1>
+    Daily Horoscope
+  </h1>
 
-    /* TODAY'S DATE */
+  <p class="subtitle">
+    Your daily Vedic astrology guidance for all twelve zodiac signs.
+  </p>
 
-    const today = new Date();
+  <div class="date" id="date"></div>
 
-    document.getElementById("todayDate").textContent =
-      today.toLocaleDateString("en-IN", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
+  <div class="status" id="status">
+    Loading horoscope...
+  </div>
 
+</section>
 
-    /* FIND HOROSCOPE TEXT */
 
-    function findPrediction(data, sign) {
+<main class="container">
 
-      const source =
-        data.horoscope ||
-        data.predictions ||
-        data.signs ||
-        data.zodiac ||
-        data;
+  <div class="grid" id="grid">
 
+    <div class="loading">
+      Loading today's horoscope...
+    </div>
 
-      if (!source || typeof source !== "object") {
-        return "";
-      }
+  </div>
 
+</main>
 
-      const keys = Object.keys(source);
 
+<footer>
 
-      const exactKey = keys.find(function(key) {
+  <strong>Kaaldarpan</strong>
 
-        return key
-          .toLowerCase()
-          .replace(/[^a-z]/g, "") ===
-          sign.toLowerCase();
+  <br>
 
-      });
+  An initiative by Mauksh
 
+</footer>
 
-      if (!exactKey) {
-        return "";
-      }
 
+<script>
 
-      const value = source[exactKey];
+const DATA_URL =
+"https://raw.githubusercontent.com/theastrobhaiya-debug/Mauksh-data/main/Horoscope.json";
 
 
-      if (typeof value === "string") {
-        return value;
-      }
+const signs = [
 
+  ["Aries", "Mesha", "♈"],
+  ["Taurus", "Vrishabha", "♉"],
+  ["Gemini", "Mithuna", "♊"],
+  ["Cancer", "Karka", "♋"],
+  ["Leo", "Simha", "♌"],
+  ["Virgo", "Kanya", "♍"],
+  ["Libra", "Tula", "♎"],
+  ["Scorpio", "Vrishchika", "♏"],
+  ["Sagittarius", "Dhanu", "♐"],
+  ["Capricorn", "Makara", "♑"],
+  ["Aquarius", "Kumbha", "♒"],
+  ["Pisces", "Meena", "♓"]
 
-      if (value && typeof value === "object") {
+];
 
-        return (
-          value.prediction ||
-          value.horoscope ||
-          value.text ||
-          value.content ||
-          ""
-        );
 
-      }
+document.getElementById("date").textContent =
+new Date().toLocaleDateString(
+  "en-IN",
+  {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  }
+);
 
 
-      return "";
+/* Remove HTML tags from horoscope text */
 
-    }
+function cleanText(value) {
 
+  if (!value) {
+    return "";
+  }
 
-    /* PROTECT PAGE FROM HTML IN JSON */
+  let text = String(value);
 
-    function escapeHtml(value) {
+  text = text.replace(/<[^>]*>/g, "");
 
-      return String(value).replace(
-        /[&<>'"]/g,
-        function(character) {
+  text = text
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
 
-          return {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "'": "&#39;",
-            '"': "&quot;"
+  return text
+    .replace(/\s+/g, " ")
+    .trim();
 
-          }[character];
+}
 
-        }
-      );
 
-    }
+/* Find zodiac prediction */
 
+function findPrediction(data, sign) {
 
-    /* DISPLAY HOROSCOPE */
+  const source =
+    data.horoscope ||
+    data.predictions ||
+    data.signs ||
+    data.zodiac ||
+    data;
 
-    function renderHoroscope(data) {
+  if (!source || typeof source !== "object") {
+    return "";
+  }
 
-      const grid =
-        document.getElementById("zodiacGrid");
+  const key = Object.keys(source).find(function(k) {
 
+    return k
+      .toLowerCase()
+      .replace(/[^a-z]/g, "") ===
+      sign.toLowerCase();
 
-      const cards = signs.map(
-        function(signData) {
+  });
 
-          const name = signData[0];
-          const sanskrit = signData[1];
-          const symbol = signData[2];
+  if (!key) {
+    return "";
+  }
 
+  const value = source[key];
 
-          const prediction =
-            findPrediction(data, name);
+  if (typeof value === "string") {
+    return cleanText(value);
+  }
 
+  if (typeof value === "object" && value !== null) {
 
-          return `
+    return cleanText(
+      value.prediction ||
+      value.horoscope ||
+      value.text ||
+      value.content ||
+      ""
+    );
 
-            <article class="card">
+  }
 
-              <div class="card-top">
+  return "";
 
-                <div class="symbol">
-                  ${symbol}
-                </div>
+}
 
-                <div>
 
-                  <h2 class="sign">
-                    ${name}
-                  </h2>
+/* Render cards */
 
-                  <div class="sanskrit">
-                    ${sanskrit}
-                  </div>
+function render(data) {
 
-                </div>
+  const grid =
+    document.getElementById("grid");
 
-              </div>
+  grid.innerHTML = signs.map(function(item) {
 
-              <p class="prediction">
+    const name = item[0];
+    const sanskrit = item[1];
+    const symbol = item[2];
 
-                ${
-                  prediction
-                    ? escapeHtml(prediction)
-                    : "Today's horoscope is being updated."
-                }
+    const prediction =
+      findPrediction(data, name);
 
-              </p>
+    return `
 
-            </article>
+      <article class="card">
 
-          `;
+        <div class="card-head">
 
-        }
-      );
+          <div class="symbol">
+            ${symbol}
+          </div>
 
+          <div>
 
-      grid.innerHTML =
-        cards.join("");
+            <h2 class="sign">
+              ${name}
+            </h2>
 
+            <div class="sanskrit">
+              ${sanskrit}
+            </div>
 
-      document.getElementById("status").textContent =
-        "Updated from Mauksh daily horoscope data";
-
-    }
-
-
-    /* LOAD LIVE JSON */
-
-    fetch(
-      DATA_URL + "?t=" + Date.now(),
-      {
-        cache: "no-store"
-      }
-    )
-
-    .then(function(response) {
-
-      if (!response.ok) {
-
-        throw new Error(
-          "Horoscope.json could not be loaded"
-        );
-
-      }
-
-      return response.json();
-
-    })
-
-    .then(function(data) {
-
-      console.log(
-        "Mauksh Horoscope JSON:",
-        data
-      );
-
-      renderHoroscope(data);
-
-    })
-
-    .catch(function(error) {
-
-      console.error(error);
-
-      document.getElementById("status").textContent =
-        "Unable to load the latest horoscope.";
-
-      document.getElementById("zodiacGrid").innerHTML = `
-
-        <div class="loading">
-
-          The latest horoscope is temporarily unavailable.
-          Please try again shortly.
+          </div>
 
         </div>
 
-      `;
+        <div class="text">
+          ${prediction || "Today's horoscope is being updated."}
+        </div>
 
-    });
+      </article>
 
-  </script>
+    `;
+
+  }).join("");
+
+  document.getElementById("status").textContent =
+    "Updated from Mauksh daily horoscope data";
+
+}
+
+
+/* Load Mauksh JSON */
+
+fetch(
+  DATA_URL + "?v=" + Date.now(),
+  {
+    cache: "no-store"
+  }
+)
+
+.then(function(response) {
+
+  if (!response.ok) {
+    throw new Error("JSON failed");
+  }
+
+  return response.json();
+
+})
+
+.then(function(data) {
+
+  console.log("Mauksh Horoscope:", data);
+
+  render(data);
+
+})
+
+.catch(function(error) {
+
+  console.error(error);
+
+  document.getElementById("status").textContent =
+    "Unable to load today's horoscope.";
+
+});
+
+</script>
 
 </body>
 </html>
