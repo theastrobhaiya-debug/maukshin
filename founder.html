@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Founder | Kaaldarpan</title>
+
+  <meta
+    name="description"
+    content="Meet the founder of Kaaldarpan, an initiative by Mauksh."
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      background: #f7f5f0;
+      color: #292621;
+      line-height: 1.6;
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    nav {
+      width: 100%;
+      background: #fffdf9;
+      border-bottom: 1px solid #e6e0d6;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: auto;
+      padding: 14px 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .brand {
+      text-decoration: none;
+      color: #292621;
+
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #625d55;
+
+      font-size: 14px;
+      font-weight: 500;
+
+      transition: color 0.2s ease;
+    }
+
+    .menu a:hover {
+      color: #9a6b32;
+    }
+
+    .menu a.active {
+      color: #9a6b32;
+      font-weight: 650;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+
+      padding: 55px 20px 70px;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      text-align: center;
+      margin-bottom: 42px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+
+      margin-bottom: 12px;
+
+      color: #9a6b32;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(36px, 7vw, 56px);
+
+      line-height: 1.1;
+      letter-spacing: -1.6px;
+
+      margin-bottom: 15px;
+    }
+
+    .subtitle {
+      max-width: 670px;
+      margin: auto;
+
+      color: #6d675f;
+
+      font-size: 17px;
+    }
+
+    /* =========================
+       FOUNDER CARD
+    ========================= */
+
+    .founder-card {
+      background: #fffdf9;
+
+      border: 1px solid #e5dfd5;
+      border-radius: 22px;
+
+      padding: 40px;
+
+      box-shadow:
+        0 10px 35px rgba(50, 42, 32, 0.06);
+    }
+
+    /* =========================
+       FOUNDER IMAGE
+    ========================= */
+
+    .founder-top {
+      text-align: center;
+
+      margin-bottom: 34px;
+    }
+
+    .founder-image {
+      width: 170px;
+      height: 170px;
+
+      margin: 0 auto 20px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      display: block;
+
+      border: 4px solid #eee7db;
+
+      box-shadow:
+        0 8px 25px rgba(50, 42, 32, 0.10);
+    }
+
+    .founder-name {
+      font-size: 30px;
+      font-weight: 700;
+
+      line-height: 1.2;
+
+      margin-bottom: 6px;
+    }
+
+    .founder-role {
+      color: #9a6b32;
+
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content {
+      max-width: 720px;
+      margin: auto;
+    }
+
+    .content h2 {
+      color: #292621;
+
+      font-size: 23px;
+      line-height: 1.3;
+
+      margin-top: 30px;
+      margin-bottom: 11px;
+    }
+
+    .content h2:first-child {
+      margin-top: 0;
+    }
+
+    .content p {
+      color: #5f5a53;
+
+      font-size: 16px;
+
+      margin-bottom: 16px;
+    }
+
+    .content strong {
+      color: #292621;
+    }
+
+    /* =========================
+       MAUKSH BOX
+    ========================= */
+
+    .mauksh-box {
+      margin-top: 35px;
+
+      padding: 26px;
+
+      border-radius: 17px;
+
+      background: #f3eee5;
+
+      border: 1px solid #e1d8ca;
+
+      text-align: center;
+    }
+
+    .mauksh-title {
+      color: #292621;
+
+      font-size: 20px;
+      font-weight: 700;
+
+      margin-bottom: 7px;
+    }
+
+    .mauksh-subtitle {
+      color: #6b655c;
+
+      font-size: 14px;
+    }
+
+    /* =========================
+       QUOTE
+    ========================= */
+
+    .quote {
+      margin-top: 30px;
+
+      padding: 25px 28px;
+
+      background: #faf7f1;
+
+      border-left: 3px solid #b4874a;
+
+      color: #4f4a43;
+
+      font-size: 17px;
+      font-style: italic;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      border-top: 1px solid #e6e0d6;
+
+      background: #fffdf9;
+
+      text-align: center;
+
+      padding: 28px 20px;
+
+      color: #777168;
+
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: #9a6b32;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .menu {
+        width: 100%;
+
+        justify-content: flex-start;
+
+        gap: 12px 16px;
+      }
+
+      .container {
+        padding: 40px 16px 55px;
+      }
+
+      .hero {
+        margin-bottom: 30px;
+      }
+
+      .subtitle {
+        font-size: 15px;
+      }
+
+      .founder-card {
+        padding: 28px 20px;
+
+        border-radius: 18px;
+      }
+
+      .founder-image {
+        width: 145px;
+        height: 145px;
+      }
+
+      .founder-name {
+        font-size: 27px;
+      }
+
+      .content h2 {
+        font-size: 21px;
+      }
+
+      .content p {
+        font-size: 15px;
+      }
+
+      .quote {
+        padding: 20px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- =========================
+       NAVIGATION
+  ========================= -->
+
+  <nav>
+    <div class="nav-inner">
+
+      <a href="index.html" class="brand">
+        Kaaldarpan
+      </a>
+
+      <div class="menu">
+
+        <a href="index.html">
+          Home
+        </a>
+
+        <a href="horoscope.html">
+          Daily Horoscope
+        </a>
+
+        <a href="monthly.html">
+          Monthly Horoscope
+        </a>
+
+        <a href="yearly.html">
+          Yearly Horoscope
+        </a>
+
+        <a href="founder.html" class="active">
+          Founder
+        </a>
+
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================= -->
+
+  <main class="container">
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <div class="eyebrow">
+        The Person Behind Kaaldarpan
+      </div>
+
+      <h1>
+        Meet the Founder
+      </h1>
+
+      <p class="subtitle">
+        Kaaldarpan is an initiative created to make the depth of
+        Vedic astrology easier to explore through thoughtful technology
+        and meaningful interpretation.
+      </p>
+
+    </section>
+
+
+    <!-- FOUNDER -->
+
+    <section class="founder-card">
+
+      <div class="founder-top">
+
+        <img
+          src="assets/Founder.jpg"
+          alt="Founder of Kaaldarpan"
+          class="founder-image"
+        >
+
+        <div class="founder-name">
+          Shivam Bansal
+        </div>
+
+        <div class="founder-role">
+          Founder, Mauksh · Creator of Kaaldarpan
+        </div>
+
+      </div>
+
+
+      <div class="content">
+
+        <h2>
+          The Vision
+        </h2>
+
+        <p>
+          Kaaldarpan was created from a simple idea:
+          astrology should not feel complicated, inaccessible,
+          or disconnected from everyday life.
+        </p>
+
+        <p>
+          The vision is to combine the depth of traditional
+          Vedic astrology with modern technology and create
+          experiences that are simple, thoughtful and useful.
+        </p>
+
+
+        <h2>
+          About Kaaldarpan
+        </h2>
+
+        <p>
+          Kaaldarpan brings together Panchang calculations,
+          horoscopes and other Vedic astrology tools in one
+          simple experience.
+        </p>
+
+        <p>
+          Its calculations are built around traditional
+          Vedic principles while using modern astronomical
+          computation where appropriate.
+        </p>
+
+
+        <h2>
+          Built by Mauksh
+        </h2>
+
+        <p>
+          Kaaldarpan is an initiative by
+          <strong>Mauksh</strong>.
+        </p>
+
+        <p>
+          Mauksh is the platform behind the technology,
+          ideas and development powering these experiences.
+        </p>
+
+
+        <!-- MAUKSH -->
+
+        <div class="mauksh-box">
+
+          <div class="mauksh-title">
+            An Initiative by Mauksh
+          </div>
+
+          <div class="mauksh-subtitle">
+            Technology, ideas and tools designed to make
+            ancient wisdom easier to explore.
+          </div>
+
+        </div>
+
+
+        <!-- QUOTE -->
+
+        <div class="quote">
+          “The purpose is not simply to predict the future,
+          but to understand the present with greater clarity.”
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
+
+  <footer>
+
+    <div>
+      Kaaldarpan · An initiative by
+      <strong>Mauksh</strong>
+    </div>
+
+    <div style="margin-top: 6px;">
+      © 2026 Kaaldarpan. All rights reserved.
+    </div>
+
+  </footer>
+
+</body>
+</html>
