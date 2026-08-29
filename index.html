@@ -4,34 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Kaaldarpan — Vedic Astrology & Panchang</title>
-  <meta name="description" content="Kaaldarpan by Mauksh — Vedic astrology tools, Panchang and horoscopes.">
+  <title>Kaaldarpan | Daily Panchang</title>
+
+  <meta name="description"
+        content="Kaaldarpan by Mauksh — Daily Vedic Panchang, Choghadiya, Tithi, Nakshatra and Muhurta.">
 
   <style>
     * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      background: #f8f5ef;
-      color: #302b25;
+    html {
+      scroll-behavior: smooth;
     }
 
-    /* HEADER */
-    header {
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      background: #f7f4ee;
+      color: #292621;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* =========================
+       NAV
+    ========================= */
+
+    nav {
       background: #fffdf9;
-      border-bottom: 1px solid #e4ddd1;
+      border-bottom: 1px solid #e5dfd5;
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
-    .header-inner {
+    .nav-inner {
       max-width: 1150px;
       margin: auto;
       padding: 14px 20px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -39,235 +55,220 @@
     }
 
     .brand {
+      font-size: 21px;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: #9a6b32;
+      margin-top: 1px;
+    }
+
+    .menu {
       display: flex;
+      gap: 18px;
       align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #302b25;
+      flex-wrap: wrap;
     }
 
-    .brand img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-    }
-
-    .brand-text {
-      line-height: 1.1;
-    }
-
-    .brand-name {
-      font-size: 25px;
-      font-weight: 700;
-      letter-spacing: .5px;
-    }
-
-    .brand-sub {
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      color: #8a7761;
-      margin-top: 4px;
-      letter-spacing: .5px;
-    }
-
-    /* MENU */
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #51483f;
-      font-family: Arial, sans-serif;
+    .menu a {
       font-size: 14px;
-      padding: 9px 12px;
-      border-radius: 8px;
+      color: #625d55;
     }
 
-    nav a:hover {
-      background: #f0ebe3;
+    .menu a:hover,
+    .menu a.active {
+      color: #9a6b32;
     }
 
-    .menu-btn {
-      display: none;
-      border: 1px solid #ddd3c6;
-      background: #fffdf9;
-      border-radius: 8px;
-      padding: 8px 11px;
-      font-size: 20px;
-      cursor: pointer;
-    }
+    /* =========================
+       PAGE
+    ========================= */
 
-    /* HERO */
-    .hero {
+    .page {
       max-width: 1150px;
       margin: auto;
-      padding: 55px 20px 30px;
+      padding: 42px 20px 70px;
+    }
+
+    .hero {
       text-align: center;
+      margin-bottom: 30px;
     }
 
-    .hero-logo {
-      width: 95px;
-      height: 95px;
-      object-fit: contain;
-      margin-bottom: 10px;
+    .eyebrow {
+      color: #9a6b32;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
-    .hero h1 {
-      margin: 5px 0 8px;
-      font-size: 42px;
-      font-weight: 600;
-      letter-spacing: .5px;
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 50px);
+      line-height: 1.1;
+      letter-spacing: -1.5px;
     }
 
     .hero p {
-      margin: 0 auto;
       max-width: 650px;
-      color: #766b60;
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
+      margin: 12px auto 0;
+      color: #706a62;
       font-size: 15px;
     }
 
-    .by-mauksh {
-      margin-top: 10px;
-      color: #927b61;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      letter-spacing: .7px;
-    }
+    /* =========================
+       CONTROLS
+    ========================= */
 
-    /* CONTROLS */
     .controls {
-      max-width: 900px;
-      margin: 25px auto;
-      padding: 24px;
       background: #fffdf9;
-      border: 1px solid #e4ddd1;
-      border-radius: 16px;
-      box-shadow: 0 5px 20px rgba(60, 45, 30, .04);
+      border: 1px solid #e3ddd3;
+      border-radius: 18px;
+      padding: 20px;
+
+      display: grid;
+      grid-template-columns: 1.5fr 1fr auto;
+      gap: 12px;
+
+      margin-bottom: 24px;
+
+      box-shadow: 0 8px 25px rgba(50, 42, 32, .045);
     }
 
-    .control-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
+    .field {
+      position: relative;
     }
 
     .field label {
       display: block;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 7px;
-      color: #574d43;
+      font-size: 11px;
+      font-weight: 700;
+      color: #716b63;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 6px;
     }
 
     input,
     select {
       width: 100%;
-      border: 1px solid #d9cfc1;
+      height: 46px;
+      border: 1px solid #dcd5ca;
       background: #fff;
-      color: #3e3832;
-      border-radius: 9px;
-      padding: 12px 13px;
-      font-family: Arial, sans-serif;
+      color: #292621;
+      border-radius: 10px;
+      padding: 0 12px;
       font-size: 14px;
       outline: none;
     }
 
     input:focus,
     select:focus {
-      border-color: #a58a6b;
+      border-color: #b4874a;
     }
 
-    .location-row {
-      display: flex;
-      gap: 8px;
-    }
+    button {
+      height: 46px;
+      border: 0;
+      border-radius: 10px;
+      padding: 0 18px;
 
-    .location-row input {
-      flex: 1;
-    }
+      background: #9a6b32;
+      color: white;
 
-    .detect-btn {
-      border: 1px solid #cdbda9;
-      background: #f4eee6;
-      color: #5b4d3f;
-      border-radius: 9px;
-      padding: 0 13px;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 650;
+
       cursor: pointer;
-      white-space: nowrap;
+      align-self: end;
     }
 
-    .detect-btn:hover {
-      background: #ebe2d6;
+    button:hover {
+      background: #825725;
     }
 
     .location-status {
-      margin-top: 8px;
-      font-family: Arial, sans-serif;
+      margin-top: 7px;
       font-size: 12px;
-      color: #8a7c6d;
-      min-height: 16px;
+      color: #777168;
     }
 
-    .selected-location {
-      margin-top: 5px;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      color: #66594d;
-    }
+    /* =========================
+       STATUS
+    ========================= */
 
-    /* PANCHANG */
-    .section {
-      max-width: 1150px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .section-title {
+    #status {
       text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .section-title h2 {
-      margin: 0 0 6px;
-      font-size: 28px;
-      font-weight: 600;
-    }
-
-    .section-title p {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: #817568;
-      font-size: 13px;
-    }
-
-    #loading {
-      text-align: center;
-      font-family: Arial, sans-serif;
-      color: #84776a;
-      padding: 30px;
+      color: #777168;
+      font-size: 14px;
+      margin: 18px 0;
     }
 
     #error {
       display: none;
-      background: #fff4ef;
-      border: 1px solid #ead3c8;
-      color: #875f50;
+      background: #fff2ee;
+      border: 1px solid #ead2c8;
+      color: #9a4f3d;
+      padding: 14px;
       border-radius: 12px;
-      padding: 15px;
+      margin-bottom: 20px;
       text-align: center;
-      font-family: Arial, sans-serif;
       font-size: 14px;
     }
 
-    .panchang-grid {
+    /* =========================
+       DAY HEADER
+    ========================= */
+
+    .day-card {
+      background: #fffdf9;
+      border: 1px solid #e3ddd3;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+
+      box-shadow: 0 8px 25px rgba(50, 42, 32, .045);
+    }
+
+    .day-title {
+      font-size: 27px;
+      font-weight: 750;
+    }
+
+    .day-subtitle {
+      color: #756f67;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .location-pill {
+      padding: 9px 13px;
+      background: #f2ede4;
+      border-radius: 999px;
+      color: #665e54;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* =========================
+       MAIN GRID
+    ========================= */
+
+    .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 15px;
@@ -275,143 +276,204 @@
 
     .card {
       background: #fffdf9;
-      border: 1px solid #e4ddd1;
-      border-radius: 14px;
-      padding: 19px;
+      border: 1px solid #e3ddd3;
+      border-radius: 17px;
+      padding: 20px;
       min-height: 120px;
+
+      box-shadow: 0 7px 22px rgba(50, 42, 32, .035);
     }
 
-    .card h3 {
-      margin: 0 0 13px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #51473e;
+    .card-label {
+      color: #8b8175;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-bottom: 9px;
     }
 
     .card-value {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #6c6055;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.25;
     }
 
-    .highlight {
-      border-top: 3px solid #b39a7a;
+    .card-detail {
+      color: #716b63;
+      font-size: 13px;
+      margin-top: 7px;
     }
 
-    /* LINKS */
-    .quick-links {
-      max-width: 900px;
-      margin: 35px auto 60px;
-      padding: 0 20px;
+    /* =========================
+       SECTION
+    ========================= */
+
+    .section {
+      margin-top: 25px;
+    }
+
+    .section-title {
+      font-size: 23px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    /* =========================
+       TIMINGS
+    ========================= */
+
+    .timing-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
-    .quick-link {
-      display: block;
-      text-align: center;
-      padding: 20px 14px;
-      text-decoration: none;
-      color: #4c433b;
+    .timing {
       background: #fffdf9;
-      border: 1px solid #e4ddd1;
-      border-radius: 13px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
+      border: 1px solid #e3ddd3;
+      border-radius: 14px;
+      padding: 15px 17px;
+
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
     }
 
-    .quick-link:hover {
-      background: #f3eee7;
+    .timing-name {
+      font-weight: 650;
     }
 
-    /* FOOTER */
+    .timing-value {
+      color: #776f65;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    /* =========================
+       CHOGHADIYA
+    ========================= */
+
+    .choghadiya-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .chog-card {
+      background: #fffdf9;
+      border: 1px solid #e3ddd3;
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .chog-title {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    .chog-row {
+      display: grid;
+      grid-template-columns: 75px 1fr 1fr;
+      gap: 8px;
+
+      padding: 10px 0;
+      border-bottom: 1px solid #eee9e1;
+
+      font-size: 13px;
+    }
+
+    .chog-row:last-child {
+      border-bottom: 0;
+    }
+
+    .chog-name {
+      font-weight: 700;
+    }
+
+    .chog-time {
+      color: #777168;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
     footer {
-      background: #eee8df;
-      border-top: 1px solid #ddd4c8;
+      border-top: 1px solid #e3ddd3;
+      background: #fffdf9;
       text-align: center;
       padding: 30px 20px;
-      color: #75695e;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      line-height: 1.7;
+      color: #777168;
+      font-size: 13px;
     }
 
     footer strong {
-      color: #51483f;
+      color: #9a6b32;
     }
 
-    /* MOBILE */
+    /* =========================
+       MOBILE
+    ========================= */
+
     @media (max-width: 800px) {
 
-      .header-inner {
-        padding: 11px 15px;
-      }
-
-      .menu-btn {
-        display: block;
-      }
-
-      nav {
-        display: none;
-        position: absolute;
-        top: 72px;
-        left: 0;
-        right: 0;
-        background: #fffdf9;
-        border-bottom: 1px solid #e4ddd1;
-        padding: 10px 15px 15px;
+      .nav-inner {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
       }
 
-      nav.open {
-        display: flex;
+      .menu {
+        gap: 12px 16px;
       }
 
-      nav a {
-        padding: 12px;
-      }
-
-      .hero {
-        padding-top: 35px;
-      }
-
-      .hero h1 {
-        font-size: 34px;
-      }
-
-      .control-grid {
+      .controls {
         grid-template-columns: 1fr;
       }
 
-      .panchang-grid {
+      button {
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .choghadiya-grid {
         grid-template-columns: 1fr;
       }
 
-      .quick-links {
-        grid-template-columns: 1fr;
+      .day-card {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 520px) {
 
-      .brand-name {
-        font-size: 21px;
+      .page {
+        padding: 30px 14px 55px;
       }
 
-      .brand img {
-        width: 42px;
-        height: 42px;
+      .grid {
+        grid-template-columns: 1fr;
       }
 
-      .location-row {
-        flex-direction: column;
+      .timing-grid {
+        grid-template-columns: 1fr;
       }
 
-      .detect-btn {
-        padding: 11px;
+      .day-title {
+        font-size: 23px;
+      }
+
+      .location-pill {
+        white-space: normal;
+      }
+
+      .card {
+        min-height: auto;
       }
     }
   </style>
@@ -419,234 +481,204 @@
 
 <body>
 
-<header>
-  <div class="header-inner">
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav>
+  <div class="nav-inner">
 
     <a href="index.html" class="brand">
-
-      <!-- CHANGE THIS PATH ONLY IF YOUR LOGO HAS A DIFFERENT NAME -->
-      <img src="assets/kaaldarpan-logo.png" alt="Kaaldarpan">
-
-      <div class="brand-text">
-        <div class="brand-name">Kaaldarpan</div>
-        <div class="brand-sub">BY MAUKSH</div>
-      </div>
-
+      Kaaldarpan
+      <span>AN INITIATIVE BY MAUKSH</span>
     </a>
 
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-
-    <nav id="mainNav">
-      <a href="index.html">Home</a>
+    <div class="menu">
+      <a href="index.html" class="active">Panchang</a>
       <a href="horoscope.html">Daily Horoscope</a>
-      <a href="monthly-horoscope.html">Monthly Horoscope</a>
-      <a href="yearly-horoscope.html">Yearly Horoscope</a>
-      <a href="founder.html">Our Founder</a>
-    </nav>
+      <a href="monthly.html">Monthly Horoscope</a>
+      <a href="yearly.html">Yearly Horoscope</a>
+      <a href="founder.html">Founder</a>
+    </div>
 
   </div>
-</header>
+</nav>
 
 
-<main>
+<main class="page">
+
+  <!-- =========================
+       HERO
+  ========================= -->
 
   <section class="hero">
 
-    <img
-      class="hero-logo"
-      src="assets/kaaldarpan-logo.png"
-      alt="Kaaldarpan Logo"
-    >
+    <div class="eyebrow">
+      Vedic Astrology
+    </div>
 
-    <h1>Kaaldarpan</h1>
+    <h1>Daily Panchang</h1>
 
     <p>
-      Vedic astrology tools, Panchang and cosmic guidance
-      powered by traditional calculations.
+      Explore today's traditional Vedic Panchang,
+      including Tithi, Nakshatra, Yoga, Karana,
+      Choghadiya and important Muhurta timings.
     </p>
-
-    <div class="by-mauksh">
-      An initiative by Mauksh
-    </div>
 
   </section>
 
 
-  <!-- DATE + LOCATION -->
+  <!-- =========================
+       CONTROLS
+  ========================= -->
 
   <section class="controls">
 
-    <div class="control-grid">
+    <div class="field">
+      <label for="city">Location</label>
 
-      <div class="field">
-        <label for="date">📅 Select Date</label>
+      <input
+        id="city"
+        type="text"
+        placeholder="Enter city name"
+        autocomplete="off"
+      >
 
-        <input
-          type="date"
-          id="date"
-        >
+      <div id="locationStatus" class="location-status">
+        Enter a city, or use Detect My Location.
       </div>
+    </div>
 
 
-      <div class="field">
+    <div class="field">
+      <label for="date">Date</label>
 
-        <label for="city">📍 Location</label>
+      <input
+        id="date"
+        type="date"
+      >
+    </div>
 
-        <div class="location-row">
 
-          <input
-            type="text"
-            id="city"
-            placeholder="Enter city name"
-            autocomplete="off"
-          >
+    <button onclick="detectLocation()">
+      Detect My Location
+    </button>
 
-          <button
-            class="detect-btn"
-            onclick="detectLocation()"
-          >
-            📍 Detect
-          </button>
+  </section>
 
-        </div>
 
-        <div id="locationStatus" class="location-status"></div>
+  <div id="error"></div>
 
-        <div id="selectedLocation" class="selected-location">
-          Location: Dehradun, Uttarakhand
-        </div>
+  <div id="status">
+    Loading Panchang…
+  </div>
 
-      </div>
 
+  <!-- =========================
+       DAY HEADER
+  ========================= -->
+
+  <section id="dayHeader" class="day-card" style="display:none;">
+
+    <div>
+      <div id="dayTitle" class="day-title"></div>
+      <div id="daySubtitle" class="day-subtitle"></div>
+    </div>
+
+    <div id="locationPill" class="location-pill"></div>
+
+  </section>
+
+
+  <!-- =========================
+       BASIC PANCHANG
+  ========================= -->
+
+  <section id="basicSection" class="grid" style="display:none;">
+
+    <div class="card">
+      <div class="card-label">Vara</div>
+      <div id="vara" class="card-value"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tithi</div>
+      <div id="tithi" class="card-value"></div>
+      <div id="tithiEnd" class="card-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Nakshatra</div>
+      <div id="nakshatra" class="card-value"></div>
+      <div id="nakshatraEnd" class="card-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Moon Rashi</div>
+      <div id="moonRashi" class="card-value"></div>
+      <div id="moonLongitude" class="card-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Yoga</div>
+      <div id="yoga" class="card-value"></div>
+      <div id="yogaEnd" class="card-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Karana</div>
+      <div id="karana" class="card-value"></div>
+      <div id="karanaEnd" class="card-detail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Paksha</div>
+      <div id="paksha" class="card-value"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Ayana</div>
+      <div id="ayana" class="card-value"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Ritu</div>
+      <div id="ritu" class="card-value"></div>
     </div>
 
   </section>
 
 
-  <!-- PANCHANG -->
+  <!-- =========================
+       SUN / MOON
+  ========================= -->
 
-  <section class="section">
+  <section id="sunMoonSection" class="section" style="display:none;">
 
     <div class="section-title">
-
-      <h2>Today's Panchang</h2>
-
-      <p id="panchangSubtitle">
-        Vedic Panchang based on your selected location
-      </p>
-
+      Sun & Moon
     </div>
 
-
-    <div id="loading">
-      Loading Panchang…
-    </div>
-
-    <div id="error"></div>
-
-
-    <div
-      id="panchang"
-      class="panchang-grid"
-      style="display:none;"
-    >
-
-      <div class="card highlight">
-
-        <h3>🌙 Tithi</h3>
-
-        <div id="tithi" class="card-value">
-          —
-        </div>
-
-      </div>
-
-
-      <div class="card highlight">
-
-        <h3>⭐ Nakshatra</h3>
-
-        <div id="nakshatra" class="card-value">
-          —
-        </div>
-
-      </div>
-
+    <div class="grid">
 
       <div class="card">
-
-        <h3>☀️ Vara</h3>
-
-        <div id="vara" class="card-value">
-          —
-        </div>
-
+        <div class="card-label">Sunrise</div>
+        <div id="sunrise" class="card-value"></div>
       </div>
 
-
       <div class="card">
-
-        <h3>🪐 Yoga</h3>
-
-        <div id="yoga" class="card-value">
-          —
-        </div>
-
+        <div class="card-label">Sunset</div>
+        <div id="sunset" class="card-value"></div>
       </div>
 
-
       <div class="card">
-
-        <h3>🌙 Moon Rashi</h3>
-
-        <div id="moonRashi" class="card-value">
-          —
-        </div>
-
+        <div class="card-label">Moonrise</div>
+        <div id="moonrise" class="card-value"></div>
       </div>
 
-
       <div class="card">
-
-        <h3>☀️ Sun Rashi</h3>
-
-        <div id="sunRashi" class="card-value">
-          —
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>⏳ Rahu Kaal</h3>
-
-        <div id="rahuKaal" class="card-value">
-          —
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>🕉️ Abhijit Muhurat</h3>
-
-        <div id="abhijit" class="card-value">
-          —
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>🌅 Sunrise / Sunset</h3>
-
-        <div id="sunriseSunset" class="card-value">
-          —
-        </div>
-
+        <div class="card-label">Moonset</div>
+        <div id="moonset" class="card-value"></div>
       </div>
 
     </div>
@@ -654,68 +686,124 @@
   </section>
 
 
-  <!-- QUICK LINKS -->
+  <!-- =========================
+       IMPORTANT TIMINGS
+  ========================= -->
 
-  <div class="quick-links">
+  <section id="timingSection" class="section" style="display:none;">
 
-    <a class="quick-link" href="horoscope.html">
-      ♈ Daily Horoscope
-    </a>
+    <div class="section-title">
+      Important Timings
+    </div>
 
-    <a class="quick-link" href="monthly-horoscope.html">
-      🌙 Monthly Horoscope
-    </a>
+    <div id="timingGrid" class="timing-grid"></div>
 
-    <a class="quick-link" href="yearly-horoscope.html">
-      ✨ Yearly Horoscope
-    </a>
+  </section>
 
-  </div>
+
+  <!-- =========================
+       CHOGHADIYA
+  ========================= -->
+
+  <section id="choghadiyaSection" class="section" style="display:none;">
+
+    <div class="section-title">
+      Choghadiya
+    </div>
+
+    <div class="choghadiya-grid">
+
+      <div class="chog-card">
+        <div class="chog-title">Day Choghadiya</div>
+        <div id="dayChoghadiya"></div>
+      </div>
+
+      <div class="chog-card">
+        <div class="chog-title">Night Choghadiya</div>
+        <div id="nightChoghadiya"></div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       SAMVAT
+  ========================= -->
+
+  <section id="samvatSection" class="section" style="display:none;">
+
+    <div class="section-title">
+      Samvat
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-label">Vikram Samvat</div>
+        <div id="vikram" class="card-value"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Shaka Samvat</div>
+        <div id="shaka" class="card-value"></div>
+      </div>
+
+    </div>
+
+  </section>
 
 </main>
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
 
-  <strong>Kaaldarpan</strong><br>
+  <div>
+    Kaaldarpan · An initiative by <strong>Mauksh</strong>
+  </div>
 
-  An astrology initiative by <strong>Mauksh</strong>.<br>
+  <div style="margin-top:6px;">
+    Vedic Panchang calculations powered by the Mauksh Panchang Engine.
+  </div>
 
-  Traditional Vedic calculations presented through modern tools.
+  <div style="margin-top:6px;">
+    © 2026 Kaaldarpan
+  </div>
 
 </footer>
 
 
 <script>
 
-  /* ----------------------------------
-     MENU
-  ---------------------------------- */
+  /* ==========================================
+     MAUKSH PANCHANG ENGINE
+  ========================================== */
 
-  function toggleMenu() {
-
-    const nav = document.getElementById("mainNav");
-
-    nav.classList.toggle("open");
-
-  }
+  const API_BASE =
+    "https://mauksh-kundali-engine.onrender.com/api/panchang";
 
 
-  /* ----------------------------------
+  /* ==========================================
      DEFAULT LOCATION
-  ---------------------------------- */
+     Rishikesh from your previous working test
+  ========================================== */
 
-  let latitude = 30.0869;
-  let longitude = 78.2676;
-  let timezone = "Asia/Kolkata";
+  let currentLocation = {
+    city: "Rishikesh",
+    latitude: 30.1086537,
+    longitude: 78.291,
+    timezone: "Asia/Kolkata"
+  };
 
-  let currentCity = "Dehradun";
-  let currentState = "Uttarakhand";
 
-
-  /* ----------------------------------
-     DATE
-  ---------------------------------- */
+  /* ==========================================
+     INITIAL DATE
+  ========================================== */
 
   const dateInput = document.getElementById("date");
 
@@ -731,477 +819,134 @@
   dateInput.value = localDate;
 
 
-  /* ----------------------------------
-     API
-  ---------------------------------- */
-
-  const PANCHANG_API =
-    "https://mauksh-kundali-engine.onrender.com/api/panchang";
-
-
-  /* ----------------------------------
-     LOAD PANCHANG
-  ---------------------------------- */
-
-  async function loadPanchang() {
-
-    const date = dateInput.value;
-
-    if (!date) return;
-
-
-    const loading =
-      document.getElementById("loading");
-
-    const error =
-      document.getElementById("error");
-
-    const panchang =
-      document.getElementById("panchang");
-
-
-    loading.style.display = "block";
-    panchang.style.display = "none";
-    error.style.display = "none";
-
-
-    try {
-
-      const url =
-        PANCHANG_API +
-        "?date=" +
-        encodeURIComponent(date) +
-        "&latitude=" +
-        encodeURIComponent(latitude) +
-        "&longitude=" +
-        encodeURIComponent(longitude) +
-        "&timezone=" +
-        encodeURIComponent(timezone);
-
-
-      const response =
-        await fetch(url);
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          "Unable to load Panchang"
-        );
-
-      }
-
-
-      const data =
-        await response.json();
-
-
-      if (!data.success) {
-
-        throw new Error(
-          "Panchang data unavailable"
-        );
-
-      }
-
-
-      /* TITHI */
-
-      document.getElementById("tithi").innerHTML =
-        safe(data.tithi?.name) +
-        (
-          data.tithi?.paksha
-            ? " • " + safe(data.tithi.paksha)
-            : ""
-        ) +
-        (
-          data.tithi?.ends
-            ? "<br>Ends " + safe(data.tithi.ends)
-            : ""
-        );
-
-
-      /* NAKSHATRA */
-
-      document.getElementById("nakshatra").innerHTML =
-        safe(data.nakshatra?.name) +
-        (
-          data.nakshatra?.pada
-            ? "<br>Pada " + safe(data.nakshatra.pada)
-            : ""
-        ) +
-        (
-          data.nakshatra?.ends
-            ? "<br>Ends " + safe(data.nakshatra.ends)
-            : ""
-        );
-
-
-      /* VARA */
-
-      document.getElementById("vara").textContent =
-        data.vara?.name || "—";
-
-
-      /* YOGA */
-
-      document.getElementById("yoga").innerHTML =
-        safe(data.yoga?.name) +
-        (
-          data.yoga?.ends
-            ? "<br>Ends " + safe(data.yoga.ends)
-            : ""
-        );
-
-
-      /* MOON */
-
-      document.getElementById("moonRashi").innerHTML =
-        safe(data.moon?.rashi?.name);
-
-
-      /* SUN */
-
-      document.getElementById("sunRashi").innerHTML =
-        safe(data.sun?.rashi?.name);
-
-
-      /* RAHU KAAL */
-
-      document.getElementById("rahuKaal").textContent =
-        data.timings?.rahuKaal || "—";
-
-
-      /* ABHIJIT */
-
-      document.getElementById("abhijit").textContent =
-        data.timings?.abhijit || "—";
-
-
-      /* SUNRISE / SUNSET */
-
-      document.getElementById("sunriseSunset").innerHTML =
-        "Rise: " +
-        safe(data.sun?.rise) +
-        "<br>" +
-        "Set: " +
-        safe(data.sun?.set);
-
-
-      loading.style.display = "none";
-      panchang.style.display = "grid";
-
-
-      document.getElementById(
-        "panchangSubtitle"
-      ).textContent =
-        "Vedic Panchang • " +
-        currentCity +
-        (currentState ? ", " + currentState : "");
-
-
-    } catch (err) {
-
-      console.error(err);
-
-      loading.style.display = "none";
-
-      error.style.display = "block";
-
-      error.textContent =
-        "Unable to load Panchang right now. Please try again.";
-
-    }
-
-  }
-
-
-  /* ----------------------------------
+  /* ==========================================
      DATE CHANGE
-  ---------------------------------- */
+  ========================================== */
 
-  dateInput.addEventListener(
-    "change",
-    loadPanchang
-  );
+  dateInput.addEventListener("change", loadPanchang);
 
 
-  /* ----------------------------------
-     CITY SEARCH
-  ---------------------------------- */
+  /* ==========================================
+     CITY INPUT
+  ========================================== */
 
-  let cityTimer = null;
+  const cityInput = document.getElementById("city");
 
+  cityInput.value = currentLocation.city;
 
-  document
-    .getElementById("city")
-    .addEventListener("input", function () {
+  cityInput.addEventListener("change", async () => {
 
-      clearTimeout(cityTimer);
+    const city = cityInput.value.trim();
 
-      const city =
-        this.value.trim();
+    if (!city) return;
 
+    await findCity(city);
 
-      if (city.length < 3) return;
-
-
-      cityTimer =
-        setTimeout(
-          () => searchCity(city),
-          700
-        );
-
-    });
+  });
 
 
-  async function searchCity(city) {
+  /* ==========================================
+     FIND CITY
+     Uses OpenStreetMap Nominatim
+  ========================================== */
 
-    const status =
-      document.getElementById(
-        "locationStatus"
-      );
-
-
-    status.textContent =
-      "Finding location…";
-
+  async function findCity(city) {
 
     try {
 
-      /*
-       * OpenStreetMap Nominatim
-       * converts city name into coordinates.
-       */
+      setStatus("Finding location…");
 
       const url =
         "https://nominatim.openstreetmap.org/search" +
         "?format=json" +
         "&limit=1" +
-        "&addressdetails=1" +
+        "&countrycodes=in" +
         "&q=" +
         encodeURIComponent(city);
 
+      const response = await fetch(url, {
+        headers: {
+          "Accept": "application/json"
+        }
+      });
 
-      const response =
-        await fetch(url, {
-          headers: {
-            "Accept": "application/json"
-          }
-        });
-
-
-      const results =
-        await response.json();
-
+      const results = await response.json();
 
       if (!results.length) {
-
-        status.textContent =
-          "City not found. Try another name.";
-
+        showError("City not found. Please try another city.");
         return;
-
       }
 
+      const result = results[0];
 
-      const result =
-        results[0];
+      currentLocation = {
+        city: result.display_name.split(",")[0],
+        latitude: Number(result.lat),
+        longitude: Number(result.lon),
+        timezone: "Asia/Kolkata"
+      };
 
+      document.getElementById("locationStatus").textContent =
+        "Location: " + currentLocation.city;
 
-      latitude =
-        parseFloat(result.lat);
-
-
-      longitude =
-        parseFloat(result.lon);
-
-
-      timezone =
-        "Asia/Kolkata";
-
-
-      currentCity =
-        result.address?.city ||
-        result.address?.town ||
-        result.address?.village ||
-        city;
-
-
-      currentState =
-        result.address?.state ||
-        "";
-
-
-      document.getElementById(
-        "selectedLocation"
-      ).textContent =
-        "Location: " +
-        currentCity +
-        (
-          currentState
-            ? ", " + currentState
-            : ""
-        );
-
-
-      status.textContent =
-        "Location selected";
-
-
-      loadPanchang();
-
+      await loadPanchang();
 
     } catch (error) {
 
       console.error(error);
 
-      status.textContent =
-        "Could not find this location.";
+      showError("Unable to find this city.");
 
     }
 
   }
 
 
-  /* ----------------------------------
-     DETECT GPS
-  ---------------------------------- */
+  /* ==========================================
+     DETECT LOCATION
+  ========================================== */
 
   function detectLocation() {
 
-    const status =
-      document.getElementById(
-        "locationStatus"
-      );
-
-
     if (!navigator.geolocation) {
 
-      status.textContent =
-        "Location detection is not supported by your browser.";
+      showError(
+        "Location detection is not supported by this browser."
+      );
 
       return;
-
     }
 
-
-    status.textContent =
-      "Requesting your location…";
-
+    setStatus("Detecting your location…");
 
     navigator.geolocation.getCurrentPosition(
 
-      async function(position) {
+      async position => {
 
-        latitude =
-          position.coords.latitude;
+        currentLocation = {
+          city: "Your Location",
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          timezone: "Asia/Kolkata"
+        };
 
-        longitude =
-          position.coords.longitude;
+        document.getElementById("city").value =
+          "Your Location";
 
+        document.getElementById("locationStatus").textContent =
+          "Using your current location";
 
-        status.textContent =
-          "Finding your city…";
-
-
-        try {
-
-          /*
-           * Reverse geocoding:
-           * coordinates → city name
-           */
-
-          const url =
-            "https://nominatim.openstreetmap.org/reverse" +
-            "?format=json" +
-            "&lat=" +
-            encodeURIComponent(latitude) +
-            "&lon=" +
-            encodeURIComponent(longitude) +
-            "&zoom=10" +
-            "&addressdetails=1";
-
-
-          const response =
-            await fetch(url, {
-              headers: {
-                "Accept": "application/json"
-              }
-            });
-
-
-          const result =
-            await response.json();
-
-
-          currentCity =
-            result.address?.city ||
-            result.address?.town ||
-            result.address?.village ||
-            result.address?.municipality ||
-            "Your Location";
-
-
-          currentState =
-            result.address?.state ||
-            "";
-
-
-          document.getElementById(
-            "city"
-          ).value =
-            currentCity;
-
-
-          document.getElementById(
-            "selectedLocation"
-          ).textContent =
-            "Location: " +
-            currentCity +
-            (
-              currentState
-                ? ", " + currentState
-                : ""
-            );
-
-
-          status.textContent =
-            "Location detected successfully";
-
-
-          loadPanchang();
-
-
-        } catch (error) {
-
-          console.error(error);
-
-          status.textContent =
-            "Location detected, but city name could not be determined.";
-
-          loadPanchang();
-
-        }
+        await loadPanchang();
 
       },
 
-
-      function(error) {
+      error => {
 
         console.error(error);
 
-        if (error.code === 1) {
-
-          status.textContent =
-            "Location permission was denied.";
-
-        } else {
-
-          status.textContent =
-            "Unable to detect your location.";
-
-        }
+        showError(
+          "Location access was not allowed. Please enter your city instead."
+        );
 
       },
 
@@ -1216,21 +961,390 @@
   }
 
 
-  /* ----------------------------------
-     SAFE TEXT
-  ---------------------------------- */
+  /* ==========================================
+     LOAD PANCHANG
+  ========================================== */
 
-  function safe(value) {
+  async function loadPanchang() {
 
-    if (
-      value === null ||
-      value === undefined
-    ) {
+    hideError();
 
-      return "—";
+    setStatus("Loading Panchang…");
+
+    try {
+
+      const date = dateInput.value;
+
+      const url =
+        API_BASE +
+        "?date=" + encodeURIComponent(date) +
+        "&latitude=" + encodeURIComponent(currentLocation.latitude) +
+        "&longitude=" + encodeURIComponent(currentLocation.longitude) +
+        "&timezone=" + encodeURIComponent(currentLocation.timezone);
+
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Panchang API error");
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error("Panchang calculation failed");
+      }
+
+      renderPanchang(data);
+
+      setStatus("");
+
+    } catch (error) {
+
+      console.error(error);
+
+      showError(
+        "Unable to load Panchang right now. Please try again."
+      );
+
+      setStatus("");
 
     }
 
+  }
+
+
+  /* ==========================================
+     RENDER PANCHANG
+  ========================================== */
+
+  function renderPanchang(data) {
+
+    document.getElementById("dayHeader").style.display = "flex";
+    document.getElementById("basicSection").style.display = "grid";
+    document.getElementById("sunMoonSection").style.display = "block";
+    document.getElementById("timingSection").style.display = "block";
+    document.getElementById("choghadiyaSection").style.display = "block";
+    document.getElementById("samvatSection").style.display = "block";
+
+
+    /* DATE */
+
+    document.getElementById("dayTitle").textContent =
+      formatDate(data.date);
+
+
+    document.getElementById("daySubtitle").textContent =
+      data.vara?.name || "";
+
+
+    document.getElementById("locationPill").textContent =
+      currentLocation.city;
+
+
+    /* BASIC */
+
+    document.getElementById("vara").textContent =
+      data.vara?.name || "—";
+
+
+    document.getElementById("tithi").textContent =
+      data.tithi?.name || "—";
+
+
+    document.getElementById("tithiEnd").textContent =
+      data.tithi?.ends
+        ? "Ends " + data.tithi.ends
+        : "";
+
+
+    document.getElementById("nakshatra").textContent =
+      data.nakshatra?.name || "—";
+
+
+    let nakshatraDetail = "";
+
+    if (data.nakshatra?.pada) {
+      nakshatraDetail =
+        "Pada " + data.nakshatra.pada;
+    }
+
+    if (data.nakshatra?.ends) {
+
+      nakshatraDetail +=
+        (nakshatraDetail ? " · " : "") +
+        "Ends " +
+        data.nakshatra.ends;
+
+    }
+
+    document.getElementById("nakshatraEnd").textContent =
+      nakshatraDetail;
+
+
+    document.getElementById("moonRashi").textContent =
+      data.moon?.rashi?.name ||
+      data.rashi?.moon?.name ||
+      "—";
+
+
+    if (data.moon?.rashi?.longitude != null) {
+
+      document.getElementById("moonLongitude").textContent =
+        Number(data.moon.rashi.longitude).toFixed(2) +
+        "°";
+
+    } else {
+
+      document.getElementById("moonLongitude").textContent = "";
+
+    }
+
+
+    document.getElementById("yoga").textContent =
+      data.yoga?.name || "—";
+
+
+    document.getElementById("yogaEnd").textContent =
+      data.yoga?.ends
+        ? "Ends " + data.yoga.ends
+        : "";
+
+
+    document.getElementById("karana").textContent =
+      data.karana?.name || "—";
+
+
+    document.getElementById("karanaEnd").textContent =
+      data.karana?.ends
+        ? "Ends " + data.karana.ends
+        : "";
+
+
+    document.getElementById("paksha").textContent =
+      data.paksha || "—";
+
+
+    document.getElementById("ayana").textContent =
+      data.ayana || "—";
+
+
+    document.getElementById("ritu").textContent =
+      data.ritu || "—";
+
+
+    /* SUN / MOON */
+
+    document.getElementById("sunrise").textContent =
+      data.sun?.rise || "—";
+
+
+    document.getElementById("sunset").textContent =
+      data.sun?.set || "—";
+
+
+    document.getElementById("moonrise").textContent =
+      data.moon?.rise || "—";
+
+
+    document.getElementById("moonset").textContent =
+      data.moon?.set || "—";
+
+
+    /* IMPORTANT TIMINGS */
+
+    const timingGrid =
+      document.getElementById("timingGrid");
+
+    timingGrid.innerHTML = "";
+
+    const timings = data.timings || {};
+
+    const timingLabels = {
+
+      brahma: "Brahma Muhurta",
+
+      abhijit: "Abhijit Muhurta",
+
+      rahuKaal: "Rahu Kaal",
+
+      yamaganda: "Yamaganda",
+
+      gulika: "Gulika"
+
+    };
+
+
+    Object.keys(timingLabels).forEach(key => {
+
+      if (!timings[key]) return;
+
+      const div =
+        document.createElement("div");
+
+      div.className = "timing";
+
+      div.innerHTML = `
+        <div class="timing-name">
+          ${timingLabels[key]}
+        </div>
+
+        <div class="timing-value">
+          ${escapeHtml(timings[key])}
+        </div>
+      `;
+
+      timingGrid.appendChild(div);
+
+    });
+
+
+    /* CHOGHADIYA */
+
+    renderChoghadiya(
+      data.choghadiya?.day || [],
+      "dayChoghadiya"
+    );
+
+
+    renderChoghadiya(
+      data.choghadiya?.night || [],
+      "nightChoghadiya"
+    );
+
+
+    /* SAMVAT */
+
+    document.getElementById("vikram").textContent =
+      data.vikramSamvat ||
+      data.samvat?.vikramSamvat ||
+      "—";
+
+
+    document.getElementById("shaka").textContent =
+      data.shakaSamvat ||
+      data.samvat?.shakaSamvat ||
+      "—";
+
+  }
+
+
+  /* ==========================================
+     CHOGHADIYA
+  ========================================== */
+
+  function renderChoghadiya(items, elementId) {
+
+    const container =
+      document.getElementById(elementId);
+
+    container.innerHTML = "";
+
+    if (!items.length) {
+
+      container.innerHTML =
+        '<div class="card-detail">Not available</div>';
+
+      return;
+
+    }
+
+    items.forEach(item => {
+
+      const row =
+        document.createElement("div");
+
+      row.className = "chog-row";
+
+      row.innerHTML = `
+
+        <div class="chog-name">
+          ${escapeHtml(item.name || "—")}
+        </div>
+
+        <div class="chog-time">
+          ${escapeHtml(item.start || "")}
+        </div>
+
+        <div class="chog-time">
+          ${escapeHtml(item.end || "")}
+        </div>
+
+      `;
+
+      container.appendChild(row);
+
+    });
+
+  }
+
+
+  /* ==========================================
+     DATE FORMAT
+  ========================================== */
+
+  function formatDate(value) {
+
+    if (!value) return "";
+
+    const date =
+      new Date(value + "T12:00:00");
+
+    return date.toLocaleDateString(
+      "en-IN",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    );
+
+  }
+
+
+  /* ==========================================
+     STATUS
+  ========================================== */
+
+  function setStatus(message) {
+
+    document.getElementById("status").textContent =
+      message;
+
+  }
+
+
+  /* ==========================================
+     ERROR
+  ========================================== */
+
+  function showError(message) {
+
+    const error =
+      document.getElementById("error");
+
+    error.textContent = message;
+    error.style.display = "block";
+
+  }
+
+
+  function hideError() {
+
+    const error =
+      document.getElementById("error");
+
+    error.style.display = "none";
+
+  }
+
+
+  /* ==========================================
+     BASIC HTML ESCAPING
+  ========================================== */
+
+  function escapeHtml(value) {
 
     return String(value)
       .replace(/&/g, "&amp;")
@@ -1242,9 +1356,9 @@
   }
 
 
-  /* ----------------------------------
+  /* ==========================================
      INITIAL LOAD
-  ---------------------------------- */
+  ========================================== */
 
   loadPanchang();
 
