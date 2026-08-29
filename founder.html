@@ -4,16 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Founder | Mauksh</title>
+  <title>Founder | Kaaldarpan by Mauksh</title>
 
-  <meta name="description"
-        content="Meet Shivam Bansal, Founder of Mauksh, Vedic Astrologer, Numerologist and Life Coach.">
+  <meta
+    name="description"
+    content="Meet Shivam Bansal, founder of Mauksh and creator of Kaaldarpan, a modern platform for Vedic astrology and spiritual self-understanding."
+  >
 
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -25,87 +32,149 @@
         Arial,
         sans-serif;
 
-      background: #faf8f3;
-      color: #29231e;
+      background: #f8f5ef;
+      color: #241b16;
       line-height: 1.7;
     }
 
     a {
-      text-decoration: none;
       color: inherit;
+      text-decoration: none;
     }
 
-    /* =========================
+    /* =========================================
        HEADER
-    ========================= */
+    ========================================= */
 
     header {
-      background: #ffffff;
-      border-bottom: 1px solid #e8e1d7;
+      background: #241b16;
+      color: #f8f5ef;
+
+      padding: 18px 20px;
+
       position: sticky;
       top: 0;
       z-index: 1000;
+
+      box-shadow:
+        0 2px 12px rgba(0,0,0,0.12);
     }
 
     .header-inner {
-      max-width: 1180px;
+      max-width: 1050px;
       margin: auto;
-      padding: 16px 22px;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      gap: 20px;
     }
 
-    .logo {
-      font-size: 27px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 48px;
+      height: 48px;
+
+      object-fit: contain;
+
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+
+      line-height: 1.2;
+    }
+
+    .brand-name {
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: 1px;
-      color: #2c241d;
+
+      letter-spacing: 0.3px;
     }
 
-    .logo span {
-      color: #9a7445;
+    .brand-subtitle {
+      font-size: 11px;
+
+      opacity: 0.72;
+
+      margin-top: 4px;
+
+      letter-spacing: 0.5px;
     }
 
     nav {
       display: flex;
       align-items: center;
-      gap: 24px;
-      font-size: 14px;
-      color: #5b5249;
+
+      gap: 18px;
     }
 
     nav a {
-      transition: 0.2s ease;
+      font-size: 14px;
+      opacity: 0.9;
+
+      transition:
+        opacity 0.2s ease,
+        color 0.2s ease;
     }
 
     nav a:hover {
-      color: #9a7445;
+      opacity: 1;
+      color: #d8bd91;
     }
 
-    .menu-btn {
+    .menu-button {
       display: none;
+
+      background: none;
       border: none;
-      background: transparent;
+
+      color: #f8f5ef;
+
       font-size: 27px;
+
       cursor: pointer;
-      color: #29231e;
     }
 
-    /* =========================
+    /* =========================================
+       MAIN
+    ========================================= */
+
+    main {
+      width: 100%;
+    }
+
+    /* =========================================
        HERO
-    ========================= */
+    ========================================= */
 
     .hero {
-      max-width: 1180px;
+      max-width: 1050px;
+
       margin: auto;
-      padding: 70px 22px 65px;
+
+      padding: 65px 20px 70px;
 
       display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
+
+      grid-template-columns:
+        minmax(280px, 0.85fr)
+        minmax(0, 1.15fr);
+
       align-items: center;
-      gap: 70px;
+
+      gap: 65px;
     }
 
     .founder-photo {
@@ -115,310 +184,553 @@
 
     .founder-photo img {
       width: 100%;
-      max-width: 430px;
+      max-width: 410px;
+
       aspect-ratio: 4 / 5;
+
       object-fit: cover;
 
-      border-radius: 24px;
-      border: 8px solid #ffffff;
+      border-radius: 22px;
+
+      border: 7px solid #fffdf9;
 
       box-shadow:
-        0 20px 50px rgba(45, 35, 25, 0.14);
+        0 15px 40px rgba(60,45,30,0.12);
+
+      display: block;
     }
 
     .eyebrow {
-      color: #9a7445;
+      color: #8b6f47;
+
       font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 2px;
+
       text-transform: uppercase;
-      margin-bottom: 12px;
+
+      letter-spacing: 2px;
+
+      font-weight: 600;
+
+      margin-bottom: 10px;
     }
 
-    h1 {
-      font-size: clamp(44px, 6vw, 70px);
+    .hero h1 {
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(42px, 7vw, 66px);
+
+      font-weight: 600;
+
       line-height: 1.05;
-      letter-spacing: -2px;
-      color: #211b16;
-      margin-bottom: 18px;
+
+      color: #241b16;
+
+      margin-bottom: 15px;
     }
 
     .role {
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
       font-size: 20px;
-      color: #776b60;
-      margin-bottom: 25px;
+
+      color: #6f5432;
+
+      margin-bottom: 22px;
     }
 
     .hero-text {
       max-width: 650px;
-      font-size: 17px;
-      color: #574f47;
+
+      color: #493e36;
+
+      font-size: 16px;
+
+      line-height: 1.85;
     }
 
-    /* =========================
+    /* =========================================
        BUTTONS
-    ========================= */
+    ========================================= */
 
     .buttons {
       display: flex;
-      gap: 12px;
+
       flex-wrap: wrap;
-      margin-top: 30px;
+
+      gap: 11px;
+
+      margin-top: 27px;
     }
 
     .btn {
-      padding: 13px 22px;
-      border-radius: 10px;
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 12px 20px;
+
+      border-radius: 11px;
+
       font-size: 14px;
+
       font-weight: 600;
-      transition: 0.2s ease;
+
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
     }
 
     .btn-primary {
-      background: #2d251e;
-      color: #ffffff;
+      background: #241b16;
+      color: #fffdf9;
     }
 
     .btn-primary:hover {
-      background: #9a7445;
+      background: #6f5432;
     }
 
     .btn-secondary {
-      background: #ffffff;
-      border: 1px solid #ded5ca;
-      color: #3d352e;
+      background: #fffdf9;
+
+      border: 1px solid #d8cfc2;
+
+      color: #493e36;
     }
 
     .btn-secondary:hover {
-      border-color: #9a7445;
+      border-color: #8b6f47;
     }
 
-    /* =========================
-       SECTIONS
-    ========================= */
+    /* =========================================
+       CONTENT SECTIONS
+    ========================================= */
 
     .section {
-      padding: 70px 22px;
+      padding: 65px 20px;
     }
 
     .section-white {
-      background: #ffffff;
+      background: #fffdf9;
+
+      border-top:
+        1px solid #e5ddd1;
+
+      border-bottom:
+        1px solid #e5ddd1;
     }
 
     .section-inner {
-      max-width: 980px;
+      max-width: 900px;
       margin: auto;
     }
 
     .section-title {
-      font-size: 34px;
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(30px, 5vw, 40px);
+
       line-height: 1.2;
-      color: #2a221c;
+
+      font-weight: 600;
+
+      color: #241b16;
+
       margin-bottom: 22px;
     }
 
     .section p {
-      font-size: 16px;
-      color: #5d554d;
-      margin-bottom: 18px;
+      color: #493e36;
+
+      font-size: 15px;
+
+      line-height: 1.85;
+
+      margin-bottom: 17px;
     }
 
-    /* =========================
+    .section p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* =========================================
        CARDS
-    ========================= */
+    ========================================= */
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 32px;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 17px;
+
+      margin-top: 30px;
     }
 
     .card {
-      background: #faf8f3;
-      border: 1px solid #e8e0d6;
+      background: #fffdf9;
+
+      border:
+        1px solid #e5ddd1;
+
       border-radius: 17px;
-      padding: 28px 24px;
+
+      padding: 25px 22px;
+
+      box-shadow:
+        0 6px 25px rgba(60,45,30,0.04);
+    }
+
+    .section-white .card {
+      background: #f8f5ef;
     }
 
     .icon {
-      font-size: 29px;
-      margin-bottom: 14px;
+      font-size: 27px;
+
+      color: #8b6f47;
+
+      margin-bottom: 12px;
     }
 
     .card h3 {
-      font-size: 18px;
-      color: #2d251e;
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: 20px;
+
+      font-weight: 600;
+
+      color: #6f5432;
+
       margin-bottom: 8px;
     }
 
     .card p {
       font-size: 14px;
-      color: #6b6259;
-      margin-bottom: 0;
+
+      color: #5b5047;
+
+      line-height: 1.75;
+
+      margin: 0;
     }
 
-    /* =========================
+    /* =========================================
+       VISION BLOCK
+    ========================================= */
+
+    .vision-box {
+      margin-top: 30px;
+
+      background: #f4eee4;
+
+      border-left:
+        4px solid #8b6f47;
+
+      border-radius: 11px;
+
+      padding: 21px 22px;
+    }
+
+    .vision-box p {
+      margin: 0;
+
+      color: #493c31;
+
+      font-size: 15px;
+    }
+
+    /* =========================================
        QUOTE
-    ========================= */
+    ========================================= */
 
     .quote-section {
-      padding: 75px 22px;
-      background: #faf8f3;
+      background: #f8f5ef;
+
+      padding: 70px 20px;
+
       text-align: center;
     }
 
     .quote {
-      max-width: 900px;
+      max-width: 850px;
+
       margin: auto;
     }
 
     .quote-mark {
-      font-size: 52px;
-      line-height: 1;
-      color: #b18a5b;
+      font-family: Georgia, serif;
+
+      font-size: 55px;
+
+      line-height: 0.8;
+
+      color: #8b6f47;
     }
 
     .quote-text {
-      font-size: clamp(22px, 3vw, 32px);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(22px, 4vw, 32px);
+
       line-height: 1.45;
+
       color: #342a22;
-      margin-top: 12px;
+
+      margin-top: 15px;
     }
 
     .quote-author {
       margin-top: 18px;
-      color: #887b6d;
+
+      color: #806f61;
+
       font-size: 13px;
     }
 
-    /* =========================
+    /* =========================================
        FOOTER
-    ========================= */
+    ========================================= */
 
     footer {
-      background: #29231e;
-      color: #eee8df;
+      background: #241b16;
+
+      color: #f8f5ef;
+
       text-align: center;
-      padding: 38px 22px;
+
+      padding: 32px 18px;
     }
 
-    .footer-logo {
-      font-size: 25px;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .footer-brand {
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: 21px;
+
+      margin-bottom: 5px;
     }
 
-    footer p {
-      color: #bcb2a8;
+    .footer-by {
       font-size: 13px;
-      margin-top: 6px;
+
+      opacity: 0.7;
     }
 
-    /* =========================
+    .footer-link {
+      display: inline-block;
+
+      margin-top: 12px;
+
+      font-size: 13px;
+
+      opacity: 0.85;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-link:hover {
+      opacity: 1;
+    }
+
+    /* =========================================
        MOBILE
-    ========================= */
+    ========================================= */
 
-    @media (max-width: 800px) {
+    @media (max-width: 750px) {
 
-      .header-inner {
-        padding: 14px 18px;
+      header {
+        padding: 13px 16px;
       }
 
-      .menu-btn {
-        display: block;
+      .brand img {
+        width: 42px;
+        height: 42px;
+      }
+
+      .brand-name {
+        font-size: 18px;
       }
 
       nav {
         display: none;
 
         position: absolute;
-        top: 65px;
-        left: 15px;
-        right: 15px;
 
-        background: #ffffff;
+        top: 68px;
 
-        border: 1px solid #e6ded4;
-        border-radius: 14px;
+        left: 0;
+        right: 0;
 
-        padding: 18px;
+        background: #241b16;
 
         flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
+
+        align-items: stretch;
+
+        padding: 10px 20px 18px;
+
+        gap: 0;
 
         box-shadow:
-          0 15px 35px rgba(0, 0, 0, 0.08);
+          0 10px 25px rgba(0,0,0,0.16);
       }
 
-      nav.active {
+      nav.open {
         display: flex;
+      }
+
+      nav a {
+        padding: 13px 0;
+
+        border-bottom:
+          1px solid rgba(255,255,255,0.1);
+      }
+
+      nav a:last-child {
+        border-bottom: none;
+      }
+
+      .menu-button {
+        display: block;
       }
 
       .hero {
         grid-template-columns: 1fr;
-        gap: 38px;
-        padding-top: 45px;
+
+        gap: 35px;
+
+        padding:
+          40px 15px
+          50px;
       }
 
       .founder-photo img {
-        max-width: 360px;
+        max-width: 350px;
       }
 
-      h1 {
-        font-size: 48px;
-        letter-spacing: -1px;
+      .hero h1 {
+        font-size: 46px;
+      }
+
+      .role {
+        font-size: 18px;
+      }
+
+      .hero-text {
+        font-size: 15px;
+      }
+
+      .section {
+        padding:
+          52px 15px;
+      }
+
+      .section-title {
+        font-size: 31px;
       }
 
       .cards {
         grid-template-columns: 1fr;
+
+        gap: 14px;
       }
 
-      .section {
-        padding: 55px 20px;
+      .card {
+        padding: 23px 20px;
       }
+
+      .quote-section {
+        padding:
+          58px 18px;
+      }
+
     }
+
   </style>
 </head>
 
+
 <body>
 
-  <!-- =========================
+
+  <!-- =========================================
        HEADER
-  ========================= -->
+  ========================================= -->
 
   <header>
 
     <div class="header-inner">
 
-      <a href="index.html" class="logo">
-        KaalDarpan.com
+      <a
+        href="index.html"
+        class="brand"
+      >
+
+        <img
+          src="assets/kaaldarpan-logo.png"
+          alt="Kaaldarpan logo"
+        >
+
+        <div class="brand-text">
+
+          <div class="brand-name">
+            Kaaldarpan
+          </div>
+
+          <div class="brand-subtitle">
+            by Mauksh
+          </div>
+
+        </div>
+
       </a>
 
+
       <button
-        class="menu-btn"
-        onclick="toggleMenu()"
-        aria-label="Open menu">
+        class="menu-button"
+        id="menuButton"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+      >
         ☰
       </button>
+
 
       <nav id="mainNav">
 
         <a href="index.html">
-          Home
+          Panchang
         </a>
 
         <a href="horoscope.html">
           Daily Horoscope
-        </a>
-
-        <a href="monthly.html">
-          Monthly Horoscope
-        </a>
-
-        <a href="yearly.html">
-          Yearly Horoscope
         </a>
 
         <a href="founder.html">
@@ -432,13 +744,17 @@
   </header>
 
 
-  <!-- =========================
+
+  <!-- =========================================
        MAIN
-  ========================= -->
+  ========================================= -->
 
   <main>
 
-    <!-- HERO -->
+
+    <!-- =======================================
+         FOUNDER HERO
+    ======================================== -->
 
     <section class="hero">
 
@@ -446,13 +762,17 @@
 
         <!--
           IMPORTANT:
-          GitHub filename is Founder.JPG
-          Folder is assets
+          Exact GitHub filename:
+          Founder.JPG
+
+          Exact path:
+          assets/Founder.JPG
         -->
 
         <img
           src="assets/Founder.JPG"
           alt="Shivam Bansal, Founder of Mauksh"
+          loading="eager"
         >
 
       </div>
@@ -464,31 +784,38 @@
           Founder of Mauksh
         </div>
 
+
         <h1>
           Shivam Bansal
         </h1>
+
 
         <div class="role">
           Vedic Astrologer · Numerologist · Life Coach
         </div>
 
+
         <p class="hero-text">
-          Shivam Bansal is the founder of Mauksh, a platform created
-          to bring traditional spiritual knowledge into a modern,
-          accessible and meaningful experience.
+          Shivam Bansal is the founder of Mauksh and the creator
+          of Kaaldarpan, a modern platform built around Vedic
+          astrology, traditional wisdom and technology.
         </p>
+
 
         <div class="buttons">
 
           <a
             href="index.html"
-            class="btn btn-primary">
-            Explore KaalDarpan
+            class="btn btn-primary"
+          >
+            Explore Kaaldarpan
           </a>
+
 
           <a
             href="#about"
-            class="btn btn-secondary">
+            class="btn btn-secondary"
+          >
             About Shivam
           </a>
 
@@ -499,11 +826,15 @@
     </section>
 
 
-    <!-- ABOUT -->
+
+    <!-- =======================================
+         ABOUT
+    ======================================== -->
 
     <section
       class="section section-white"
-      id="about">
+      id="about"
+    >
 
       <div class="section-inner">
 
@@ -511,42 +842,66 @@
           About the Founder
         </div>
 
+
         <h2 class="section-title">
-          A modern approach to ancient wisdom
+          Bringing ancient wisdom into a modern world
         </h2>
 
-        <p>
-          Shivam Bansal's work brings together his interest in
-          Vedic astrology, numerology, spirituality and practical
-          life guidance with his experience in entrepreneurship,
-          digital marketing, business development and communication.
-        </p>
 
         <p>
-          Through Mauksh, his vision is to make spiritual tools
-          easier to understand and more accessible to people living
-          in a fast-moving modern world.
+          Shivam Bansal is the founder of Mauksh, an initiative
+          focused on making traditional systems of knowledge more
+          accessible through modern technology and thoughtful
+          digital experiences.
         </p>
 
-        <p>
-          Rather than treating astrology as something distant or
-          complicated, Mauksh aims to present it in a way that feels
-          personal, clear and relevant to everyday life.
-        </p>
 
         <p>
-          The platform combines traditional systems with modern
-          technology, creating tools that can help people explore
-          their birth charts, planetary influences, numerology and
-          other areas of spiritual self-understanding.
+          His work brings together an interest in Vedic astrology,
+          numerology, spirituality and practical life guidance with
+          entrepreneurship, digital technology, communication and
+          the process of building products for a modern audience.
         </p>
+
+
+        <p>
+          Through Mauksh and Kaaldarpan, the goal is not simply to
+          present calculations or traditional terminology, but to
+          make these systems easier for people to explore and
+          understand in the context of their own lives.
+        </p>
+
+
+        <p>
+          Kaaldarpan represents this vision through tools such as
+          Panchang, astrological calculations, planetary information
+          and daily guidance — presented through a simple and
+          accessible digital experience.
+        </p>
+
+
+        <div class="vision-box">
+
+          <p>
+            <strong>
+              The philosophy is simple:
+            </strong>
+            technology should make ancient knowledge easier to
+            access without taking away the depth, tradition and
+            personal nature of the journey.
+          </p>
+
+        </div>
 
       </div>
 
     </section>
 
 
-    <!-- EXPERTISE -->
+
+    <!-- =======================================
+         AREAS OF WORK
+    ======================================== -->
 
     <section class="section">
 
@@ -556,11 +911,14 @@
           Areas of Work
         </div>
 
+
         <h2 class="section-title">
-          The foundation of his work
+          The ideas behind Mauksh
         </h2>
 
+
         <div class="cards">
+
 
           <div class="card">
 
@@ -574,11 +932,12 @@
 
             <p>
               Exploring planetary positions, birth charts,
-              timing and traditional Vedic astrological
-              principles.
+              transits, timing systems and traditional Vedic
+              astrological principles.
             </p>
 
           </div>
+
 
 
           <div class="card">
@@ -592,12 +951,13 @@
             </h3>
 
             <p>
-              Understanding the symbolism of numbers and
-              how numerological patterns can provide another
-              perspective on life.
+              Exploring the symbolism and patterns associated
+              with numbers as another perspective for personal
+              reflection and understanding.
             </p>
 
           </div>
+
 
 
           <div class="card">
@@ -611,12 +971,13 @@
             </h3>
 
             <p>
-              Translating spiritual insights into practical
-              reflections that can support everyday decisions
-              and personal growth.
+              Turning spiritual concepts into practical
+              reflections that can help people think about
+              choices, patterns and personal growth.
             </p>
 
           </div>
+
 
         </div>
 
@@ -625,7 +986,10 @@
     </section>
 
 
-    <!-- MAUKSH VISION -->
+
+    <!-- =======================================
+         MAUKSH VISION
+    ======================================== -->
 
     <section class="section section-white">
 
@@ -635,26 +999,39 @@
           The Mauksh Vision
         </div>
 
+
         <h2 class="section-title">
-          Making spirituality easier to explore
+          Ancient knowledge, thoughtfully presented
         </h2>
 
-        <p>
-          Mauksh was built around a simple idea: spiritual
-          knowledge should be accessible without losing the
-          depth of the traditions from which it comes.
-        </p>
 
         <p>
-          Technology can make calculations faster, charts easier
-          to explore and information easier to access. But the
-          human element of interpretation, reflection and
-          understanding remains at the heart of the experience.
+          Mauksh was built around the belief that spiritual
+          knowledge should be approachable without becoming
+          superficial.
         </p>
 
+
         <p>
-          This balance between ancient knowledge and modern
-          technology is at the centre of the Mauksh vision.
+          Technology can make complex calculations faster,
+          information easier to access and traditional tools
+          simpler to explore. At the same time, astrology and
+          spiritual self-understanding remain deeply personal.
+        </p>
+
+
+        <p>
+          The purpose of Mauksh is therefore to create a bridge
+          between the depth of traditional knowledge and the
+          simplicity expected from modern digital products.
+        </p>
+
+
+        <p>
+          Kaaldarpan is one expression of that vision — bringing
+          Panchang and Vedic astrological information into an
+          experience that is clear, elegant and useful in everyday
+          life.
         </p>
 
       </div>
@@ -662,7 +1039,10 @@
     </section>
 
 
-    <!-- PHILOSOPHY -->
+
+    <!-- =======================================
+         PHILOSOPHY
+    ======================================== -->
 
     <section class="quote-section">
 
@@ -672,10 +1052,12 @@
           “
         </div>
 
+
         <div class="quote-text">
           Technology can help us understand the map,
           but the journey remains deeply personal.
         </div>
+
 
         <div class="quote-author">
           Shivam Bansal · Founder, Mauksh
@@ -685,45 +1067,96 @@
 
     </section>
 
+
   </main>
 
 
-  <!-- =========================
+
+  <!-- =========================================
        FOOTER
-  ========================= -->
+  ========================================= -->
 
   <footer>
 
-    <div class="footer-logo">
-      Mauksh.
+    <div class="footer-brand">
+      Kaaldarpan
     </div>
 
-    <p>
-      Astrology · Numerology · Spiritual Self-Understanding
-    </p>
 
-    <p>
-      © 2026 Mauksh. All rights reserved.
-    </p>
+    <div class="footer-by">
+      An initiative by Mauksh
+    </div>
+
+
+    <a
+      href="https://mauksh.com"
+      class="footer-link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Visit Mauksh
+    </a>
 
   </footer>
 
 
-  <!-- =========================
+
+  <!-- =========================================
        MOBILE MENU
-  ========================= -->
+  ========================================= -->
 
   <script>
 
-    function toggleMenu() {
+    const menuButton =
+      document.getElementById("menuButton");
 
-      const nav = document.getElementById("mainNav");
+    const mainNav =
+      document.getElementById("mainNav");
 
-      nav.classList.toggle("active");
 
-    }
+    menuButton.addEventListener(
+      "click",
+      function () {
+
+        const isOpen =
+          mainNav.classList.toggle("open");
+
+        menuButton.setAttribute(
+          "aria-expanded",
+          isOpen ? "true" : "false"
+        );
+
+      }
+    );
+
+
+    /*
+      Close menu after navigation
+    */
+
+    document
+      .querySelectorAll("#mainNav a")
+      .forEach(function(link) {
+
+        link.addEventListener(
+          "click",
+          function() {
+
+            mainNav.classList.remove("open");
+
+            menuButton.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+          }
+        );
+
+      });
+
 
   </script>
+
 
 </body>
 </html>
