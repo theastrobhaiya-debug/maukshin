@@ -1,27 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
+
+/* =========================================================
+   KAALDARPAN — GLOBAL DESIGN SYSTEM
+========================================================= */
 
 :root {
   --kd-bg: #f5f0e7;
   --kd-surface: #fbf8f2;
-  --kd-surface-2: #eee7da;
+  --kd-surface-soft: #eee7da;
 
   --kd-ink: #24201c;
   --kd-muted: #756d63;
-  --kd-light-text: #bdb4a8;
+  --kd-light: #bdb4a8;
 
   --kd-gold: #a67b3c;
-  --kd-gold-light: #c7a66a;
+  --kd-gold-soft: #c7a66a;
 
   --kd-dark: #211e1a;
   --kd-border: #d9d0c2;
 
+  --kd-max: 1240px;
   --kd-radius: 18px;
-  --kd-max-width: 1240px;
 }
 
-/* --------------------------------------------------
+/* =========================================================
    RESET
--------------------------------------------------- */
+========================================================= */
 
 * {
   box-sizing: border-box;
@@ -34,11 +38,14 @@ html {
 }
 
 body {
+  min-height: 100vh;
   background: var(--kd-bg);
   color: var(--kd-ink);
-  font-family: 'DM Sans', sans-serif;
+
+  font-family: "DM Sans", sans-serif;
   font-size: 16px;
   line-height: 1.6;
+
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -50,8 +57,8 @@ a {
 
 button,
 input,
-select,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -60,59 +67,53 @@ button {
 }
 
 img {
-  max-width: 100%;
-  height: auto;
   display: block;
+  max-width: 100%;
 }
 
-/* --------------------------------------------------
+/* =========================================================
    TYPOGRAPHY
--------------------------------------------------- */
+========================================================= */
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   color: var(--kd-ink);
   line-height: 1.05;
   font-weight: 600;
 }
 
 h1 {
-  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  font-size: clamp(3.2rem, 8vw, 7rem);
   letter-spacing: -0.045em;
 }
 
 h2 {
-  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
   letter-spacing: -0.035em;
 }
 
 h3 {
-  font-size: clamp(1.7rem, 3vw, 2.8rem);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
 }
 
 p {
   color: var(--kd-muted);
 }
 
-/* --------------------------------------------------
-   GLOBAL CONTAINER
--------------------------------------------------- */
+/* =========================================================
+   GLOBAL MAIN
+========================================================= */
 
-.container {
-  width: min(calc(100% - 48px), var(--kd-max-width));
-  margin-inline: auto;
+main {
+  min-height: 60vh;
 }
 
-.section {
-  padding: 100px 0;
-}
-
-/* --------------------------------------------------
+/* =========================================================
    HEADER
--------------------------------------------------- */
+========================================================= */
 
 .site-header {
   position: sticky;
@@ -121,72 +122,95 @@ p {
 
   width: 100%;
 
-  background: rgba(251, 248, 242, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(251, 248, 242, 0.96);
 
   border-bottom: 1px solid var(--kd-border);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .header-inner {
-  min-height: 96px;
+  width: min(calc(100% - 48px), var(--kd-max));
+  min-height: 94px;
 
-  width: min(calc(100% - 48px), var(--kd-max-width));
-  margin-inline: auto;
+  margin: 0 auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+
+  gap: 28px;
 }
 
-/* Logo */
+/* =========================================================
+   HEADER BRAND
+========================================================= */
 
-.site-logo {
+.brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 15px;
 
   flex-shrink: 0;
 }
 
-.site-logo img {
-  width: 64px;
-  height: 64px;
+.brand-logo {
+  width: 62px;
+  height: 62px;
+
   object-fit: contain;
 }
 
-.site-logo-text {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2.25rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
+.brand-text {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
 }
 
-/* Navigation */
+.brand-name {
+  font-family: "Playfair Display", Georgia, serif;
+
+  font-size: 2.25rem;
+  font-weight: 600;
+
+  letter-spacing: -0.045em;
+}
+
+.brand-tagline {
+  color: var(--kd-muted);
+
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* =========================================================
+   DESKTOP NAVIGATION
+========================================================= */
 
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 34px;
+  gap: 32px;
+
+  margin-left: auto;
 }
 
 .main-nav a {
   position: relative;
 
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--kd-ink);
-
   padding: 8px 0;
 
-  transition:
-    color 180ms ease,
-    opacity 180ms ease;
+  color: var(--kd-ink);
+
+  font-size: 15px;
+  font-weight: 500;
+
+  transition: color 180ms ease;
 }
 
 .main-nav a::after {
-  content: '';
+  content: "";
 
   position: absolute;
   left: 0;
@@ -208,15 +232,56 @@ p {
   width: 100%;
 }
 
-/* Mobile menu */
+/* =========================================================
+   HEADER EXPLORE BUTTON
+========================================================= */
+
+.header-button {
+  min-height: 48px;
+
+  padding: 0 21px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid var(--kd-ink);
+  border-radius: 999px;
+
+  background: var(--kd-ink);
+  color: var(--kd-surface);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.header-button:hover {
+  background: transparent;
+  color: var(--kd-ink);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   MOBILE MENU BUTTON
+========================================================= */
 
 .menu-button {
   width: 54px;
   height: 54px;
 
   display: none;
+
   align-items: center;
   justify-content: center;
+
+  position: relative;
 
   border: 1px solid var(--kd-border);
   border-radius: 50%;
@@ -225,106 +290,101 @@ p {
   color: var(--kd-ink);
 }
 
-.menu-button span,
-.menu-button span::before,
-.menu-button span::after {
-  display: block;
+.menu-button span {
+  position: absolute;
 
-  width: 22px;
+  width: 21px;
   height: 2px;
 
   background: currentColor;
 
-  transition: 180ms ease;
+  transition: transform 180ms ease;
 }
 
-.menu-button span {
-  position: relative;
+.menu-button span:nth-child(1) {
+  transform: translateY(-7px);
 }
 
-.menu-button span::before,
-.menu-button span::after {
-  content: '';
-
-  position: absolute;
-  left: 0;
+.menu-button span:nth-child(2) {
+  transform: translateY(0);
 }
 
-.menu-button span::before {
-  top: -7px;
+.menu-button span:nth-child(3) {
+  transform: translateY(7px);
 }
 
-.menu-button span::after {
-  top: 7px;
+/* =========================================================
+   PANCHANG PAGE
+========================================================= */
+
+.panchang-page {
+  width: min(calc(100% - 48px), var(--kd-max));
+  margin: 0 auto;
+
+  padding-bottom: 100px;
 }
 
-/* --------------------------------------------------
-   PAGE HEADER
--------------------------------------------------- */
+/* =========================================================
+   PANCHANG HERO
+========================================================= */
 
-.page-header {
-  padding: 90px 0 50px;
+.panchang-hero {
+  padding: 78px 0 42px;
 }
 
-.eyebrow {
-  display: inline-block;
-
-  margin-bottom: 22px;
+.panchang-eyebrow {
+  margin-bottom: 20px;
 
   color: var(--kd-gold);
 
   font-size: 13px;
   font-weight: 600;
+
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.page-header h1 {
+.panchang-hero h1 {
   max-width: 900px;
 }
 
-.page-header p {
-  max-width: 680px;
-  margin-top: 24px;
+.panchang-hero p {
+  margin-top: 20px;
 
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
-/* --------------------------------------------------
-   PANCHANG
--------------------------------------------------- */
+/* =========================================================
+   DATE + LOCATION
+========================================================= */
 
-.panchang-page {
-  min-height: 70vh;
+.panchang-location {
+  padding: 0 0 55px;
 }
 
-.panchang-hero {
-  padding: 80px 0 50px;
+.location-label {
+  margin-bottom: 15px;
+
+  color: var(--kd-ink);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
 }
 
-.panchang-title {
-  margin-bottom: 18px;
-}
-
-.panchang-date {
-  margin-top: 12px;
-
-  color: var(--kd-muted);
-  font-size: 1.2rem;
-}
-
-.panchang-controls {
-  margin-top: 42px;
-
+.location-row {
   display: grid;
-  grid-template-columns: 190px 1fr auto;
+
+  grid-template-columns: 190px minmax(220px, 1fr) auto auto;
+
   gap: 12px;
-  align-items: stretch;
+
+  align-items: center;
 }
 
-.panchang-controls input,
-.panchang-controls button,
-.date-control {
+.location-input,
+.location-button {
   min-height: 58px;
 
   border: 1px solid var(--kd-border);
@@ -335,9 +395,10 @@ p {
   color: var(--kd-ink);
 }
 
-.panchang-controls input {
+.location-input {
   width: 100%;
-  padding: 0 22px;
+
+  padding: 0 20px;
 
   outline: none;
 
@@ -346,27 +407,21 @@ p {
     box-shadow 180ms ease;
 }
 
-.panchang-controls input::placeholder {
+.location-input::placeholder {
   color: #a49b90;
 }
 
-.panchang-controls input:focus {
+.location-input:focus {
   border-color: var(--kd-gold);
-  box-shadow: 0 0 0 4px rgba(166, 123, 60, 0.1);
+
+  box-shadow:
+    0 0 0 4px rgba(166, 123, 60, 0.1);
 }
 
-.date-control {
-  padding: 0 24px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.location-button {
+  padding: 0 25px;
 
   white-space: nowrap;
-}
-
-.panchang-controls button {
-  padding: 0 28px;
 
   font-weight: 600;
 
@@ -376,37 +431,139 @@ p {
     transform 180ms ease;
 }
 
-.panchang-controls button:hover {
+.location-button:hover {
   background: var(--kd-ink);
   color: var(--kd-surface);
 }
 
-.panchang-controls button:active {
+.location-button:active {
   transform: translateY(1px);
 }
 
-.panchang-action {
-  margin-top: 14px;
+/* =========================================================
+   STATUS / ERROR
+========================================================= */
+
+.panchang-status {
+  margin: 20px 0;
+
+  padding: 16px 20px;
+
+  border: 1px solid var(--kd-border);
+  border-radius: 12px;
+
+  background: var(--kd-surface);
+
+  color: var(--kd-muted);
 }
 
-/* Panchang grid */
+.panchang-error {
+  margin: 20px 0;
 
-.panchang-grid {
-  margin-top: 55px;
+  padding: 16px 20px;
+
+  border: 1px solid #c99d8e;
+  border-radius: 12px;
+
+  background: #f5e7e2;
+
+  color: #783f32;
+}
+
+/* =========================================================
+   PANCHANG DATE CARD
+========================================================= */
+
+.panchang-date-card {
+  margin-bottom: 70px;
+
+  padding: 30px;
 
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 30px;
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+
+  background: var(--kd-surface);
+}
+
+.panchang-date-card span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--kd-muted);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.panchang-date-card strong {
+  display: block;
+
+  font-family: "Playfair Display", Georgia, serif;
+
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* =========================================================
+   PANCHANG SECTIONS
+========================================================= */
+
+.panchang-section {
+  padding: 70px 0;
+
+  border-top: 1px solid var(--kd-border);
+}
+
+.section-heading {
+  margin-bottom: 38px;
+}
+
+.section-heading > span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--kd-gold);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.section-heading h2 {
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+}
+
+/* =========================================================
+   FIVE LIMBS
+========================================================= */
+
+.panchang-grid {
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  gap: 14px;
 }
 
 .panchang-card {
-  min-height: 180px;
+  min-height: 190px;
 
-  padding: 28px;
+  padding: 25px;
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 
   background: var(--kd-surface);
 
@@ -421,113 +578,233 @@ p {
 .panchang-card:hover {
   transform: translateY(-3px);
 
-  box-shadow: 0 14px 40px rgba(45, 37, 28, 0.07);
+  box-shadow:
+    0 14px 40px rgba(45, 37, 28, 0.07);
+}
+
+.panchang-card-icon {
+  font-size: 25px;
+  color: var(--kd-gold);
 }
 
 .panchang-card-label {
+  margin-top: 18px;
+
   color: var(--kd-muted);
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .panchang-card-value {
-  margin-top: 20px;
+  margin-top: 10px;
 
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
 
-  font-size: 1.7rem;
+  font-size: 1.45rem;
   font-weight: 600;
-
-  color: var(--kd-ink);
 }
 
 .panchang-card-subtitle {
   margin-top: 5px;
 
   color: var(--kd-muted);
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   TIMING GRID
+========================================================= */
+
+.timing-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 15px;
+}
+
+.timing-card {
+  padding: 28px;
+
+  background: var(--kd-surface);
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+}
+
+.timing-card-icon {
+  color: var(--kd-gold);
+
+  font-size: 26px;
+}
+
+.timing-card-label {
+  margin-top: 18px;
+
+  color: var(--kd-muted);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.timing-card-value {
+  margin-top: 7px;
+
+  font-family: "Playfair Display", Georgia, serif;
+
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+/* =========================================================
+   SIMPLE CARD GRID
+========================================================= */
+
+.muhurat-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 15px;
+}
+
+.simple-card {
+  padding: 25px;
+
+  background: var(--kd-surface);
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+}
+
+.simple-card-label {
+  color: var(--kd-muted);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.simple-card-value {
+  margin-top: 8px;
+
+  font-family: "Playfair Display", Georgia, serif;
+
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CHOGHADIYA
+========================================================= */
+
+.choghadiya-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+
+.choghadiya-card {
+  padding: 30px;
+
+  background: var(--kd-surface);
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+}
+
+.choghadiya-card h3 {
+  margin-bottom: 25px;
+
+  font-size: 2rem;
+}
+
+.choghadiya-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.choghadiya-item {
+  padding: 13px 0;
+
+  display: grid;
+
+  grid-template-columns: 1fr auto;
+
+  gap: 20px;
+
+  border-bottom: 1px solid var(--kd-border);
+}
+
+.choghadiya-item:last-child {
+  border-bottom: 0;
+}
+
+.choghadiya-name {
+  font-weight: 600;
+}
+
+.choghadiya-time {
+  color: var(--kd-muted);
+
   font-size: 14px;
 }
 
-/* --------------------------------------------------
-   BUTTONS
--------------------------------------------------- */
+/* =========================================================
+   HOROSCOPE
+========================================================= */
 
-.btn {
-  min-height: 54px;
+.horoscope-page {
+  width: min(calc(100% - 48px), var(--kd-max));
+  margin: 0 auto;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  padding: 80px 0 100px;
+}
 
-  padding: 0 28px;
+.page-header {
+  padding-bottom: 45px;
+}
 
-  border-radius: 999px;
+.eyebrow {
+  display: block;
 
-  border: 1px solid var(--kd-ink);
+  margin-bottom: 18px;
 
-  background: var(--kd-ink);
-  color: var(--kd-surface);
+  color: var(--kd-gold);
 
+  font-size: 13px;
   font-weight: 600;
 
-  transition:
-    transform 180ms ease,
-    background 180ms ease,
-    color 180ms ease;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
+.page-header p {
+  max-width: 680px;
 
-  background: transparent;
-  color: var(--kd-ink);
+  margin-top: 20px;
+
+  font-size: 1.15rem;
 }
-
-.btn-secondary {
-  background: transparent;
-  color: var(--kd-ink);
-  border-color: var(--kd-border);
-}
-
-.btn-secondary:hover {
-  background: var(--kd-ink);
-  color: var(--kd-surface);
-}
-
-/* --------------------------------------------------
-   DIVIDERS
--------------------------------------------------- */
-
-.divider {
-  width: 100%;
-  height: 1px;
-
-  background: var(--kd-border);
-}
-
-.gold-divider {
-  width: 100px;
-  height: 3px;
-
-  margin: 28px 0;
-
-  background: var(--kd-gold);
-}
-
-/* --------------------------------------------------
-   HOROSCOPE
--------------------------------------------------- */
 
 .horoscope-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
 
-  margin-top: 50px;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
 }
 
 .zodiac-card {
@@ -537,41 +814,61 @@ p {
 
   border: 1px solid var(--kd-border);
   border-radius: var(--kd-radius);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.zodiac-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 14px 40px rgba(45, 37, 28, 0.07);
 }
 
 .zodiac-symbol {
-  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--kd-gold);
+
+  font-family: "Playfair Display", Georgia, serif;
 
   font-size: 3rem;
-  line-height: 1;
-
-  color: var(--kd-gold);
 }
 
 .zodiac-name {
-  margin-top: 18px;
+  margin-top: 15px;
 
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
 
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   font-weight: 600;
 }
 
 .zodiac-text {
-  margin-top: 14px;
+  margin-top: 13px;
 
   color: var(--kd-muted);
+
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
-/* --------------------------------------------------
+/* =========================================================
    FOUNDER
--------------------------------------------------- */
+========================================================= */
+
+.founder-page {
+  width: min(calc(100% - 48px), var(--kd-max));
+  margin: 0 auto;
+
+  padding: 80px 0 100px;
+}
 
 .founder-layout {
   display: grid;
+
   grid-template-columns: 0.8fr 1.2fr;
+
   gap: 80px;
 
   align-items: center;
@@ -582,120 +879,153 @@ p {
 
   border-radius: var(--kd-radius);
 
-  background: var(--kd-surface-2);
+  background: var(--kd-surface-soft);
 }
 
 .founder-content p {
-  margin-top: 22px;
+  max-width: 680px;
 
-  max-width: 650px;
+  margin-top: 22px;
 
   font-size: 1.1rem;
 }
 
-/* --------------------------------------------------
+/* =========================================================
    FOOTER
--------------------------------------------------- */
+========================================================= */
 
 .site-footer {
-  margin-top: 100px;
+  margin-top: 80px;
 
-  padding: 80px 0 35px;
+  padding: 75px 0 30px;
 
   background: var(--kd-dark);
-  color: #f5f0e7;
+  color: var(--kd-bg);
 }
 
-.footer-grid {
+.footer-inner {
+  width: min(calc(100% - 48px), var(--kd-max));
+
+  margin: 0 auto;
+
   display: grid;
+
   grid-template-columns: 1.5fr 1fr 1fr;
-  gap: 60px;
+
+  gap: 65px;
 }
+
+/* Footer brand */
 
 .footer-brand {
   display: flex;
+  flex-direction: column;
+}
+
+.footer-logo {
+  display: inline-flex;
+
   align-items: center;
+
   gap: 16px;
 }
 
-.footer-brand img {
-  width: 70px;
-  height: 70px;
+.footer-logo img {
+  width: 68px;
+  height: 68px;
+
   object-fit: contain;
 }
 
-.footer-brand-name {
-  font-family: 'Playfair Display', Georgia, serif;
+.footer-logo span {
+  color: var(--kd-bg);
 
-  font-size: 2.4rem;
+  font-family: "Playfair Display", Georgia, serif;
+
+  font-size: 2.35rem;
   font-weight: 600;
+
+  letter-spacing: -0.04em;
 }
 
-.footer-description {
-  max-width: 350px;
+.footer-brand p {
+  margin-top: 25px;
 
-  margin-top: 28px;
-
-  color: var(--kd-light-text);
+  color: var(--kd-light);
 
   font-size: 1rem;
+
   line-height: 1.8;
 }
 
-.footer-column h3 {
-  margin-bottom: 22px;
+/* Footer columns */
 
-  color: #f5f0e7;
+.footer-column {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+.footer-column h3 {
+  margin-bottom: 10px;
+
+  color: var(--kd-bg);
 
   font-size: 1.35rem;
 }
 
-.footer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.footer-column a,
+.footer-column span {
+  color: var(--kd-light);
 
-.footer-links a {
-  color: var(--kd-light-text);
+  font-size: 15px;
 
   transition: color 180ms ease;
 }
 
-.footer-links a:hover {
-  color: #f5f0e7;
+.footer-column a:hover {
+  color: var(--kd-bg);
 }
 
-.footer-bottom {
-  margin-top: 70px;
-  padding-top: 24px;
+/* Footer bottom */
 
-  border-top: 1px solid rgba(245, 240, 231, 0.15);
+.footer-bottom {
+  width: min(calc(100% - 48px), var(--kd-max));
+
+  margin: 65px auto 0;
+
+  padding-top: 23px;
 
   display: flex;
   justify-content: space-between;
+
   gap: 20px;
 
-  color: var(--kd-light-text);
+  border-top: 1px solid rgba(245, 240, 231, 0.15);
+
+  color: var(--kd-light);
 
   font-size: 13px;
 }
 
-/* --------------------------------------------------
-   LOADING / EMPTY STATES
--------------------------------------------------- */
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
 .empty-state {
   margin-top: 40px;
 
-  padding: 60px 30px;
+  padding: 55px 30px;
 
   text-align: center;
 
   border: 1px dashed var(--kd-border);
   border-radius: var(--kd-radius);
 
-  background: rgba(251, 248, 242, 0.5);
+  background: rgba(251, 248, 242, 0.55);
 }
 
 .empty-state h3 {
@@ -703,53 +1033,32 @@ p {
 }
 
 .empty-state p {
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
-/* --------------------------------------------------
-   RESPONSIVE
--------------------------------------------------- */
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
 
-@media (max-width: 900px) {
-
-  .header-inner {
-    min-height: 82px;
-  }
-
-  .site-logo img {
-    width: 58px;
-    height: 58px;
-  }
-
-  .site-logo-text {
-    font-size: 2rem;
-  }
+@media (max-width: 1000px) {
 
   .main-nav {
+    gap: 22px;
+  }
+
+  .brand-tagline {
     display: none;
   }
 
-  .menu-button {
-    display: flex;
-  }
-
-  .section {
-    padding: 75px 0;
-  }
-
-  .panchang-hero {
-    padding: 65px 0 40px;
-  }
-
-  .panchang-controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .panchang-controls input {
-    grid-column: span 2;
-  }
-
   .panchang-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .timing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .muhurat-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -758,131 +1067,195 @@ p {
   }
 
   .founder-layout {
-    grid-template-columns: 1fr;
-    gap: 45px;
-  }
-
-  .footer-grid {
     grid-template-columns: 1fr 1fr;
+
+    gap: 45px;
   }
 }
 
-@media (max-width: 600px) {
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
 
-  .container {
-    width: min(calc(100% - 32px), var(--kd-max-width));
-  }
+@media (max-width: 760px) {
 
   .header-inner {
     width: calc(100% - 32px);
+
+    min-height: 78px;
   }
 
-  .site-logo {
-    gap: 11px;
+  .brand-logo {
+    width: 52px;
+    height: 52px;
   }
 
-  .site-logo img {
-    width: 54px;
-    height: 54px;
+  .brand-name {
+    font-size: 1.75rem;
   }
 
-  .site-logo-text {
-    font-size: 1.8rem;
+  .main-nav {
+    position: absolute;
+
+    top: 100%;
+
+    left: 16px;
+    right: 16px;
+
+    padding: 20px;
+
+    display: none;
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 3px;
+
+    background: var(--kd-surface);
+
+    border: 1px solid var(--kd-border);
+    border-radius: 16px;
+
+    box-shadow:
+      0 18px 50px rgba(45, 37, 28, 0.12);
   }
 
-  h1 {
-    font-size: clamp(3rem, 14vw, 4.5rem);
+  .main-nav.nav-open {
+    display: flex;
   }
 
-  h2 {
-    font-size: clamp(2.4rem, 11vw, 3.5rem);
+  .main-nav a {
+    padding: 13px 10px;
   }
 
-  .page-header {
-    padding: 60px 0 35px;
+  .header-button {
+    display: none;
+  }
+
+  .menu-button {
+    display: flex;
+  }
+
+  .panchang-page,
+  .horoscope-page,
+  .founder-page {
+    width: calc(100% - 32px);
   }
 
   .panchang-hero {
-    padding: 55px 0 30px;
+    padding: 50px 0 35px;
   }
 
-  .panchang-controls {
-    display: flex;
-    flex-direction: column;
+  .panchang-hero h1 {
+    font-size: clamp(3rem, 15vw, 4.8rem);
   }
 
-  .panchang-controls input {
-    order: 2;
+  .panchang-hero p {
+    font-size: 1.05rem;
   }
 
-  .date-control {
-    order: 1;
-    justify-content: flex-start;
+  .location-row {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .panchang-controls button {
-    order: 3;
+  .location-row .location-input:nth-child(2) {
+    grid-column: span 2;
+  }
+
+  .location-button {
     width: 100%;
   }
 
-  .panchang-action {
-    width: 100%;
+  .panchang-date-card {
+    grid-template-columns: 1fr;
+
+    gap: 22px;
+
+    margin-bottom: 45px;
   }
 
-  .panchang-action .btn {
-    width: 100%;
+  .panchang-section {
+    padding: 50px 0;
   }
 
   .panchang-grid {
-    grid-template-columns: 1fr;
-    margin-top: 40px;
+    grid-template-columns: 1fr 1fr;
   }
 
-  .panchang-card {
-    min-height: 155px;
+  .timing-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .muhurat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .choghadiya-grid {
+    grid-template-columns: 1fr;
   }
 
   .horoscope-grid {
     grid-template-columns: 1fr;
   }
 
-  .footer-grid {
+  .founder-layout {
     grid-template-columns: 1fr;
+
+    gap: 40px;
+  }
+
+  .footer-inner {
+    width: calc(100% - 32px);
+
+    grid-template-columns: 1fr;
+
     gap: 45px;
   }
 
-  .site-footer {
-    margin-top: 70px;
-    padding: 60px 0 30px;
-  }
-
   .footer-bottom {
-    margin-top: 45px;
+    width: calc(100% - 32px);
 
     flex-direction: column;
+
     gap: 8px;
   }
 }
 
-/* --------------------------------------------------
-   ACCESSIBILITY
--------------------------------------------------- */
+/* =========================================================
+   RESPONSIVE — SMALL PHONES
+========================================================= */
 
-:focus-visible {
-  outline: 2px solid var(--kd-gold);
-  outline-offset: 4px;
-}
+@media (max-width: 480px) {
 
-/* --------------------------------------------------
-   REDUCED MOTION
--------------------------------------------------- */
+  .brand-name {
+    font-size: 1.55rem;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition: none !important;
-    animation: none !important;
+  .panchang-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .location-row {
+    grid-template-columns: 1fr;
+  }
+
+  .location-row .location-input:nth-child(2) {
+    grid-column: auto;
+  }
+
+  .location-button {
+    min-height: 54px;
+  }
+
+  .panchang-card {
+    min-height: 165px;
+  }
+
+  .footer-logo span {
+    font-size: 2rem;
   }
 }
