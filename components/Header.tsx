@@ -74,16 +74,14 @@ export default function Header() {
               Founder
             </Link>
 
-          </nav>
+            <a
+              href="https://mauksh.com"
+              onClick={closeMenu}
+            >
+              Shop Products
+            </a>
 
-          <a
-            href="https://mauksh.com"
-            className="header-button"
-            onClick={closeMenu}
-          >
-            Shop
-            <span>→</span>
-          </a>
+          </nav>
 
           <button
             type="button"
