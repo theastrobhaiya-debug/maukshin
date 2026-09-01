@@ -45,7 +45,7 @@ export default function Header() {
             className="shop-link"
             onClick={closeMenu}
             style={{
-              marginLeft: "80px",
+              marginLeft: "60px",
             }}
           >
             <svg
