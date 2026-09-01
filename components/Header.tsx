@@ -45,7 +45,7 @@ export default function Header() {
             className="shop-link"
             onClick={closeMenu}
             style={{
-              marginLeft: "60px",
+              marginLeft: "70px",
             }}
           >
 
