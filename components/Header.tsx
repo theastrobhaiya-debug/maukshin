@@ -38,20 +38,7 @@ export default function Header() {
               alt="Mauksh"
               className="brand-logo"
             />
-
-            <div className="brand-text">
-
-              <span className="brand-name">
-                Mauksh
-              </span>
-
-              <span className="brand-tagline">
-                Vedic Astrology
-              </span>
-
-            </div>
           </Link>
-
 
           <nav
             className={`main-nav ${
@@ -89,15 +76,14 @@ export default function Header() {
 
           </nav>
 
-
-          <Link
-            href="/horoscope"
+          <a
+            href="https://mauksh.com"
             className="header-button"
+            onClick={closeMenu}
           >
-            Explore
+            Shop
             <span>→</span>
-          </Link>
-
+          </a>
 
           <button
             type="button"
@@ -106,11 +92,9 @@ export default function Header() {
             aria-label="Open navigation"
             aria-expanded={menuOpen}
           >
-
             <span />
             <span />
             <span />
-
           </button>
 
         </div>
