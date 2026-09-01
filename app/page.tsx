@@ -219,7 +219,7 @@ export default function Home() {
           <div className="choghadiya-row" key={index}>
 
             <span>
-              {display(item?.name)}
+              {display(item?.name)}{" "}
             </span>
 
             <strong>
@@ -1429,7 +1429,7 @@ function TimeRow({
     <div className="time-row">
 
       <span>
-        {label}:
+        {label}:{" "}
       </span>
 
       <strong>
@@ -1456,7 +1456,7 @@ function SimpleCard({
     <div className="simple-card">
 
       <span>
-        {label}:
+        {label}:{" "}
       </span>
 
       <strong>
@@ -1465,4 +1465,4 @@ function SimpleCard({
 
     </div>
   );
-} 
+}
