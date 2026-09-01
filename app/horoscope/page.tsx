@@ -1,1528 +1,1955 @@
-"useclient";
+"use client";
 
-import{useEffect,useMemo,useState}from"react";
+import { useEffect, useMemo, useState } from "react";
 
-typeHoroscopeData={
-date:string;
-[key:string]:string;
+type HoroscopeData = {
+  date: string;
+  [key: string]: string;
 };
 
-typeSign={
-name:string;
-hindi:string;
-symbol:string;
-key:string;
-html:string;
+type Sign = {
+  name: string;
+  hindi: string;
+  symbol: string;
+  key: string;
+  html: string;
 };
 
-constsignsMeta=[
-{
-name:"Aries",
-hindi:"Mesha",
-symbol:"♈",
-key:"aries",
-},
-{
-name:"Taurus",
-hindi:"Vrishabha",
-symbol:"♉",
-key:"taurus",
-},
-{
-name:"Gemini",
-hindi:"Mithuna",
-symbol:"♊",
-key:"gemini",
-},
-{
-name:"Cancer",
-hindi:"Karka",
-symbol:"♋",
-key:"cancer",
-},
-{
-name:"Leo",
-hindi:"Simha",
-symbol:"♌",
-key:"leo",
-},
-{
-name:"Virgo",
-hindi:"Kanya",
-symbol:"♍",
-key:"virgo",
-},
-{
-name:"Libra",
-hindi:"Tula",
-symbol:"♎",
-key:"libra",
-},
-{
-name:"Scorpio",
-hindi:"Vrishchika",
-symbol:"♏",
-key:"scorpio",
-},
-{
-name:"Sagittarius",
-hindi:"Dhanu",
-symbol:"♐",
-key:"sagittarius",
-},
-{
-name:"Capricorn",
-hindi:"Makara",
-symbol:"♑",
-key:"capricorn",
-},
-{
-name:"Aquarius",
-hindi:"Kumbha",
-symbol:"♒",
-key:"aquarius",
-},
-{
-name:"Pisces",
-hindi:"Meena",
-symbol:"♓",
-key:"pisces",
-},
+const signsMeta = [
+  {
+    name: "Aries",
+    hindi: "Mesha",
+    symbol: "♈",
+    key: "aries",
+  },
+  {
+    name: "Taurus",
+    hindi: "Vrishabha",
+    symbol: "♉",
+    key: "taurus",
+  },
+  {
+    name: "Gemini",
+    hindi: "Mithuna",
+    symbol: "♊",
+    key: "gemini",
+  },
+  {
+    name: "Cancer",
+    hindi: "Karka",
+    symbol: "♋",
+    key: "cancer",
+  },
+  {
+    name: "Leo",
+    hindi: "Simha",
+    symbol: "♌",
+    key: "leo",
+  },
+  {
+    name: "Virgo",
+    hindi: "Kanya",
+    symbol: "♍",
+    key: "virgo",
+  },
+  {
+    name: "Libra",
+    hindi: "Tula",
+    symbol: "♎",
+    key: "libra",
+  },
+  {
+    name: "Scorpio",
+    hindi: "Vrishchika",
+    symbol: "♏",
+    key: "scorpio",
+  },
+  {
+    name: "Sagittarius",
+    hindi: "Dhanu",
+    symbol: "♐",
+    key: "sagittarius",
+  },
+  {
+    name: "Capricorn",
+    hindi: "Makara",
+    symbol: "♑",
+    key: "capricorn",
+  },
+  {
+    name: "Aquarius",
+    hindi: "Kumbha",
+    symbol: "♒",
+    key: "aquarius",
+  },
+  {
+    name: "Pisces",
+    hindi: "Meena",
+    symbol: "♓",
+    key: "pisces",
+  },
 ];
 
-constHOROSCOPE_URL=
-"https://raw.githubusercontent.com/theastrobhaiya-debug/Mauksh-data/main/Horoscope.json";
+const HOROSCOPE_URL =
+  "https://raw.githubusercontent.com/theastrobhaiya-debug/Mauksh-data/main/Horoscope.json";
 
-functioncleanHtml(html:string){
-returnhtml.replace(/<h3>.*?<\/h3>/i,"");
+function stripHtml(value: string) {
+  if (!value) return "";
+
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-functiongetFirstParagraph(html:string){
-constmatch=html.match(/<p>(.*?)<\/p>/i);
+function getFirstParagraph(html: string) {
+  if (!html) return "";
 
-if(!match)return"";
+  const match = html.match(/<p[^>]*>(.*?)<\/p>/is);
 
-returnmatch[1]
-.replace(/<[^>]*>/g,"")
-.replace(/&nbsp;/g,"")
-.trim();
+  if (!match) {
+    return stripHtml(html);
+  }
+
+  return stripHtml(match[1]);
 }
 
-functiongetSection(html:string,label:string){
-constregex=newRegExp(
-`<p>.*?${label}:.*?</p>`,
-"is"
-);
+function getSection(html: string, label: string) {
+  if (!html) return "";
 
-constmatch=html.match(regex);
+  const regex = new RegExp(
+    `<p[^>]*>\\s*${label}\\s*:?\\s*(.*?)<\\/p>`,
+    "is"
+  );
 
-if(!match)return"";
+  const match = html.match(regex);
 
-returnmatch[0]
-.replace(/<p>/i,"")
-.replace(/<\/p>/i,"")
-.trim();
+  if (match) {
+    return stripHtml(match[1]);
+  }
+
+  const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gis;
+
+  const paragraphs = [...html.matchAll(paragraphRegex)];
+
+  const found = paragraphs.find((item) =>
+    stripHtml(item[1]).toLowerCase().startsWith(label.toLowerCase())
+  );
+
+  if (!found) return "";
+
+  return stripHtml(found[1]).replace(
+    new RegExp(`^${label}\\s*:?\\s*`, "i"),
+    ""
+  );
 }
 
-exportdefaultfunctionHoroscopePage(){
-const[data,setData]=useState<HoroscopeData|null>(null);
-const[selectedSign,setSelectedSign]=useState<string>("aries");
-const[loading,setLoading]=useState(true);
-const[error,setError]=useState("");
+function getTruth(html: string) {
+  if (!html) return "";
 
-useEffect(()=>{
-asyncfunctionloadHoroscope(){
-try{
-setLoading(true);
-setError("");
+  const truthMatch = html.match(
+    /<p[^>]*class=["']truth["'][^>]*>(.*?)<\/p>/is
+  );
 
-constresponse=awaitfetch(HOROSCOPE_URL,{
-cache:"no-store",
-});
+  if (truthMatch) {
+    return stripHtml(truthMatch[1]);
+  }
 
-if(!response.ok){
-thrownewError("Unabletoloadhoroscopedata.");
+  const paragraphs = [...html.matchAll(/<p[^>]*>(.*?)<\/p>/gis)];
+
+  const truth = paragraphs.find((item) =>
+    stripHtml(item[1])
+      .toLowerCase()
+      .includes("mauksh truth")
+  );
+
+  if (!truth) return "";
+
+  return stripHtml(truth[1])
+    .replace(/mauksh truth\s*:?\s*/i, "")
+    .trim();
 }
 
-constjson=awaitresponse.json();
+function formatDate(dateString: string) {
+  if (!dateString) return "";
 
-setData(json);
-}catch(err){
-console.error(err);
-setError("Unabletoloadtoday'shoroscope.");
-}finally{
-setLoading(false);
-}
-}
+  const date = new Date(`${dateString}T12:00:00`);
 
-loadHoroscope();
-},[]);
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
 
-constsigns:Sign[]=useMemo(()=>{
-if(!data)return[];
-
-returnsignsMeta.map((sign)=>({
-...sign,
-html:data[sign.key]||"",
-}));
-},[data]);
-
-constselected=signs.find(
-(sign)=>sign.key===selectedSign
-);
-
-if(loading){
-return(
-<mainclassName="kd-horoscope">
-<divclassName="kd-loading">
-<divclassName="kd-loader"/>
-<p>Readingtoday'sstars...</p>
-</div>
-
-<stylejsx>{styles}</style>
-</main>
-);
+  return date.toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
-if(error||!data){
-return(
-<mainclassName="kd-horoscope">
-<divclassName="kd-error">
-<span>✦</span>
-<h1>Horoscopeunavailable</h1>
-<p>{error||"Pleasetryagainlater."}</p>
+export default function HoroscopePage() {
+  const [data, setData] = useState<HoroscopeData | null>(null);
+  const [selectedSign, setSelectedSign] = useState("aries");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-<button
-onClick={()=>window.location.reload()}
->
-TryAgain
-</button>
-</div>
+  useEffect(() => {
+    async function loadHoroscope() {
+      try {
+        setLoading(true);
+        setError("");
 
-<stylejsx>{styles}</style>
-</main>
-);
+        const response = await fetch(HOROSCOPE_URL, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Horoscope request failed: ${response.status}`
+          );
+        }
+
+        const json = (await response.json()) as HoroscopeData;
+
+        setData(json);
+      } catch (err) {
+        console.error("Horoscope loading error:", err);
+
+        setError(
+          "Unable to load today's horoscope. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadHoroscope();
+  }, []);
+
+  const signs: Sign[] = useMemo(() => {
+    if (!data) return [];
+
+    return signsMeta.map((sign) => ({
+      ...sign,
+      html: data[sign.key] || "",
+    }));
+  }, [data]);
+
+  const selected = signs.find(
+    (sign) => sign.key === selectedSign
+  );
+
+  function selectSign(key: string) {
+    setSelectedSign(key);
+  }
+
+  function scrollToReading(key: string) {
+    setSelectedSign(key);
+
+    window.setTimeout(() => {
+      const reading = document.querySelector(
+        ".kd-reading"
+      );
+
+      if (reading) {
+        reading.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 50);
+  }
+
+  if (loading) {
+    return (
+      <main className="kd-horoscope">
+        <div className="kd-loading">
+          <div className="kd-loader" />
+
+          <p>Reading today's stars...</p>
+        </div>
+
+        <style jsx>{styles}</style>
+      </main>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <main className="kd-horoscope">
+        <div className="kd-error">
+          <span className="kd-error-symbol">✦</span>
+
+          <h1>Horoscope unavailable</h1>
+
+          <p>
+            {error ||
+              "Today's horoscope could not be loaded."}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </div>
+
+        <style jsx>{styles}</style>
+      </main>
+    );
+  }
+
+  return (
+    <main className="kd-horoscope">
+
+      {/* =================================
+          HERO
+      ================================= */}
+
+      <section className="kd-hero">
+        <div className="kd-hero-inner">
+
+          <div className="kd-eyebrow">
+            <span>KAALDARPAN</span>
+            <i>•</i>
+            <span>VEDIC HOROSCOPE</span>
+          </div>
+
+          <div className="kd-hero-grid">
+
+            <div className="kd-hero-main">
+              <p className="kd-overline">
+                DAILY GUIDANCE
+              </p>
+
+              <h1>
+                Your day,
+                <br />
+                written in the stars.
+              </h1>
+            </div>
+
+            <div className="kd-hero-side">
+
+              <div className="kd-date-mark">
+                <span>HOROSCOPE FOR</span>
+
+                <strong>
+                  {formatDate(data.date)}
+                </strong>
+              </div>
+
+              <p>
+                Vedic guidance for the energies,
+                opportunities and lessons shaping
+                your day.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* =================================
+          ZODIAC
+      ================================= */}
+
+      <section className="kd-signs">
+
+        <div className="kd-section-head">
+
+          <div>
+            <p className="kd-label">
+              CHOOSE YOUR RASHI
+            </p>
+
+            <h2>
+              Find your
+              <br />
+              daily guidance.
+            </h2>
+          </div>
+
+          <p className="kd-section-copy">
+            Select your zodiac sign to explore
+            today's horoscope and planetary
+            guidance.
+          </p>
+
+        </div>
+
+
+        <div className="kd-zodiac-grid">
+
+          {signs.map((sign, index) => (
+
+            <button
+              key={sign.key}
+              type="button"
+              className={`kd-zodiac-card ${
+                selectedSign === sign.key
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => selectSign(sign.key)}
+            >
+
+              <span className="kd-zodiac-number">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+
+              <span className="kd-symbol">
+                {sign.symbol}
+              </span>
+
+              <span className="kd-sign-name">
+                {sign.name}
+              </span>
+
+              <span className="kd-sign-hindi">
+                {sign.hindi}
+              </span>
+
+            </button>
+
+          ))}
+
+        </div>
+
+      </section>
+
+
+      {/* =================================
+          SELECTED READING
+      ================================= */}
+
+      {selected && (
+
+        <section className="kd-reading">
+
+          <div className="kd-reading-inner">
+
+            <div className="kd-reading-heading">
+
+              <div className="kd-reading-sign">
+
+                <div className="kd-reading-symbol">
+                  {selected.symbol}
+                </div>
+
+                <div>
+
+                  <p className="kd-label">
+                    TODAY'S HOROSCOPE
+                  </p>
+
+                  <h2>
+                    {selected.name}
+                  </h2>
+
+                  <span>
+                    {selected.hindi}
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div className="kd-reading-index">
+                {String(
+                  signs.findIndex(
+                    (sign) =>
+                      sign.key === selected.key
+                  ) + 1
+                ).padStart(2, "0")}
+
+                <small>/ 12</small>
+              </div>
+
+            </div>
+
+
+            <div className="kd-reading-content">
+
+              {/* INTRO */}
+
+              <div className="kd-reading-intro">
+
+                <span className="kd-intro-icon">
+                  ✦
+                </span>
+
+                <p>
+                  {getFirstParagraph(selected.html)}
+                </p>
+
+              </div>
+
+
+              {/* TOPICS */}
+
+              <div className="kd-topic-grid">
+
+                <div className="kd-topic">
+
+                  <span>01</span>
+
+                  <div>
+                    <h3>Career</h3>
+
+                    <p>
+                      {getSection(
+                        selected.html,
+                        "💼 Career"
+                      ) ||
+                        getSection(
+                          selected.html,
+                          "Career"
+                        ) ||
+                        "Career guidance is available in today's horoscope."
+                      }
+                    </p>
+                  </div>
+
+                </div>
+
+
+                <div className="kd-topic">
+
+                  <span>02</span>
+
+                  <div>
+                    <h3>Love</h3>
+
+                    <p>
+                      {getSection(
+                        selected.html,
+                        "❤️ Love"
+                      ) ||
+                        getSection(
+                          selected.html,
+                          "Love"
+                        ) ||
+                        "Love and relationship guidance is available in today's horoscope."
+                      }
+                    </p>
+                  </div>
+
+                </div>
+
+
+                <div className="kd-topic">
+
+                  <span>03</span>
+
+                  <div>
+                    <h3>Money</h3>
+
+                    <p>
+                      {getSection(
+                        selected.html,
+                        "💰 Money"
+                      ) ||
+                        getSection(
+                          selected.html,
+                          "Money"
+                        ) ||
+                        "Financial guidance is available in today's horoscope."
+                      }
+                    </p>
+                  </div>
+
+                </div>
+
+
+                <div className="kd-topic">
+
+                  <span>04</span>
+
+                  <div>
+                    <h3>Advice</h3>
+
+                    <p>
+                      {getSection(
+                        selected.html,
+                        "🧘 Advice"
+                      ) ||
+                        getSection(
+                          selected.html,
+                          "Advice"
+                        ) ||
+                        "Follow the practical guidance given in today's horoscope."
+                      }
+                    </p>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              {/* MAUKSH TRUTH */}
+
+              {getTruth(selected.html) && (
+
+                <div className="kd-truth">
+
+                  <div className="kd-truth-symbol">
+                    ⚡
+                  </div>
+
+                  <div>
+
+                    <span>
+                      MAUKSH TRUTH
+                    </span>
+
+                    <p>
+                      {getTruth(selected.html)}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </div>
+
+          </div>
+
+        </section>
+
+      )}
+
+
+      {/* =================================
+          ALL SIGNS
+      ================================= */}
+
+      <section className="kd-all">
+
+        <div className="kd-all-head">
+
+          <div>
+
+            <p className="kd-label">
+              12 RASHIS
+            </p>
+
+            <h2>
+              Today's
+              <br />
+              complete sky.
+            </h2>
+
+          </div>
+
+          <p>
+            Explore every zodiac sign and
+            discover the guidance written
+            for today.
+          </p>
+
+        </div>
+
+
+        <div className="kd-list">
+
+          {signs.map((sign, index) => (
+
+            <article
+              key={sign.key}
+              className={`kd-row ${
+                selectedSign === sign.key
+                  ? "selected"
+                  : ""
+              }`}
+            >
+
+              <div className="kd-row-number">
+                {String(index + 1).padStart(2, "0")}
+              </div>
+
+
+              <button
+                type="button"
+                className="kd-row-sign"
+                onClick={() =>
+                  scrollToReading(sign.key)
+                }
+              >
+
+                <span>
+                  {sign.symbol}
+                </span>
+
+                <div>
+
+                  <strong>
+                    {sign.name}
+                  </strong>
+
+                  <small>
+                    {sign.hindi}
+                  </small>
+
+                </div>
+
+              </button>
+
+
+              <p>
+                {getFirstParagraph(sign.html)}
+              </p>
+
+
+              <button
+                type="button"
+                className="kd-read"
+                onClick={() =>
+                  scrollToReading(sign.key)
+                }
+              >
+                Read
+                <span>→</span>
+              </button>
+
+            </article>
+
+          ))}
+
+        </div>
+
+      </section>
+
+
+      {/* =================================
+          FOOTER NOTE
+      ================================= */}
+
+      <section className="kd-footer-note">
+
+        <div>
+          <span>KAALDARPAN</span>
+
+          <p>
+            Vedic wisdom for the modern day.
+          </p>
+        </div>
+
+        <span className="kd-footer-star">
+          ✦
+        </span>
+
+      </section>
+
+
+      <style jsx>{styles}</style>
+
+    </main>
+  );
 }
 
-return(
-<mainclassName="kd-horoscope">
 
-{/*HERO*/}
-
-<sectionclassName="kd-hero">
-
-<divclassName="kd-hero-inner">
-
-<divclassName="kd-eyebrow">
-KAALDARPAN
-<span>•</span>
-VEDICHOROSCOPE
-</div>
-
-<divclassName="kd-hero-grid">
-
-<div>
-<pclassName="kd-overline">
-DAILYGUIDANCE
-</p>
-
-<h1>
-Yourday,
-<br/>
-writteninthestars.
-</h1>
-</div>
-
-<divclassName="kd-hero-side">
-<divclassName="kd-date-mark">
-<span>HOROSCOPEFOR</span>
-<strong>{data.date}</strong>
-</div>
-
-<p>
-AVedicperspectiveontheenergies,
-opportunitiesandlessonsshaping
-yourday.
-</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-{/*ZODIACSELECTOR*/}
-
-<sectionclassName="kd-signs">
-
-<divclassName="kd-section-head">
-
-<div>
-<pclassName="kd-label">
-CHOOSEYOURRASHI
-</p>
-
-<h2>
-Findyour
-<br/>
-dailyguidance.
-</h2>
-</div>
-
-<pclassName="kd-section-copy">
-Selectyourzodiacsigntoexplore
-today'sMaukshhoroscope.
-</p>
-
-</div>
-
-
-<divclassName="kd-zodiac-grid">
-
-{signs.map((sign)=>(
-
-<button
-key={sign.key}
-type="button"
-className={`kd-zodiac-card${
-selectedSign===sign.key
-?"active"
-:""
-}`}
-onClick={()=>
-setSelectedSign(sign.key)
-}
->
-
-<spanclassName="kd-zodiac-number">
-{String(
-signsMeta.findIndex(
-(item)=>item.key===sign.key
-)+1
-).padStart(2,"0")}
-</span>
-
-<spanclassName="kd-symbol">
-{sign.symbol}
-</span>
-
-<spanclassName="kd-sign-name">
-{sign.name}
-</span>
-
-<spanclassName="kd-sign-hindi">
-{sign.hindi}
-</span>
-
-</button>
-
-))}
-
-</div>
-
-</section>
-
-
-{/*SELECTEDHOROSCOPE*/}
-
-{selected&&(
-
-<sectionclassName="kd-reading">
-
-<divclassName="kd-reading-inner">
-
-<divclassName="kd-reading-heading">
-
-<divclassName="kd-reading-sign">
-
-<spanclassName="kd-reading-symbol">
-{selected.symbol}
-</span>
-
-<div>
-<pclassName="kd-label">
-TODAY'SHOROSCOPE
-</p>
-
-<h2>
-{selected.name}
-</h2>
-
-<span>
-{selected.hindi}
-</span>
-</div>
-
-</div>
-
-<divclassName="kd-reading-index">
-{String(
-signs.findIndex(
-(sign)=>
-sign.key===selected.key
-)+1
-).padStart(2,"0")}
-<small>/12</small>
-</div>
-
-</div>
-
-
-<divclassName="kd-reading-content">
-
-<divclassName="kd-reading-intro">
-
-<spanclassName="kd-intro-icon">
-✦
-</span>
-
-<p>
-{getFirstParagraph(selected.html)}
-</p>
-
-</div>
-
-
-<divclassName="kd-topic-grid">
-
-<divclassName="kd-topic">
-<span>01</span>
-
-<div>
-<h3>Career</h3>
-
-<p>
-{getSection(
-selected.html,
-"💼Career"
-)}
-</p>
-</div>
-</div>
-
-
-<divclassName="kd-topic">
-<span>02</span>
-
-<div>
-<h3>Love</h3>
-
-<p>
-{getSection(
-selected.html,
-"❤️Love"
-)}
-</p>
-</div>
-</div>
-
-
-<divclassName="kd-topic">
-<span>03</span>
-
-<div>
-<h3>Money</h3>
-
-<p>
-{getSection(
-selected.html,
-"💰Money"
-)}
-</p>
-</div>
-</div>
-
-
-<divclassName="kd-topic">
-<span>04</span>
-
-<div>
-<h3>Advice</h3>
-
-<p>
-{getSection(
-selected.html,
-"🧘Advice"
-)}
-</p>
-</div>
-</div>
-
-</div>
-
-
-{/*MAUKSHTRUTH*/}
-
-<divclassName="kd-truth">
-
-<divclassName="kd-truth-symbol">
-⚡
-</div>
-
-<div>
-<span>MAUKSHTRUTH</span>
-
-<p
-dangerouslySetInnerHTML={{
-__html:
-selected.html.match(
-/<pclass="truth">(.*?)<\/p>/is
-)?.[1]||"",
-}}
-/>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-)}
-
-
-{/*ALLSIGNS*/}
-
-<sectionclassName="kd-all">
-
-<divclassName="kd-all-head">
-
-<div>
-<pclassName="kd-label">
-12RASHIS
-</p>
-
-<h2>
-Today's
-<br/>
-completesky.
-</h2>
-</div>
-
-<p>
-Exploreeveryzodiacsignand
-discovertheplanetarystory
-unfoldingtoday.
-</p>
-
-</div>
-
-
-<divclassName="kd-list">
-
-{signs.map((sign,index)=>(
-
-<article
-key={sign.key}
-className={`kd-row${
-selectedSign===sign.key
-?"selected"
-:""
-}`}
->
-
-<divclassName="kd-row-number">
-{String(index+1).padStart(2,"0")}
-</div>
-
-
-<button
-className="kd-row-sign"
-onClick={()=>{
-setSelectedSign(sign.key);
-
-window.scrollTo({
-top:
-document.querySelector(
-".kd-reading"
-)?.getBoundingClientRect()
-.top!+
-window.scrollY-
-30,
-behavior:"smooth",
-});
-}}
->
-
-<span>
-{sign.symbol}
-</span>
-
-<div>
-<strong>{sign.name}</strong>
-<small>{sign.hindi}</small>
-</div>
-
-</button>
-
-
-<p>
-{getFirstParagraph(sign.html)}
-</p>
-
-
-<button
-className="kd-read"
-onClick={()=>{
-setSelectedSign(sign.key);
-
-window.scrollTo({
-top:
-document.querySelector(
-".kd-reading"
-)?.getBoundingClientRect()
-.top!+
-window.scrollY-
-30,
-behavior:"smooth",
-});
-}}
->
-Read
-<span>→</span>
-</button>
-
-</article>
-
-))}
-
-</div>
-
-</section>
-
-
-{/*FOOTERNOTE*/}
-
-<sectionclassName="kd-footer-note">
-
-<div>
-<span>KAALDARPAN</span>
-<p>
-Vedicwisdomforthemodernday.
-</p>
-</div>
-
-<spanclassName="kd-footer-star">
-✦
-</span>
-
-</section>
-
-
-<stylejsx>{styles}</style>
-
-</main>
-);
-}
-
-conststyles=`
-
-.kd-horoscope{
---paper:#f5f0e7;
---paper-light:#faf7f0;
---ink:#171512;
---muted:#756e63;
---line:#d8d0c2;
---gold:#a27a3e;
---gold-light:#c6a56d;
-
-min-height:100vh;
-background:var(--paper);
-color:var(--ink);
-font-family:
-Inter,
--apple-system,
-BlinkMacSystemFont,
-"SegoeUI",
-sans-serif;
+const styles = `
+
+/* =====================================
+   KAALDARPAN HOROSCOPE
+===================================== */
+
+.kd-horoscope {
+  --paper: #f5f0e7;
+  --paper-light: #faf7f0;
+  --ink: #171512;
+  --muted: #756e63;
+  --line: #d8d0c2;
+  --gold: #a27a3e;
+  --gold-light: #c6a56d;
+
+  min-height: 100vh;
+
+  background: var(--paper);
+  color: var(--ink);
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 
-/*================================
-LOADING
-================================*/
+/* =====================================
+   LOADING
+===================================== */
 
-.kd-loading{
-min-height:70vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:20px;
-color:var(--muted);
+.kd-loading {
+  min-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  color: var(--muted);
 }
 
-.kd-loader{
-width:34px;
-height:34px;
-border:2pxsolidvar(--line);
-border-top-color:var(--gold);
-border-radius:50%;
-animation:kd-spin.8slinearinfinite;
+.kd-loader {
+  width: 34px;
+  height: 34px;
+
+  border: 2px solid var(--line);
+  border-top-color: var(--gold);
+
+  border-radius: 50%;
+
+  animation:
+    kd-spin .8s linear infinite;
 }
 
-@keyframeskd-spin{
-to{
-transform:rotate(360deg);
-}
-}
-
-
-/*================================
-ERROR
-================================*/
-
-.kd-error{
-min-height:70vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-text-align:center;
-padding:40px;
-}
-
-.kd-error>span{
-color:var(--gold);
-font-size:28px;
-}
-
-.kd-errorh1{
-margin:15px010px;
-font-family:"PlayfairDisplay",Georgia,serif;
-font-size:48px;
-}
-
-.kd-errorp{
-color:var(--muted);
-}
-
-.kd-errorbutton{
-margin-top:20px;
-padding:12px22px;
-border:1pxsolidvar(--ink);
-background:var(--ink);
-color:var(--paper);
-cursor:pointer;
+@keyframes kd-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
-/*================================
-HERO
-================================*/
+/* =====================================
+   ERROR
+===================================== */
 
-.kd-hero{
-border-bottom:1pxsolidvar(--line);
+.kd-error {
+  min-height: 70vh;
+
+  padding: 40px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
 }
 
-.kd-hero-inner{
-max-width:1280px;
-margin:auto;
-padding:34px42px100px;
+.kd-error-symbol {
+  color: var(--gold);
+  font-size: 28px;
 }
 
-.kd-eyebrow{
-display:flex;
-gap:12px;
-align-items:center;
+.kd-error h1 {
+  margin: 16px 0 10px;
 
-color:var(--gold);
-font-size:12px;
-font-weight:700;
-letter-spacing:3px;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
+  font-size: 48px;
+  font-weight: 500;
 }
 
-.kd-eyebrowspan{
-color:var(--line);
+.kd-error p {
+  margin: 0;
+
+  color: var(--muted);
 }
 
-.kd-hero-grid{
-margin-top:95px;
+.kd-error button {
+  margin-top: 25px;
 
-display:grid;
-grid-template-columns:1.5fr.65fr;
-gap:80px;
+  padding: 12px 24px;
 
-align-items:end;
+  border: 1px solid var(--ink);
+
+  background: var(--ink);
+  color: var(--paper);
+
+  cursor: pointer;
+}
+
+
+/* =====================================
+   HERO
+===================================== */
+
+.kd-hero {
+  border-bottom: 1px solid var(--line);
+}
+
+.kd-hero-inner {
+  max-width: 1280px;
+
+  margin: 0 auto;
+
+  padding: 34px 42px 105px;
+}
+
+.kd-eyebrow {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  color: var(--gold);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 3px;
+}
+
+.kd-eyebrow i {
+  color: var(--line);
+  font-style: normal;
+}
+
+.kd-hero-grid {
+  margin-top: 95px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(260px, .65fr);
+
+  gap: 80px;
+
+  align-items: end;
 }
 
 .kd-overline,
-.kd-label{
-margin:0016px;
+.kd-label {
+  margin: 0 0 16px;
 
-color:var(--gold);
+  color: var(--gold);
 
-font-size:12px;
-font-weight:700;
-letter-spacing:3px;
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 3px;
 }
+
+.kd-hero h1 {
+  margin: 0;
 
-.kd-heroh1{
-margin:0;
+  max-width: 900px;
 
-max-width:900px;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  font-size:
+    clamp(64px, 9vw, 132px);
 
-font-size:clamp(65px,9vw,132px);
-line-height:.88;
-letter-spacing:-5px;
-font-weight:500;
+  line-height: .88;
+
+  letter-spacing: -5px;
+
+  font-weight: 500;
 }
+
+.kd-hero-side {
+  padding-left: 35px;
 
-.kd-hero-side{
-border-left:1pxsolidvar(--line);
-padding-left:35px;
+  border-left: 1px solid var(--line);
 }
 
-.kd-date-mark{
-display:flex;
-flex-direction:column;
-gap:8px;
+.kd-date-mark {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
 }
+
+.kd-date-mark span {
+  color: var(--muted);
 
-.kd-date-markspan{
-color:var(--muted);
-font-size:11px;
-letter-spacing:2px;
+  font-size: 10px;
+  letter-spacing: 2px;
 }
 
-.kd-date-markstrong{
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+.kd-date-mark strong {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-size:28px;
-font-weight:500;
+  font-size: 25px;
+
+  font-weight: 500;
 }
 
-.kd-hero-side>p{
-margin:28px00;
+.kd-hero-side > p {
+  max-width: 360px;
 
-color:var(--muted);
+  margin: 28px 0 0;
 
-font-size:16px;
-line-height:1.7;
+  color: var(--muted);
+
+  font-size: 15px;
+  line-height: 1.7;
 }
+
 
+/* =====================================
+   ZODIAC
+===================================== */
 
-/*================================
-SIGNS
-================================*/
+.kd-signs {
+  max-width: 1280px;
 
-.kd-signs{
-max-width:1280px;
-margin:auto;
+  margin: 0 auto;
 
-padding:100px42px120px;
+  padding:
+    100px
+    42px
+    120px;
 }
 
-.kd-section-head{
-display:flex;
-justify-content:space-between;
-gap:60px;
+.kd-section-head {
+  margin-bottom: 48px;
 
-align-items:end;
+  display: flex;
 
-margin-bottom:48px;
+  justify-content: space-between;
+
+  gap: 60px;
+
+  align-items: end;
 }
+
+.kd-section-head h2,
+.kd-all-head h2 {
+  margin: 0;
+
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(50px, 6vw, 78px);
 
-.kd-section-headh2,
-.kd-all-headh2{
-margin:0;
+  line-height: .92;
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  letter-spacing: -2px;
 
-font-size:clamp(50px,6vw,78px);
-line-height:.92;
-letter-spacing:-2px;
-font-weight:500;
+  font-weight: 500;
 }
 
-.kd-section-copy{
-max-width:340px;
-margin:0;
+.kd-section-copy {
+  max-width: 340px;
 
-color:var(--muted);
+  margin: 0;
 
-font-size:15px;
-line-height:1.7;
+  color: var(--muted);
+
+  font-size: 15px;
+  line-height: 1.7;
 }
+
+.kd-zodiac-grid {
+  display: grid;
 
-.kd-zodiac-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:12px;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 12px;
 }
 
-.kd-zodiac-card{
-position:relative;
+.kd-zodiac-card {
+  min-height: 190px;
 
-min-height:190px;
+  padding: 25px;
 
-padding:25px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
 
-border:1pxsolidvar(--line);
-border-radius:2px;
+  background: var(--paper-light);
+  color: var(--ink);
 
-background:var(--paper-light);
-color:var(--ink);
+  text-align: left;
 
-text-align:left;
+  display: flex;
+  flex-direction: column;
 
-display:flex;
-flex-direction:column;
-align-items:flex-start;
-justify-content:space-between;
+  align-items: flex-start;
+  justify-content: space-between;
 
-cursor:pointer;
+  cursor: pointer;
 
-transition:
-transform.25sease,
-background.25sease,
-color.25sease,
-border-color.25sease;
+  transition:
+    transform .25s ease,
+    background .25s ease,
+    color .25s ease,
+    border-color .25s ease;
 }
 
-.kd-zodiac-card:hover{
-transform:translateY(-4px);
-border-color:var(--gold);
+.kd-zodiac-card:hover {
+  transform: translateY(-4px);
+
+  border-color: var(--gold);
 }
+
+.kd-zodiac-card.active {
+  background: var(--ink);
 
-.kd-zodiac-card.active{
-background:var(--ink);
-border-color:var(--ink);
-color:var(--paper);
-transform:translateY(-4px);
+  border-color: var(--ink);
+
+  color: var(--paper);
+
+  transform: translateY(-4px);
 }
 
-.kd-zodiac-number{
-color:var(--gold);
+.kd-zodiac-number {
+  color: var(--gold);
 
-font-size:11px;
-letter-spacing:2px;
+  font-size: 10px;
+
+  letter-spacing: 2px;
 }
 
-.kd-symbol{
-font-size:42px;
-line-height:1;
+.kd-symbol {
+  font-size: 42px;
+  line-height: 1;
 }
 
-.kd-sign-name{
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+.kd-sign-name {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-size:27px;
-font-weight:500;
+  font-size: 27px;
+
+  font-weight: 500;
 }
+
+.kd-sign-hindi {
+  color: var(--muted);
 
-.kd-sign-hindi{
-color:var(--muted);
-font-size:12px;
+  font-size: 12px;
 }
 
-.kd-zodiac-card.active.kd-sign-hindi{
-color:#aaa399;
+.kd-zodiac-card.active
+.kd-sign-hindi {
+  color: #aaa399;
 }
 
 
-/*================================
-READING
-================================*/
+/* =====================================
+   READING
+===================================== */
 
-.kd-reading{
-background:var(--ink);
-color:var(--paper);
+.kd-reading {
+  background: var(--ink);
+
+  color: var(--paper);
 }
+
+.kd-reading-inner {
+  max-width: 1280px;
 
-.kd-reading-inner{
-max-width:1280px;
-margin:auto;
+  margin: 0 auto;
 
-padding:100px42px115px;
+  padding:
+    100px
+    42px
+    115px;
 }
 
-.kd-reading-heading{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
+.kd-reading-heading {
+  padding-bottom: 65px;
 
-padding-bottom:65px;
+  display: flex;
 
-border-bottom:1pxsolid#3a3732;
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  border-bottom:
+    1px solid #3a3732;
 }
+
+.kd-reading-sign {
+  display: flex;
 
-.kd-reading-sign{
-display:flex;
-gap:28px;
-align-items:center;
+  gap: 28px;
+
+  align-items: center;
 }
+
+.kd-reading-symbol {
+  width: 82px;
+  height: 82px;
 
-.kd-reading-symbol{
-width:82px;
-height:82px;
+  flex-shrink: 0;
 
-border:1pxsolid#4b463f;
+  border: 1px solid #4b463f;
 
-display:flex;
-align-items:center;
-justify-content:center;
+  display: flex;
 
-font-size:42px;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
 }
+
+.kd-reading-sign h2 {
+  margin: 0;
+
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-.kd-reading-signh2{
-margin:0;
+  font-size:
+    clamp(55px, 7vw, 90px);
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  line-height: .85;
 
-font-size:clamp(55px,7vw,90px);
-line-height:.85;
-font-weight:500;
-letter-spacing:-3px;
+  font-weight: 500;
+
+  letter-spacing: -3px;
 }
 
-.kd-reading-sign>div>span{
-display:block;
-margin-top:12px;
+.kd-reading-sign > div > span {
+  display: block;
 
-color:#989187;
+  margin-top: 12px;
 
-font-size:14px;
+  color: #989187;
+
+  font-size: 14px;
 }
 
-.kd-reading-heading.kd-label{
-color:var(--gold-light);
+.kd-reading-heading
+.kd-label {
+  color: var(--gold-light);
 }
+
+.kd-reading-index {
+  color: var(--gold-light);
 
-.kd-reading-index{
-color:var(--gold-light);
-font-size:22px;
-letter-spacing:2px;
+  font-size: 22px;
+
+  letter-spacing: 2px;
 }
 
-.kd-reading-indexsmall{
-color:#6d675e;
-font-size:11px;
+.kd-reading-index small {
+  color: #6d675e;
+
+  font-size: 11px;
 }
+
+.kd-reading-content {
+  max-width: 1080px;
 
-.kd-reading-content{
-max-width:1080px;
-margin:65pxauto0;
+  margin:
+    65px
+    auto
+    0;
 }
 
-.kd-reading-intro{
-display:grid;
-grid-template-columns:60px1fr;
-gap:25px;
+.kd-reading-intro {
+  padding-bottom: 65px;
 
-padding-bottom:65px;
+  display: grid;
 
-border-bottom:1pxsolid#3a3732;
+  grid-template-columns:
+    60px
+    minmax(0, 1fr);
+
+  gap: 25px;
+
+  border-bottom:
+    1px solid #3a3732;
 }
 
-.kd-intro-icon{
-color:var(--gold-light);
-font-size:25px;
+.kd-intro-icon {
+  color: var(--gold-light);
+
+  font-size: 25px;
 }
 
-.kd-reading-introp{
-margin:0;
+.kd-reading-intro p {
+  max-width: 900px;
 
-max-width:900px;
+  margin: 0;
 
-color:#ddd7cc;
+  color: #ddd7cc;
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-size:clamp(22px,2.2vw,31px);
-line-height:1.45;
+  font-size:
+    clamp(22px, 2.2vw, 31px);
+
+  line-height: 1.45;
 }
+
 
+/* =====================================
+   TOPICS
+===================================== */
 
-/*================================
-TOPICS
-================================*/
+.kd-topic-grid {
+  display: grid;
 
-.kd-topic-grid{
-display:grid;
-grid-template-columns:1fr1fr;
+  grid-template-columns: 1fr 1fr;
 
-border-bottom:1pxsolid#3a3732;
+  border-bottom:
+    1px solid #3a3732;
 }
 
-.kd-topic{
-display:grid;
-grid-template-columns:42px1fr;
-gap:22px;
+.kd-topic {
+  min-width: 0;
 
-padding:48px45px48px0;
+  padding:
+    48px
+    45px
+    48px
+    0;
+
+  display: grid;
+
+  grid-template-columns:
+    42px
+    minmax(0, 1fr);
+
+  gap: 22px;
 }
 
-.kd-topic:nth-child(2n){
-padding-left:45px;
-border-left:1pxsolid#3a3732;
+.kd-topic:nth-child(2n) {
+  padding-left: 45px;
+
+  border-left:
+    1px solid #3a3732;
 }
 
-.kd-topic:nth-child(n+3){
-border-top:1pxsolid#3a3732;
+.kd-topic:nth-child(n + 3) {
+  border-top:
+    1px solid #3a3732;
 }
+
+.kd-topic > span {
+  color: var(--gold-light);
 
-.kd-topic>span{
-color:var(--gold-light);
-font-size:11px;
-letter-spacing:1px;
+  font-size: 10px;
+
+  letter-spacing: 1px;
 }
+
+.kd-topic h3 {
+  margin: 0 0 15px;
 
-.kd-topich3{
-margin:0015px;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  font-size: 27px;
 
-font-size:27px;
-font-weight:500;
+  font-weight: 500;
 }
 
-.kd-topicp{
-margin:0;
+.kd-topic p {
+  margin: 0;
 
-color:#aaa39a;
+  color: #aaa39a;
 
-font-size:15px;
-line-height:1.75;
+  font-size: 15px;
+
+  line-height: 1.75;
 }
+
+
+/* =====================================
+   MAUKSH TRUTH
+===================================== */
 
+.kd-truth {
+  margin-top: 65px;
 
-/*================================
-TRUTH
-================================*/
+  padding: 30px;
 
-.kd-truth{
-margin-top:65px;
+  display: grid;
 
-padding:30px;
+  grid-template-columns:
+    48px
+    minmax(0, 1fr);
 
-border:1pxsolid#514a41;
+  gap: 20px;
 
-display:grid;
-grid-template-columns:48px1fr;
-gap:20px;
+  border: 1px solid #514a41;
 }
 
-.kd-truth-symbol{
-color:var(--gold-light);
-font-size:25px;
+.kd-truth-symbol {
+  color: var(--gold-light);
+
+  font-size: 25px;
 }
+
+.kd-truth span {
+  color: var(--gold-light);
+
+  font-size: 10px;
 
-.kd-truthspan{
-color:var(--gold-light);
+  font-weight: 700;
 
-font-size:11px;
-font-weight:700;
-letter-spacing:3px;
+  letter-spacing: 3px;
 }
 
-.kd-truthp{
-margin:12px00;
+.kd-truth p {
+  margin: 12px 0 0;
 
-color:#ddd7cc;
+  color: #ddd7cc;
 
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-size:20px;
-line-height:1.5;
+  font-size: 20px;
+
+  line-height: 1.5;
 }
 
 
-/*================================
-ALLSIGNS
-================================*/
+/* =====================================
+   ALL SIGNS
+===================================== */
 
-.kd-all{
-max-width:1280px;
-margin:auto;
+.kd-all {
+  max-width: 1280px;
 
-padding:110px42px;
+  margin: 0 auto;
+
+  padding:
+    110px
+    42px;
 }
+
+.kd-all-head {
+  margin-bottom: 55px;
 
-.kd-all-head{
-display:flex;
-justify-content:space-between;
-align-items:end;
+  display: flex;
 
-gap:60px;
+  justify-content: space-between;
 
-margin-bottom:55px;
+  align-items: end;
+
+  gap: 60px;
 }
+
+.kd-all-head > p {
+  max-width: 350px;
 
-.kd-all-head>p{
-max-width:350px;
-margin:0;
+  margin: 0;
 
-color:var(--muted);
+  color: var(--muted);
 
-font-size:15px;
-line-height:1.7;
+  font-size: 15px;
+
+  line-height: 1.7;
 }
 
-.kd-list{
-border-top:1pxsolidvar(--line);
+.kd-list {
+  border-top:
+    1px solid var(--line);
 }
+
+.kd-row {
+  display: grid;
+
+  grid-template-columns:
+    55px
+    220px
+    minmax(0, 1fr)
+    70px;
 
-.kd-row{
-display:grid;
-grid-template-columns:55px220px1fr70px;
-gap:25px;
+  gap: 25px;
 
-align-items:center;
+  align-items: center;
 
-padding:28px0;
+  padding: 28px 0;
 
-border-bottom:1pxsolidvar(--line);
+  border-bottom:
+    1px solid var(--line);
 
-transition:padding.2sease;
+  transition:
+    padding .2s ease,
+    background .2s ease;
 }
 
-.kd-row.selected{
-padding-left:12px;
-padding-right:12px;
-background:rgba(162,122,62,.06);
+.kd-row.selected {
+  padding-left: 12px;
+  padding-right: 12px;
+
+  background:
+    rgba(162, 122, 62, .06);
 }
+
+.kd-row-number {
+  color: var(--gold);
 
-.kd-row-number{
-color:var(--gold);
+  font-size: 10px;
 
-font-size:11px;
-letter-spacing:2px;
+  letter-spacing: 2px;
 }
+
+.kd-row-sign {
+  min-width: 0;
+
+  padding: 0;
+
+  border: 0;
 
-.kd-row-sign{
-padding:0;
+  background: transparent;
 
-border:0;
-background:transparent;
+  color: var(--ink);
 
-display:flex;
-align-items:center;
-gap:15px;
+  display: flex;
 
-text-align:left;
+  align-items: center;
 
-cursor:pointer;
-color:var(--ink);
+  gap: 15px;
+
+  text-align: left;
+
+  cursor: pointer;
 }
 
-.kd-row-sign>span{
-font-size:28px;
+.kd-row-sign > span {
+  font-size: 28px;
 }
+
+.kd-row-sign div {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
 
-.kd-row-signdiv{
-display:flex;
-flex-direction:column;
-gap:3px;
+  gap: 3px;
 }
 
-.kd-row-signstrong{
-font-family:
-"PlayfairDisplay",
-Georgia,
-serif;
+.kd-row-sign strong {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
 
-font-size:22px;
-font-weight:500;
+  font-size: 22px;
+
+  font-weight: 500;
 }
 
-.kd-row-signsmall{
-color:var(--muted);
-font-size:11px;
+.kd-row-sign small {
+  color: var(--muted);
+
+  font-size: 11px;
 }
+
+.kd-row > p {
+  min-width: 0;
 
-.kd-row>p{
-margin:0;
+  margin: 0;
 
-color:var(--muted);
+  color: var(--muted);
 
-font-size:14px;
-line-height:1.6;
+  font-size: 14px;
+
+  line-height: 1.6;
 }
+
+.kd-read {
+  padding: 0;
+
+  border: 0;
 
-.kd-read{
-padding:0;
+  background: transparent;
 
-border:0;
-background:transparent;
+  color: var(--ink);
 
-color:var(--ink);
+  font-size: 13px;
 
-font-size:13px;
-font-weight:600;
+  font-weight: 600;
 
-cursor:pointer;
+  cursor: pointer;
 
-display:flex;
-justify-content:flex-end;
-gap:7px;
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 7px;
 }
 
-.kd-readspan{
-transition:transform.2sease;
+.kd-read span {
+  transition:
+    transform .2s ease;
 }
 
-.kd-read:hoverspan{
-transform:translateX(4px);
+.kd-read:hover span {
+  transform:
+    translateX(4px);
 }
+
+
+/* =====================================
+   FOOTER NOTE
+===================================== */
+
+.kd-footer-note {
+  max-width: 1280px;
 
+  margin: 0 auto;
 
-/*================================
-FOOTERNOTE
-================================*/
+  padding:
+    35px
+    42px
+    50px;
 
-.kd-footer-note{
-border-top:1pxsolidvar(--line);
+  border-top:
+    1px solid var(--line);
 
-max-width:1280px;
-margin:auto;
+  display: flex;
 
-padding:35px42px50px;
+  justify-content: space-between;
 
-display:flex;
-justify-content:space-between;
-align-items:center;
+  align-items: center;
 }
 
-.kd-footer-notespan{
-color:var(--gold);
+.kd-footer-note > div > span {
+  color: var(--gold);
 
-font-size:11px;
-font-weight:700;
-letter-spacing:3px;
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 3px;
 }
 
-.kd-footer-notep{
-margin:7px00;
+.kd-footer-note p {
+  margin: 7px 0 0;
 
-color:var(--muted);
+  color: var(--muted);
 
-font-size:13px;
+  font-size: 13px;
 }
 
-.kd-footer-star{
-font-size:20px;
+.kd-footer-star {
+  color: var(--gold);
+
+  font-size: 20px;
 }
 
 
-/*================================
-TABLET
-================================*/
+/* =====================================
+   TABLET
+===================================== */
 
-@media(max-width:900px){
+@media (max-width: 950px) {
 
-.kd-hero-grid{
-grid-template-columns:1fr;
-gap:45px;
-}
+  .kd-hero-grid {
+    grid-template-columns: 1fr;
 
-.kd-hero-side{
-max-width:500px;
-}
+    gap: 45px;
+  }
 
-.kd-zodiac-grid{
-grid-template-columns:repeat(3,1fr);
-}
+  .kd-hero-side {
+    max-width: 500px;
+  }
 
-.kd-row{
-grid-template-columns:45px190px1fr60px;
-}
+  .kd-zodiac-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
 
+  .kd-row {
+    grid-template-columns:
+      45px
+      190px
+      minmax(0, 1fr)
+      60px;
+
+    gap: 18px;
+  }
+
 }
 
 
-/*================================
-MOBILE
-================================*/
+/* =====================================
+   MOBILE
+===================================== */
 
-@media(max-width:650px){
+@media (max-width: 650px) {
 
-.kd-hero-inner{
-padding:25px22px70px;
-}
+  .kd-hero-inner {
+    padding:
+      25px
+      22px
+      70px;
+  }
 
-.kd-eyebrow{
-font-size:9px;
-letter-spacing:2px;
-}
+  .kd-eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.8px;
+  }
 
-.kd-hero-grid{
-margin-top:65px;
-}
+  .kd-hero-grid {
+    margin-top: 65px;
+  }
 
-.kd-heroh1{
-font-size:clamp(58px,18vw,90px);
-letter-spacing:-3px;
-}
+  .kd-hero h1 {
+    font-size:
+      clamp(58px, 18vw, 90px);
 
-.kd-hero-side{
-border-left:0;
-border-top:1pxsolidvar(--line);
-padding:25px00;
-}
+    letter-spacing: -3px;
+  }
 
-.kd-signs{
-padding:70px22px80px;
-}
+  .kd-hero-side {
+    max-width: none;
 
-.kd-section-head,
-.kd-all-head{
-display:block;
-}
+    padding:
+      25px
+      0
+      0;
 
-.kd-section-headh2,
-.kd-all-headh2{
-font-size:50px;
-}
+    border-left: 0;
 
-.kd-section-copy,
-.kd-all-head>p{
-margin-top:25px;
-}
+    border-top:
+      1px solid var(--line);
+  }
 
-.kd-zodiac-grid{
-grid-template-columns:1fr1fr;
-gap:8px;
-}
+  .kd-date-mark strong {
+    font-size: 22px;
+  }
 
-.kd-zodiac-card{
-min-height:145px;
-padding:18px;
-}
 
-.kd-symbol{
-font-size:34px;
-}
+  /* SIGNS */
 
-.kd-sign-name{
-font-size:22px;
-}
+  .kd-signs {
+    padding:
+      70px
+      22px
+      80px;
+  }
 
-.kd-reading-inner{
-padding:70px22px80px;
-}
+  .kd-section-head,
+  .kd-all-head {
+    display: block;
+  }
 
-.kd-reading-heading{
-padding-bottom:45px;
-}
+  .kd-section-head h2,
+  .kd-all-head h2 {
+    font-size: 50px;
+  }
 
-.kd-reading-sign{
-gap:16px;
-}
+  .kd-section-copy,
+  .kd-all-head > p {
+    margin-top: 25px;
+  }
 
-.kd-reading-symbol{
-width:58px;
-height:58px;
-font-size:30px;
-}
+  .kd-zodiac-grid {
+    grid-template-columns:
+      1fr 1fr;
 
-.kd-reading-signh2{
-font-size:53px;
-letter-spacing:-2px;
-}
+    gap: 8px;
+  }
 
-.kd-reading-index{
-display:none;
-}
+  .kd-zodiac-card {
+    min-height: 145px;
 
-.kd-reading-content{
-margin-top:45px;
-}
+    padding: 18px;
+  }
 
-.kd-reading-intro{
-grid-template-columns:1fr;
-gap:12px;
-padding-bottom:45px;
-}
+  .kd-symbol {
+    font-size: 34px;
+  }
 
-.kd-reading-introp{
-font-size:21px;
-}
+  .kd-sign-name {
+    font-size: 22px;
+  }
 
-.kd-topic-grid{
-display:block;
-}
 
-.kd-topic,
-.kd-topic:nth-child(2n){
-padding:32px0;
-border-left:0;
-}
+  /* READING */
 
-.kd-topic+.kd-topic{
-border-top:1pxsolid#3a3732;
-}
+  .kd-reading-inner {
+    padding:
+      70px
+      22px
+      80px;
+  }
 
-.kd-topich3{
-font-size:25px;
-}
+  .kd-reading-heading {
+    padding-bottom: 45px;
+  }
 
-.kd-topicp{
-font-size:14px;
-}
+  .kd-reading-sign {
+    gap: 16px;
+  }
 
-.kd-truth{
-margin-top:40px;
-padding:22px;
-}
+  .kd-reading-symbol {
+    width: 58px;
+    height: 58px;
 
-.kd-truthp{
-font-size:18px;
-}
+    font-size: 30px;
+  }
 
-.kd-all{
-padding:75px22px;
-}
+  .kd-reading-sign h2 {
+    font-size: 53px;
 
-.kd-row{
-grid-template-columns:35px1fr;
-gap:12px;
-padding:24px0;
-}
+    letter-spacing: -2px;
+  }
 
-.kd-row>p{
-grid-column:2;
-}
+  .kd-reading-index {
+    display: none;
+  }
 
-.kd-read{
-grid-column:2;
-justify-content:flex-start;
-}
+  .kd-reading-content {
+    margin-top: 45px;
+  }
+
+  .kd-reading-intro {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+
+    padding-bottom: 45px;
+  }
+
+  .kd-reading-intro p {
+    font-size: 21px;
+  }
+
+
+  /* TOPICS */
+
+  .kd-topic-grid {
+    display: block;
+  }
+
+  .kd-topic,
+  .kd-topic:nth-child(2n) {
+    padding:
+      32px
+      0;
+
+    border-left: 0;
+  }
+
+  .kd-topic + .kd-topic {
+    border-top:
+      1px solid #3a3732;
+  }
+
+  .kd-topic h3 {
+    font-size: 25px;
+  }
+
+  .kd-topic p {
+    font-size: 14px;
+  }
+
+
+  /* TRUTH */
+
+  .kd-truth {
+    margin-top: 40px;
+
+    padding: 22px;
+  }
 
-.kd-footer-note{
-padding:30px22px40px;
+  .kd-truth p {
+    font-size: 18px;
+  }
+
+
+  /* ALL */
+
+  .kd-all {
+    padding:
+      75px
+      22px;
+  }
+
+  .kd-row {
+    grid-template-columns:
+      35px
+      minmax(0, 1fr);
+
+    gap: 12px;
+
+    padding: 24px 0;
+  }
+
+  .kd-row > p {
+    grid-column: 2;
+  }
+
+  .kd-read {
+    grid-column: 2;
+
+    justify-content: flex-start;
+  }
+
+
+  /* FOOTER */
+
+  .kd-footer-note {
+    padding:
+      30px
+      22px
+      40px;
+  }
+
 }
+
+
+/* =====================================
+   SMALL PHONES
+===================================== */
+
+@media (max-width: 390px) {
+
+  .kd-hero h1 {
+    font-size: 55px;
+  }
+
+  .kd-zodiac-card {
+    min-height: 138px;
+    padding: 15px;
+  }
+
+  .kd-symbol {
+    font-size: 30px;
+  }
+
+  .kd-sign-name {
+    font-size: 20px;
+  }
+
+  .kd-reading-sign h2 {
+    font-size: 46px;
+  }
 
 }
 `;
