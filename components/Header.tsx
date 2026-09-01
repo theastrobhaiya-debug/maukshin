@@ -28,7 +28,6 @@ export default function Header() {
 
         <div className="header-inner">
 
-          {/* Logo */}
           <Link
             href="/"
             className="brand"
@@ -41,12 +40,13 @@ export default function Header() {
             />
           </Link>
 
-          {/* Shop - Always Centered */}
           <a
             href="https://mauksh.com"
             className="shop-link"
             onClick={closeMenu}
-            aria-label="Shop Mauksh products"
+            style={{
+              marginLeft: "80px",
+            }}
           >
             <svg
               className="shop-icon"
@@ -67,7 +67,6 @@ export default function Header() {
             <span>Shop</span>
           </a>
 
-          {/* Menu */}
           <button
             type="button"
             className="menu-button"
@@ -82,7 +81,6 @@ export default function Header() {
 
         </div>
 
-        {/* Navigation */}
         <nav
           className={`main-nav ${
             menuOpen ? "nav-open" : ""
