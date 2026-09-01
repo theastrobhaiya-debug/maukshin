@@ -42,7 +42,7 @@ export default function Header() {
             <div className="brand-text">
 
               <span className="brand-name">
-                KaalDarpan
+                GrahGanit
               </span>
 
               <span className="brand-tagline">
