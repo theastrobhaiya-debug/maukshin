@@ -28,17 +28,45 @@ export default function Header() {
 
         <div className="header-inner">
 
-          <Link
-            href="/"
-            className="brand"
-            onClick={closeMenu}
-          >
-            <img
-              src="/assets/mauksh-logo.jpg"
-              alt="Mauksh"
-              className="brand-logo"
-            />
-          </Link>
+          <div className="brand-area">
+
+            <Link
+              href="/"
+              className="brand"
+              onClick={closeMenu}
+            >
+              <img
+                src="/assets/mauksh-logo.jpg"
+                alt="Mauksh"
+                className="brand-logo"
+              />
+            </Link>
+
+            <a
+              href="https://mauksh.com"
+              className="shop-link"
+              onClick={closeMenu}
+            >
+              <svg
+                className="shop-icon"
+                width="19"
+                height="19"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 8h12l1 13H5L6 8Z" />
+                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+              </svg>
+
+              <span>Shop</span>
+            </a>
+
+          </div>
 
           <nav
             className={`main-nav ${
@@ -73,30 +101,6 @@ export default function Header() {
             >
               Founder
             </Link>
-
-            <a
-              href="https://mauksh.com"
-              className="shop-link"
-              onClick={closeMenu}
-            >
-              <svg
-                className="shop-icon"
-                width="19"
-                height="19"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M6 8h12l1 13H5L6 8Z" />
-                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-              </svg>
-
-              <span>Shop</span>
-            </a>
 
           </nav>
 
