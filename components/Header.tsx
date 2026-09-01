@@ -11,94 +11,111 @@ export default function Header() {
   }
 
   return (
-    <header className="site-header">
+    <>
+      <head>
+        <link
+          rel="icon"
+          type="image/png"
+          href="/assets/kaaldarpan-logo.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/assets/kaaldarpan-logo.png"
+        />
+      </head>
 
-      <div className="header-inner">
+      <header className="site-header">
 
-        <Link
-          href="/"
-          className="brand"
-          onClick={closeMenu}
-        >
-          <img
-            src="/assets/kaaldarpan-logo.png"
-            alt="KaalDarpan"
-            className="brand-logo"
-          />
-
-          <div className="brand-text">
-
-            <span className="brand-name">
-              KaalDarpan
-            </span>
-
-            <span className="brand-tagline">
-              Vedic Astrology
-            </span>
-
-          </div>
-        </Link>
-
-
-        <nav
-          className={`main-nav ${
-            menuOpen ? "nav-open" : ""
-          }`}
-        >
+        <div className="header-inner">
 
           <Link
             href="/"
+            className="brand"
             onClick={closeMenu}
           >
-            Home
+            <img
+              src="/assets/kaaldarpan-logo.png"
+              alt="KaalDarpan"
+              className="brand-logo"
+            />
+
+            <div className="brand-text">
+
+              <span className="brand-name">
+                KaalDarpan
+              </span>
+
+              <span className="brand-tagline">
+                Vedic Astrology
+              </span>
+
+            </div>
           </Link>
+
+
+          <nav
+            className={`main-nav ${
+              menuOpen ? "nav-open" : ""
+            }`}
+          >
+
+            <Link
+              href="/"
+              onClick={closeMenu}
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/horoscope"
+              onClick={closeMenu}
+            >
+              Horoscope
+            </Link>
+
+            <Link
+              href="/name-checker"
+              onClick={closeMenu}
+            >
+              Name Checker
+            </Link>
+
+            <Link
+              href="/founder"
+              onClick={closeMenu}
+            >
+              Founder
+            </Link>
+
+          </nav>
+
 
           <Link
             href="/horoscope"
-            onClick={closeMenu}
+            className="header-button"
           >
-            Horoscope
+            Explore
+            <span>→</span>
           </Link>
 
-<Link href="/name-checker">
-  Name Checker
-</Link>
 
-          <Link
-            href="/founder"
-            onClick={closeMenu}
+          <button
+            type="button"
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Open navigation"
+            aria-expanded={menuOpen}
           >
-            Founder
-          </Link>
 
-        </nav>
+            <span />
+            <span />
+            <span />
 
+          </button>
 
-        <Link
-          href="/horoscope"
-          className="header-button"
-        >
-          Explore
-          <span>→</span>
-        </Link>
+        </div>
 
-
-        <button
-          type="button"
-          className="menu-button"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Open navigation"
-          aria-expanded={menuOpen}
-        >
-
-          <span />
-          <span />
-          <span />
-
-        </button>
-
-      </div>
-
-    </header>
+      </header>
+    </>
   );
 }
