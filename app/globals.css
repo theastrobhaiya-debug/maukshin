@@ -1,1261 +1,172 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
-
-/* =========================================================
-   KAALDARPAN — GLOBAL DESIGN SYSTEM
-========================================================= */
-
-:root {
-  --kd-bg: #f5f0e7;
-  --kd-surface: #fbf8f2;
-  --kd-surface-soft: #eee7da;
-
-  --kd-ink: #24201c;
-  --kd-muted: #756d63;
-  --kd-light: #bdb4a8;
-
-  --kd-gold: #a67b3c;
-  --kd-gold-soft: #c7a66a;
-
-  --kd-dark: #211e1a;
-  --kd-border: #d9d0c2;
-
-  --kd-max: 1240px;
-  --kd-radius: 18px;
-}
-
-/* =========================================================
-   RESET
-========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
+}
+
+html,
+body {
   margin: 0;
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  min-height: 100vh;
-  background: var(--kd-bg);
-  color: var(--kd-ink);
-
+  background: #f7f2e8;
+  color: #211d19;
   font-family: "DM Sans", sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
-a {
-  color: inherit;
+/* =========================
+   GLOBAL HEADER
+   ========================= */
+
+.site-header {
+  width: 100%;
+  height: 118px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 42px;
+  background: #faf7f0;
+  border-bottom: 1px solid #ded5c6;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 28px;
   text-decoration: none;
+  color: #211d19;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+.site-logo {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
-button {
+.site-title {
+  font-family: "Playfair Display", serif;
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+}
+
+.site-menu-button {
+  width: 94px;
+  height: 94px;
+  border: 1px solid #d8cebd;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
-img {
-  display: block;
-  max-width: 100%;
-}
-
-/* =========================================================
-   TYPOGRAPHY
-========================================================= */
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: "Playfair Display", Georgia, serif;
-  color: var(--kd-ink);
-  line-height: 1.05;
-  font-weight: 600;
-}
-
-h1 {
-  font-size: clamp(3.2rem, 8vw, 7rem);
-  letter-spacing: -0.045em;
-}
-
-h2 {
-  font-size: clamp(2.2rem, 5vw, 4.5rem);
-  letter-spacing: -0.035em;
-}
-
-h3 {
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
-}
-
-p {
-  color: var(--kd-muted);
-}
-
-/* =========================================================
-   GLOBAL MAIN
-========================================================= */
-
-main {
-  min-height: 60vh;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
-  width: 100%;
-
-  background: rgba(251, 248, 242, 0.96);
-
-  border-bottom: 1px solid var(--kd-border);
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.header-inner {
-  width: min(calc(100% - 48px), var(--kd-max));
-  min-height: 94px;
-
-  margin: 0 auto;
-
+.site-menu-icon {
+  width: 42px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 28px;
-}
-
-/* =========================================================
-   HEADER BRAND
-========================================================= */
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  flex-shrink: 0;
-}
-
-.brand-logo {
-  width: 62px;
-  height: 62px;
-
-  object-fit: contain;
-}
-
-.brand-text {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-}
-
-.brand-name {
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 2.25rem;
-  font-weight: 600;
-
-  letter-spacing: -0.045em;
-}
-
-.brand-tagline {
-  color: var(--kd-muted);
-
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* =========================================================
-   DESKTOP NAVIGATION
-========================================================= */
-
-.main-nav {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-
-  margin-left: auto;
-}
-
-.main-nav a {
-  position: relative;
-
-  padding: 8px 0;
-
-  color: var(--kd-ink);
-
-  font-size: 15px;
-  font-weight: 500;
-
-  transition: color 180ms ease;
-}
-
-.main-nav a::after {
-  content: "";
-
-  position: absolute;
-  left: 0;
-  bottom: 0;
-
-  width: 0;
-  height: 1px;
-
-  background: var(--kd-gold);
-
-  transition: width 180ms ease;
-}
-
-.main-nav a:hover {
-  color: var(--kd-gold);
-}
-
-.main-nav a:hover::after {
-  width: 100%;
-}
-
-/* =========================================================
-   HEADER EXPLORE BUTTON
-========================================================= */
-
-.header-button {
-  min-height: 48px;
-
-  padding: 0 21px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   gap: 8px;
-
-  border: 1px solid var(--kd-ink);
-  border-radius: 999px;
-
-  background: var(--kd-ink);
-  color: var(--kd-surface);
-
-  font-size: 14px;
-  font-weight: 600;
-
-  transition:
-    background 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
 }
 
-.header-button:hover {
-  background: transparent;
-  color: var(--kd-ink);
-
-  transform: translateY(-1px);
-}
-
-/* =========================================================
-   MOBILE MENU BUTTON
-========================================================= */
-
-.menu-button {
-  width: 54px;
-  height: 54px;
-
-  display: none;
-
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-
-  border: 1px solid var(--kd-border);
-  border-radius: 50%;
-
-  background: transparent;
-  color: var(--kd-ink);
-}
-
-.menu-button span {
-  position: absolute;
-
-  width: 21px;
-  height: 2px;
-
-  background: currentColor;
-
-  transition: transform 180ms ease;
-}
-
-.menu-button span:nth-child(1) {
-  transform: translateY(-7px);
-}
-
-.menu-button span:nth-child(2) {
-  transform: translateY(0);
-}
-
-.menu-button span:nth-child(3) {
-  transform: translateY(7px);
-}
-
-/* =========================================================
-   PANCHANG PAGE
-========================================================= */
-
-.panchang-page {
-  width: min(calc(100% - 48px), var(--kd-max));
-  margin: 0 auto;
-
-  padding-bottom: 100px;
-}
-
-/* =========================================================
-   PANCHANG HERO
-========================================================= */
-
-.panchang-hero {
-  padding: 78px 0 42px;
-}
-
-.panchang-eyebrow {
-  margin-bottom: 20px;
-
-  color: var(--kd-gold);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.panchang-hero h1 {
-  max-width: 900px;
-}
-
-.panchang-hero p {
-  margin-top: 20px;
-
-  font-size: 1.25rem;
-}
-
-/* =========================================================
-   DATE + LOCATION
-========================================================= */
-
-.panchang-location {
-  padding: 0 0 55px;
-}
-
-.location-label {
-  margin-bottom: 15px;
-
-  color: var(--kd-ink);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  letter-spacing: 0.14em;
-}
-
-.location-row {
-  display: grid;
-
-  grid-template-columns: 190px minmax(220px, 1fr) auto auto;
-
-  gap: 12px;
-
-  align-items: center;
-}
-
-.location-input,
-.location-button {
-  min-height: 58px;
-
-  border: 1px solid var(--kd-border);
-  border-radius: 999px;
-
-  background: var(--kd-surface);
-
-  color: var(--kd-ink);
-}
-
-.location-input {
+.site-menu-icon span {
   width: 100%;
-
-  padding: 0 20px;
-
-  outline: none;
-
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.location-input::placeholder {
-  color: #a49b90;
-}
-
-.location-input:focus {
-  border-color: var(--kd-gold);
-
-  box-shadow:
-    0 0 0 4px rgba(166, 123, 60, 0.1);
-}
-
-.location-button {
-  padding: 0 25px;
-
-  white-space: nowrap;
-
-  font-weight: 600;
-
-  transition:
-    background 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.location-button:hover {
-  background: var(--kd-ink);
-  color: var(--kd-surface);
-}
-
-.location-button:active {
-  transform: translateY(1px);
-}
-
-/* =========================================================
-   STATUS / ERROR
-========================================================= */
-
-.panchang-status {
-  margin: 20px 0;
-
-  padding: 16px 20px;
-
-  border: 1px solid var(--kd-border);
-  border-radius: 12px;
-
-  background: var(--kd-surface);
-
-  color: var(--kd-muted);
-}
-
-.panchang-error {
-  margin: 20px 0;
-
-  padding: 16px 20px;
-
-  border: 1px solid #c99d8e;
-  border-radius: 12px;
-
-  background: #f5e7e2;
-
-  color: #783f32;
-}
-
-/* =========================================================
-   PANCHANG DATE CARD
-========================================================= */
-
-.panchang-date-card {
-  margin-bottom: 70px;
-
-  padding: 30px;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  gap: 30px;
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-
-  background: var(--kd-surface);
-}
-
-.panchang-date-card span {
+  height: 3px;
+  background: #211d19;
   display: block;
-
-  margin-bottom: 8px;
-
-  color: var(--kd-muted);
-
-  font-size: 11px;
-  font-weight: 600;
-
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
 }
 
-.panchang-date-card strong {
-  display: block;
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-/* =========================================================
-   PANCHANG SECTIONS
-========================================================= */
-
-.panchang-section {
-  padding: 70px 0;
-
-  border-top: 1px solid var(--kd-border);
-}
-
-.section-heading {
-  margin-bottom: 38px;
-}
-
-.section-heading > span {
-  display: block;
-
-  margin-bottom: 10px;
-
-  color: var(--kd-gold);
-
-  font-size: 12px;
-  font-weight: 600;
-
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.section-heading h2 {
-  font-size: clamp(2.2rem, 5vw, 4.2rem);
-}
-
-/* =========================================================
-   FIVE LIMBS
-========================================================= */
-
-.panchang-grid {
-  display: grid;
-
-  grid-template-columns: repeat(5, 1fr);
-
-  gap: 14px;
-}
-
-.panchang-card {
-  min-height: 190px;
-
-  padding: 25px;
-
-  display: flex;
-  flex-direction: column;
-
-  background: var(--kd-surface);
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.panchang-card:hover {
-  transform: translateY(-3px);
-
-  box-shadow:
-    0 14px 40px rgba(45, 37, 28, 0.07);
-}
-
-.panchang-card-icon {
-  font-size: 25px;
-  color: var(--kd-gold);
-}
-
-.panchang-card-label {
-  margin-top: 18px;
-
-  color: var(--kd-muted);
-
-  font-size: 11px;
-  font-weight: 600;
-
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.panchang-card-value {
-  margin-top: 10px;
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 1.45rem;
-  font-weight: 600;
-}
-
-.panchang-card-subtitle {
-  margin-top: 5px;
-
-  color: var(--kd-muted);
-
-  font-size: 13px;
-}
-
-/* =========================================================
-   TIMING GRID
-========================================================= */
-
-.timing-grid {
-  display: grid;
-
-  grid-template-columns: repeat(4, 1fr);
-
-  gap: 15px;
-}
-
-.timing-card {
-  padding: 28px;
-
-  background: var(--kd-surface);
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-}
-
-.timing-card-icon {
-  color: var(--kd-gold);
-
-  font-size: 26px;
-}
-
-.timing-card-label {
-  margin-top: 18px;
-
-  color: var(--kd-muted);
-
-  font-size: 12px;
-  font-weight: 600;
-
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.timing-card-value {
-  margin-top: 7px;
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 1.6rem;
-  font-weight: 600;
-}
-
-/* =========================================================
-   SIMPLE CARD GRID
-========================================================= */
-
-.muhurat-grid {
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 15px;
-}
-
-.simple-card {
-  padding: 25px;
-
-  background: var(--kd-surface);
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-}
-
-.simple-card-label {
-  color: var(--kd-muted);
-
-  font-size: 12px;
-  font-weight: 600;
-
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.simple-card-value {
-  margin-top: 8px;
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-/* =========================================================
-   CHOGHADIYA
-========================================================= */
-
-.choghadiya-grid {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 20px;
-}
-
-.choghadiya-card {
-  padding: 30px;
-
-  background: var(--kd-surface);
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-}
-
-.choghadiya-card h3 {
-  margin-bottom: 25px;
-
-  font-size: 2rem;
-}
-
-.choghadiya-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.choghadiya-item {
-  padding: 13px 0;
-
-  display: grid;
-
-  grid-template-columns: 1fr auto;
-
-  gap: 20px;
-
-  border-bottom: 1px solid var(--kd-border);
-}
-
-.choghadiya-item:last-child {
-  border-bottom: 0;
-}
-
-.choghadiya-name {
-  font-weight: 600;
-}
-
-.choghadiya-time {
-  color: var(--kd-muted);
-
-  font-size: 14px;
-}
-
-/* =========================================================
-   HOROSCOPE
-========================================================= */
-
-.horoscope-page {
-  width: min(calc(100% - 48px), var(--kd-max));
-  margin: 0 auto;
-
-  padding: 80px 0 100px;
-}
-
-.page-header {
-  padding-bottom: 45px;
-}
-
-.eyebrow {
-  display: block;
-
-  margin-bottom: 18px;
-
-  color: var(--kd-gold);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.page-header p {
-  max-width: 680px;
-
-  margin-top: 20px;
-
-  font-size: 1.15rem;
-}
-
-.horoscope-grid {
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 18px;
-}
-
-.zodiac-card {
-  padding: 30px;
-
-  background: var(--kd-surface);
-
-  border: 1px solid var(--kd-border);
-  border-radius: var(--kd-radius);
-
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.zodiac-card:hover {
-  transform: translateY(-3px);
-
-  box-shadow:
-    0 14px 40px rgba(45, 37, 28, 0.07);
-}
-
-.zodiac-symbol {
-  color: var(--kd-gold);
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 3rem;
-}
-
-.zodiac-name {
-  margin-top: 15px;
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 1.55rem;
-  font-weight: 600;
-}
-
-.zodiac-text {
-  margin-top: 13px;
-
-  color: var(--kd-muted);
-
-  font-size: 15px;
-  line-height: 1.75;
-}
-
-/* =========================================================
-   FOUNDER
-========================================================= */
-
-.founder-page {
-  width: min(calc(100% - 48px), var(--kd-max));
-  margin: 0 auto;
-
-  padding: 80px 0 100px;
-}
-
-.founder-layout {
-  display: grid;
-
-  grid-template-columns: 0.8fr 1.2fr;
-
-  gap: 80px;
-
-  align-items: center;
-}
-
-.founder-image {
-  overflow: hidden;
-
-  border-radius: var(--kd-radius);
-
-  background: var(--kd-surface-soft);
-}
-
-.founder-content p {
-  max-width: 680px;
-
-  margin-top: 22px;
-
-  font-size: 1.1rem;
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
+/* =========================
+   GLOBAL FOOTER
+   ========================= */
 
 .site-footer {
-  margin-top: 80px;
-
-  padding: 75px 0 30px;
-
-  background: var(--kd-dark);
-  color: var(--kd-bg);
+  background: #211d19;
+  color: #f7f2e8;
+  padding: 90px 42px 60px;
 }
 
 .footer-inner {
-  width: min(calc(100% - 48px), var(--kd-max));
-
+  max-width: 1200px;
   margin: 0 auto;
-
-  display: grid;
-
-  grid-template-columns: 1.5fr 1fr 1fr;
-
-  gap: 65px;
 }
-
-/* Footer brand */
 
 .footer-brand {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .footer-logo {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 16px;
-}
-
-.footer-logo img {
-  width: 68px;
-  height: 68px;
-
+  width: 78px;
+  height: 78px;
   object-fit: contain;
+  border-radius: 50%;
 }
 
-.footer-logo span {
-  color: var(--kd-bg);
-
-  font-family: "Playfair Display", Georgia, serif;
-
-  font-size: 2.35rem;
+.footer-title {
+  font-family: "Playfair Display", serif;
+  font-size: 46px;
   font-weight: 600;
-
-  letter-spacing: -0.04em;
 }
 
-.footer-brand p {
-  margin-top: 25px;
-
-  color: var(--kd-light);
-
-  font-size: 1rem;
-
-  line-height: 1.8;
+.footer-tagline {
+  margin-top: 42px;
+  max-width: 400px;
+  color: #bdb3a6;
+  font-size: 21px;
+  line-height: 1.7;
 }
 
-/* Footer columns */
-
-.footer-column {
+.footer-nav {
+  margin-top: 70px;
   display: flex;
   flex-direction: column;
-
-  align-items: flex-start;
-
-  gap: 12px;
+  gap: 18px;
 }
 
-.footer-column h3 {
-  margin-bottom: 10px;
-
-  color: var(--kd-bg);
-
-  font-size: 1.35rem;
+.footer-nav a {
+  color: #bdb3a6;
+  text-decoration: none;
+  font-size: 18px;
 }
 
-.footer-column a,
-.footer-column span {
-  color: var(--kd-light);
-
-  font-size: 15px;
-
-  transition: color 180ms ease;
+.footer-nav a:hover {
+  color: #ffffff;
 }
 
-.footer-column a:hover {
-  color: var(--kd-bg);
-}
-
-/* Footer bottom */
-
-.footer-bottom {
-  width: min(calc(100% - 48px), var(--kd-max));
-
-  margin: 65px auto 0;
-
-  padding-top: 23px;
-
-  display: flex;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  border-top: 1px solid rgba(245, 240, 231, 0.15);
-
-  color: var(--kd-light);
-
-  font-size: 13px;
-}
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
-.empty-state {
-  margin-top: 40px;
-
-  padding: 55px 30px;
-
-  text-align: center;
-
-  border: 1px dashed var(--kd-border);
-  border-radius: var(--kd-radius);
-
-  background: rgba(251, 248, 242, 0.55);
-}
-
-.empty-state h3 {
-  font-size: 2rem;
-}
-
-.empty-state p {
-  margin-top: 10px;
-}
-
-/* =========================================================
-   RESPONSIVE — TABLET
-========================================================= */
-
-@media (max-width: 1000px) {
-
-  .main-nav {
-    gap: 22px;
+@media (max-width: 700px) {
+  .site-header {
+    height: 105px;
+    padding: 0 28px;
   }
 
-  .brand-tagline {
-    display: none;
+  .site-logo {
+    width: 72px;
+    height: 72px;
   }
 
-  .panchang-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .site-title {
+    font-size: 38px;
   }
 
-  .timing-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .site-menu-button {
+    width: 76px;
+    height: 76px;
   }
 
-  .muhurat-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .site-menu-icon {
+    width: 34px;
   }
 
-  .horoscope-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .site-footer {
+    padding: 70px 34px 50px;
   }
 
-  .founder-layout {
-    grid-template-columns: 1fr 1fr;
-
-    gap: 45px;
-  }
-}
-
-/* =========================================================
-   RESPONSIVE — MOBILE
-========================================================= */
-
-@media (max-width: 760px) {
-
-  .header-inner {
-    width: calc(100% - 32px);
-
-    min-height: 78px;
-  }
-
-  .brand-logo {
-    width: 52px;
-    height: 52px;
-  }
-
-  .brand-name {
-    font-size: 1.75rem;
-  }
-
-  .main-nav {
-    position: absolute;
-
-    top: 100%;
-
-    left: 16px;
-    right: 16px;
-
-    padding: 20px;
-
-    display: none;
-    flex-direction: column;
-
-    align-items: stretch;
-
-    gap: 3px;
-
-    background: var(--kd-surface);
-
-    border: 1px solid var(--kd-border);
-    border-radius: 16px;
-
-    box-shadow:
-      0 18px 50px rgba(45, 37, 28, 0.12);
-  }
-
-  .main-nav.nav-open {
-    display: flex;
-  }
-
-  .main-nav a {
-    padding: 13px 10px;
-  }
-
-  .header-button {
-    display: none;
-  }
-
-  .menu-button {
-    display: flex;
-  }
-
-  .panchang-page,
-  .horoscope-page,
-  .founder-page {
-    width: calc(100% - 32px);
-  }
-
-  .panchang-hero {
-    padding: 50px 0 35px;
-  }
-
-  .panchang-hero h1 {
-    font-size: clamp(3rem, 15vw, 4.8rem);
-  }
-
-  .panchang-hero p {
-    font-size: 1.05rem;
-  }
-
-  .location-row {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .location-row .location-input:nth-child(2) {
-    grid-column: span 2;
-  }
-
-  .location-button {
-    width: 100%;
-  }
-
-  .panchang-date-card {
-    grid-template-columns: 1fr;
-
-    gap: 22px;
-
-    margin-bottom: 45px;
-  }
-
-  .panchang-section {
-    padding: 50px 0;
-  }
-
-  .panchang-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .timing-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .muhurat-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .choghadiya-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .horoscope-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .founder-layout {
-    grid-template-columns: 1fr;
-
-    gap: 40px;
-  }
-
-  .footer-inner {
-    width: calc(100% - 32px);
-
-    grid-template-columns: 1fr;
-
-    gap: 45px;
-  }
-
-  .footer-bottom {
-    width: calc(100% - 32px);
-
-    flex-direction: column;
-
-    gap: 8px;
-  }
-}
-
-/* =========================================================
-   RESPONSIVE — SMALL PHONES
-========================================================= */
-
-@media (max-width: 480px) {
-
-  .brand-name {
-    font-size: 1.55rem;
-  }
-
-  .panchang-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .timing-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .location-row {
-    grid-template-columns: 1fr;
-  }
-
-  .location-row .location-input:nth-child(2) {
-    grid-column: auto;
-  }
-
-  .location-button {
-    min-height: 54px;
-  }
-
-  .panchang-card {
-    min-height: 165px;
-  }
-
-  .footer-logo span {
-    font-size: 2rem;
+  .footer-title {
+    font-size: 38px;
   }
 }
