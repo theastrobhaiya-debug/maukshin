@@ -1,34 +1,100 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
   return (
     <header className="site-header">
-      <nav className="nav">
-        <Link href="/" className="brand">
+
+      <div className="header-inner">
+
+        <Link
+          href="/"
+          className="brand"
+          onClick={closeMenu}
+        >
           <img
             src="/assets/kaaldarpan-logo.png"
-            alt="Kaaldarpan"
+            alt="KaalDarpan"
+            className="brand-logo"
           />
 
-          <span className="brand-name">
-            Kaaldarpan
-          </span>
+          <div className="brand-text">
+
+            <span className="brand-name">
+              KaalDarpan
+            </span>
+
+            <span className="brand-tagline">
+              Vedic Astrology
+            </span>
+
+          </div>
         </Link>
 
-        <div className="menu">
-          <Link href="/">
-            Panchang
+
+        <nav
+          className={`main-nav ${
+            menuOpen ? "nav-open" : ""
+          }`}
+        >
+
+          <Link
+            href="/"
+            onClick={closeMenu}
+          >
+            Home
           </Link>
 
-          <Link href="/horoscope">
+          <Link
+            href="/horoscope"
+            onClick={closeMenu}
+          >
             Horoscope
           </Link>
 
-          <Link href="/founder">
+          <Link
+            href="/founder"
+            onClick={closeMenu}
+          >
             Founder
           </Link>
-        </div>
-      </nav>
+
+        </nav>
+
+
+        <Link
+          href="/horoscope"
+          className="header-button"
+        >
+          Explore
+          <span>→</span>
+        </Link>
+
+
+        <button
+          type="button"
+          className="menu-button"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Open navigation"
+          aria-expanded={menuOpen}
+        >
+
+          <span />
+          <span />
+          <span />
+
+        </button>
+
+      </div>
+
     </header>
   );
 }
