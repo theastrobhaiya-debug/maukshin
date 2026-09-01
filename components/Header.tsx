@@ -25,6 +25,7 @@ export default function Header() {
       </head>
 
       <header className="site-header">
+
         <div className="header-inner">
 
           {/* Logo */}
@@ -40,7 +41,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* Shop - Center */}
+          {/* Shop - Always Centered */}
           <a
             href="https://mauksh.com"
             className="shop-link"
@@ -81,7 +82,7 @@ export default function Header() {
 
         </div>
 
-        {/* Navigation Menu */}
+        {/* Navigation */}
         <nav
           className={`main-nav ${
             menuOpen ? "nav-open" : ""
