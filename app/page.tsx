@@ -217,11 +217,17 @@ export default function Home() {
       <div>
         {items.map((item: any, index: number) => (
           <div className="choghadiya-row" key={index}>
-            <span>{display(item?.name)}</span>
+
+            <span>
+              {display(item?.name)}
+            </span>
 
             <strong>
-              {display(item?.start)} – {display(item?.end)}
+              {display(item?.start)}
+              {" – "}
+              {display(item?.end)}
             </strong>
+
           </div>
         ))}
       </div>
@@ -903,7 +909,7 @@ export default function Home() {
 
         /* =====================================================
            KAALDARPAN OUTPUT
-           CLEAN SPACING + READABILITY
+           CLEAR BLACK TEXT
         ===================================================== */
 
         .results {
@@ -912,8 +918,6 @@ export default function Home() {
           padding: 0 24px 70px;
 
           color: #111111;
-
-          line-height: 1.55;
         }
 
 
@@ -925,9 +929,9 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          gap: 30px;
+          gap: 20px;
 
-          padding: 27px 26px;
+          padding: 25px 24px;
 
           background: #fffdf9;
 
@@ -940,7 +944,7 @@ export default function Home() {
         .summary-label {
           display: block;
 
-          margin-bottom: 8px;
+          margin-bottom: 7px;
 
           color: #6a5a42;
 
@@ -960,15 +964,12 @@ export default function Home() {
             serif;
 
           font-size: 24px;
-          line-height: 1.3;
           font-weight: 600;
         }
 
         .summary-location {
           color: #333333;
           font-size: 13px;
-          line-height: 1.4;
-          white-space: nowrap;
         }
 
 
@@ -977,15 +978,15 @@ export default function Home() {
         ========================= */
 
         .section {
-          margin-top: 52px;
+          margin-top: 48px;
         }
 
         .section-title {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 15px;
 
-          margin-bottom: 18px;
+          margin-bottom: 15px;
         }
 
         .section-title h2 {
@@ -999,10 +1000,7 @@ export default function Home() {
             serif;
 
           font-size: 24px;
-          line-height: 1.3;
           font-weight: 600;
-
-          white-space: nowrap;
         }
 
         .section-title div {
@@ -1024,11 +1022,11 @@ export default function Home() {
           grid-template-columns:
             repeat(5, 1fr);
 
-          gap: 12px;
+          gap: 10px;
         }
 
         .panchang-card {
-          min-height: 155px;
+          min-height: 150px;
 
           display: flex;
           flex-direction: column;
@@ -1036,7 +1034,7 @@ export default function Home() {
           align-items: center;
           justify-content: center;
 
-          padding: 22px 14px;
+          padding: 18px 10px;
 
           text-align: center;
 
@@ -1061,42 +1059,36 @@ export default function Home() {
         }
 
         .panchang-icon {
-          margin-bottom: 12px;
+          margin-bottom: 10px;
 
           color: #a87935;
 
           font-family: Georgia, serif;
 
           font-size: 24px;
-          line-height: 1;
         }
 
         .panchang-card .label {
-          margin-bottom: 9px;
+          margin-bottom: 7px;
 
           color: #625847;
 
           font-size: 11px;
-          line-height: 1.4;
         }
 
         .panchang-card strong {
           color: #111111;
 
           font-size: 15px;
-          line-height: 1.45;
           font-weight: 600;
-
-          overflow-wrap: anywhere;
         }
 
         .panchang-card small {
-          margin-top: 8px;
+          margin-top: 6px;
 
           color: #55504a;
 
           font-size: 10px;
-          line-height: 1.45;
         }
 
 
@@ -1110,12 +1102,12 @@ export default function Home() {
           grid-template-columns:
             1fr 1fr;
 
-          gap: 14px;
+          gap: 12px;
         }
 
         .info-card,
         .large-card {
-          padding: 22px;
+          padding: 20px;
 
           background: #fffdf9;
 
@@ -1128,7 +1120,7 @@ export default function Home() {
 
         .info-card h3,
         .large-card h3 {
-          margin: 0 0 14px;
+          margin: 0 0 12px;
 
           color: #111111;
 
@@ -1138,7 +1130,6 @@ export default function Home() {
             serif;
 
           font-size: 19px;
-          line-height: 1.35;
           font-weight: 600;
         }
 
@@ -1148,11 +1139,9 @@ export default function Home() {
           justify-content: space-between;
           align-items: center;
 
-          gap: 24px;
+          gap: 20px;
 
-          min-height: 45px;
-
-          padding: 11px 0;
+          padding: 12px 0;
 
           border-bottom: 1px solid #ebe4da;
         }
@@ -1165,11 +1154,7 @@ export default function Home() {
         .time-row span,
         .choghadiya-row span {
           color: #333333;
-
           font-size: 13px;
-          line-height: 1.5;
-
-          flex: 1;
         }
 
         .time-row strong,
@@ -1177,12 +1162,9 @@ export default function Home() {
           color: #111111;
 
           font-size: 13px;
-          line-height: 1.5;
           font-weight: 600;
 
           text-align: right;
-
-          white-space: nowrap;
         }
 
 
@@ -1196,17 +1178,11 @@ export default function Home() {
           grid-template-columns:
             repeat(3, 1fr);
 
-          gap: 12px;
+          gap: 10px;
         }
 
         .simple-card {
-          min-height: 92px;
-
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-
-          padding: 18px 19px;
+          padding: 18px;
 
           background: #fffdf9;
 
@@ -1220,12 +1196,11 @@ export default function Home() {
         .simple-card span {
           display: block;
 
-          margin-bottom: 8px;
+          margin-bottom: 7px;
 
           color: #625847;
 
           font-size: 10px;
-          line-height: 1.4;
           font-weight: 600;
           letter-spacing: .2px;
         }
@@ -1234,10 +1209,7 @@ export default function Home() {
           color: #111111;
 
           font-size: 15px;
-          line-height: 1.5;
           font-weight: 600;
-
-          overflow-wrap: anywhere;
         }
 
 
@@ -1246,12 +1218,11 @@ export default function Home() {
         ========================= */
 
         .empty {
-          padding: 10px 0;
+          padding: 8px 0;
 
           color: #55504a;
 
           font-size: 12px;
-          line-height: 1.5;
         }
 
 
@@ -1323,13 +1294,10 @@ export default function Home() {
           .panchang-grid {
             grid-template-columns:
               1fr 1fr;
-
-            gap: 10px;
           }
 
           .panchang-card {
             min-height: 140px;
-            padding: 20px 10px;
           }
 
           .two-columns {
@@ -1342,48 +1310,18 @@ export default function Home() {
 
           .date-summary {
             display: block;
-            padding: 24px 20px;
           }
 
           .summary-location {
-            margin-top: 9px;
+            margin-top: 8px;
           }
 
           .section {
-            margin-top: 44px;
-          }
-
-          .section-title {
-            gap: 12px;
-            margin-bottom: 16px;
+            margin-top: 40px;
           }
 
           .section-title h2 {
             font-size: 22px;
-          }
-
-          .info-card,
-          .large-card {
-            padding: 20px;
-          }
-
-          .time-row,
-          .choghadiya-row {
-            gap: 14px;
-            min-height: 44px;
-            padding: 11px 0;
-          }
-
-          .time-row span,
-          .choghadiya-row span,
-          .time-row strong,
-          .choghadiya-row strong {
-            font-size: 13px;
-          }
-
-          .simple-card {
-            min-height: 86px;
-            padding: 17px 18px;
           }
 
         }
@@ -1402,10 +1340,6 @@ export default function Home() {
 
           .panchang-card strong {
             font-size: 14px;
-          }
-
-          .panchang-card small {
-            font-size: 9px;
           }
 
         }
@@ -1448,7 +1382,7 @@ function PanchangCard({
 
       {end && (
         <small>
-          Ends {end}
+          Ends: {display(end)}
         </small>
       )}
 
@@ -1494,7 +1428,9 @@ function TimeRow({
   return (
     <div className="time-row">
 
-      <span>{label}</span>
+      <span>
+        {label}:
+      </span>
 
       <strong>
         {display(value)}
@@ -1519,7 +1455,9 @@ function SimpleCard({
   return (
     <div className="simple-card">
 
-      <span>{label}</span>
+      <span>
+        {label}:
+      </span>
 
       <strong>
         {display(value)}
