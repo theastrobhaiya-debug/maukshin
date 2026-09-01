@@ -1,345 +1,331 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function HomePage() {
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+
+    setDate(
+      today.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    );
+  }, []);
+
   return (
-    <>
+    <div className="panchang-page">
 
-      {/* HERO */}
+      {/* PAGE HEADER */}
+      <section className="panchang-hero">
 
-      <section className="hero">
-
-        <div className="hero-content">
-
-          <div className="eyebrow">
-            VEDIC ASTROLOGY · PLANETARY WISDOM
-          </div>
-
-          <h1>
-            Read the
-            <br />
-            <span>rhythm of life.</span>
-          </h1>
-
-          <p>
-            KaalDarpan brings the timeless principles
-            of Vedic astrology into a clear, modern
-            experience — helping you understand
-            planetary movements and their influence
-            on your journey.
-          </p>
-
-
-          <div className="hero-actions">
-
-            <a
-              href="/horoscope"
-              className="btn btn-primary"
-            >
-              Explore Horoscope
-              <span>→</span>
-            </a>
-
-            <a
-              href="/founder"
-              className="btn btn-secondary"
-            >
-              About KaalDarpan
-            </a>
-
-          </div>
-
+        <div className="panchang-eyebrow">
+          KAALDARPAN · VEDIC ASTROLOGY
         </div>
 
+        <h1>Daily Panchang</h1>
 
-        <div className="hero-visual">
+        <p>
+          Today's Vedic Panchang
+        </p>
 
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="orbit orbit-three" />
+        <div className="panchang-date">
+          {date || "Loading date..."}
+        </div>
 
-          <div className="hero-sun">
-            ☀
-          </div>
+      </section>
 
-          <div className="planet planet-one">
-            ☽
-          </div>
 
-          <div className="planet planet-two">
-            ✦
-          </div>
+      {/* LOCATION */}
+      <section className="panchang-location">
 
-          <div className="planet planet-three">
-            ◐
-          </div>
+        <div className="location-label">
+          YOUR LOCATION
+        </div>
+
+        <div className="location-row">
+
+          <input
+            type="text"
+            placeholder="Enter city"
+            className="location-input"
+          />
+
+          <button className="location-button">
+            Detect
+          </button>
 
         </div>
 
       </section>
 
 
-      {/* TRUST STRIP */}
+      {/* MAIN PANCHANG */}
+      <section className="panchang-content">
 
-      <section className="trust-strip">
+        {/* TITHI */}
+        <article className="panchang-card featured">
 
-        <div>
-          <strong>Vedic</strong>
-          <span>Tradition</span>
-        </div>
+          <div className="card-label">
+            TITHI
+          </div>
 
-        <div>
-          <strong>Planetary</strong>
-          <span>Calculations</span>
-        </div>
+          <div className="card-value">
+            Shukla Panchami
+          </div>
 
-        <div>
-          <strong>Simple</strong>
-          <span>Interpretation</span>
-        </div>
+          <div className="card-detail">
+            Until 06:42 PM
+          </div>
 
-        <div>
-          <strong>Modern</strong>
-          <span>Experience</span>
-        </div>
+        </article>
+
+
+        {/* NAKSHATRA */}
+        <article className="panchang-card">
+
+          <div className="card-label">
+            NAKSHATRA
+          </div>
+
+          <div className="card-value">
+            Uttara Phalguni
+          </div>
+
+          <div className="card-detail">
+            Until 08:15 PM
+          </div>
+
+        </article>
+
+
+        {/* YOGA */}
+        <article className="panchang-card">
+
+          <div className="card-label">
+            YOGA
+          </div>
+
+          <div className="card-value">
+            Saubhagya
+          </div>
+
+          <div className="card-detail">
+            Until 04:31 PM
+          </div>
+
+        </article>
+
+
+        {/* KARANA */}
+        <article className="panchang-card">
+
+          <div className="card-label">
+            KARANA
+          </div>
+
+          <div className="card-value">
+            Taitila
+          </div>
+
+          <div className="card-detail">
+            Until 06:42 PM
+          </div>
+
+        </article>
 
       </section>
 
 
-      {/* INTRODUCTION */}
+      {/* SUN & MOON */}
+      <section className="astronomical-section">
 
-      <section className="home-section">
-
-        <div className="section-intro">
-
-          <div className="eyebrow">
-            THE KAALDARPAN APPROACH
-          </div>
-
-          <h2>
-            Astrology,
-            <br />
-            <span>without the noise.</span>
-          </h2>
-
-          <p>
-            Astrology can be deeply complex.
-            KaalDarpan is designed to make that
-            complexity easier to understand without
-            losing the depth of the Vedic tradition.
-          </p>
-
+        <div className="section-heading">
+          <span>ASTRONOMICAL TIMINGS</span>
+          <h2>Sun & Moon</h2>
         </div>
 
 
-        <div className="feature-grid">
+        <div className="timing-grid">
 
-          <article className="feature-card">
+          <div className="timing-card">
 
-            <span className="feature-number">
-              01
-            </span>
-
-            <div className="feature-icon">
-              ☉
+            <div className="timing-icon">
+              ☀
             </div>
 
-            <h3>
-              Planetary Wisdom
-            </h3>
+            <div>
+              <span>Sunrise</span>
+              <strong>06:12 AM</strong>
+            </div>
 
-            <p>
-              Understand the movements of the
-              planets and the themes they activate
-              in your life.
-            </p>
-
-          </article>
+          </div>
 
 
-          <article className="feature-card">
+          <div className="timing-card">
 
-            <span className="feature-number">
-              02
-            </span>
+            <div className="timing-icon">
+              ☀
+            </div>
 
-            <div className="feature-icon">
+            <div>
+              <span>Sunset</span>
+              <strong>06:43 PM</strong>
+            </div>
+
+          </div>
+
+
+          <div className="timing-card">
+
+            <div className="timing-icon">
+              ☾
+            </div>
+
+            <div>
+              <span>Moonrise</span>
+              <strong>10:21 AM</strong>
+            </div>
+
+          </div>
+
+
+          <div className="timing-card">
+
+            <div className="timing-icon">
               ☽
             </div>
 
-            <h3>
-              Vedic Perspective
-            </h3>
-
-            <p>
-              Rooted in the principles and
-              calculations of traditional
-              Jyotish.
-            </p>
-
-          </article>
-
-
-          <article className="feature-card">
-
-            <span className="feature-number">
-              03
-            </span>
-
-            <div className="feature-icon">
-              ✦
+            <div>
+              <span>Moonset</span>
+              <strong>10:42 PM</strong>
             </div>
 
-            <h3>
-              Modern Guidance
-            </h3>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* MUHURAT */}
+      <section className="muhurat-section">
+
+        <div className="section-heading">
+          <span>AUSPICIOUS & INAUSPICIOUS</span>
+          <h2>Today's Timings</h2>
+        </div>
+
+
+        <div className="muhurat-grid">
+
+          <div className="muhurat-card good">
+
+            <div className="muhurat-title">
+              Abhijit Muhurat
+            </div>
+
+            <div className="muhurat-time">
+              11:58 AM – 12:48 PM
+            </div>
+
+            <div className="muhurat-status">
+              Auspicious
+            </div>
+
+          </div>
+
+
+          <div className="muhurat-card">
+
+            <div className="muhurat-title">
+              Rahu Kalam
+            </div>
+
+            <div className="muhurat-time">
+              03:15 PM – 04:47 PM
+            </div>
+
+            <div className="muhurat-status">
+              Avoid important work
+            </div>
+
+          </div>
+
+
+          <div className="muhurat-card">
+
+            <div className="muhurat-title">
+              Yamaganda
+            </div>
+
+            <div className="muhurat-time">
+              09:15 AM – 10:47 AM
+            </div>
+
+            <div className="muhurat-status">
+              Avoid important work
+            </div>
+
+          </div>
+
+
+          <div className="muhurat-card">
+
+            <div className="muhurat-title">
+              Gulika Kalam
+            </div>
+
+            <div className="muhurat-time">
+              12:19 PM – 01:51 PM
+            </div>
+
+            <div className="muhurat-status">
+              Traditionally avoided
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* DAY SUMMARY */}
+      <section className="panchang-summary">
+
+        <div className="summary-inner">
+
+          <div className="summary-symbol">
+            ✦
+          </div>
+
+          <div>
+
+            <div className="summary-label">
+              TODAY IN VEDIC CALENDAR
+            </div>
+
+            <h2>
+              A day to move with awareness.
+            </h2>
 
             <p>
-              Ancient concepts presented in a
-              language that makes sense in
-              everyday life.
+              Panchang reflects the five key limbs of
+              the Vedic calendar — Tithi, Nakshatra,
+              Yoga, Karana and Vara.
             </p>
 
-          </article>
+          </div>
 
         </div>
 
       </section>
 
-
-      {/* HOROSCOPE */}
-
-      <section className="horoscope-cta">
-
-        <div className="horoscope-copy">
-
-          <div className="eyebrow">
-            DAILY GUIDANCE
-          </div>
-
-          <h2>
-            Know what the
-            <br />
-            <span>stars are saying.</span>
-          </h2>
-
-          <p>
-            Explore your daily horoscope through
-            the lens of Vedic astrology and
-            planetary movements.
-          </p>
-
-          <a
-            href="/horoscope"
-            className="btn btn-primary"
-          >
-            View Horoscope
-            <span>→</span>
-          </a>
-
-        </div>
-
-
-        <div className="moon-visual">
-
-          <div className="moon-ring" />
-
-          <div className="moon">
-            ☾
-          </div>
-
-          <span>✦</span>
-          <span>✧</span>
-          <span>⋆</span>
-
-        </div>
-
-      </section>
-
-
-      {/* FOUNDER */}
-
-      <section className="founder-preview">
-
-        <div>
-
-          <div className="eyebrow">
-            THE PERSON BEHIND KAALDARPAN
-          </div>
-
-          <h2>
-            Built with
-            <br />
-            <span>curiosity.</span>
-          </h2>
-
-          <p>
-            KaalDarpan was created with a simple
-            belief — astrology should encourage
-            curiosity and awareness, not blind
-            belief.
-          </p>
-
-          <a
-            href="/founder"
-            className="btn btn-secondary"
-          >
-            Meet the Founder
-            <span>→</span>
-          </a>
-
-        </div>
-
-
-        <div className="founder-quote">
-
-          <div className="quote-mark">
-            “
-          </div>
-
-          <blockquote>
-            Astrology should help you
-            understand yourself better,
-            not decide your life for you.
-          </blockquote>
-
-          <div className="quote-line" />
-
-          <small>
-            KAALDARPAN
-          </small>
-
-        </div>
-
-      </section>
-
-
-      {/* FINAL CTA */}
-
-      <section className="final-cta">
-
-        <div className="eyebrow">
-          BEGIN YOUR JOURNEY
-        </div>
-
-        <h2>
-          Look at the
-          <br />
-          <span>bigger picture.</span>
-        </h2>
-
-        <p>
-          Explore Vedic astrology through
-          KaalDarpan.
-        </p>
-
-        <a
-          href="/horoscope"
-          className="btn btn-primary"
-        >
-          Explore Horoscope
-          <span>→</span>
-        </a>
-
-      </section>
-
-    </>
+    </div>
   );
 }
