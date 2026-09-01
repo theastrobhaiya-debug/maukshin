@@ -1,23 +1,7 @@
 /* =========================================================
-   KAALDARPAN — GLOBAL HEADER & FOOTER ONLY
+   KAALDARPAN GLOBAL CSS
+   HEADER + FOOTER ONLY
    ========================================================= */
-
-/* ---------- Global Reset for Header/Footer ---------- */
-
-.site-header *,
-.site-footer * {
-  box-sizing: border-box;
-}
-
-.site-header a,
-.site-footer a {
-  text-decoration: none;
-}
-
-.site-header img,
-.site-footer img {
-  display: block;
-}
 
 
 /* =========================================================
@@ -26,96 +10,121 @@
 
 .site-header {
   width: 100%;
-  background: #0b0b0b;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.22);
-  color: #f5ead0;
+  background: #faf8f1;
+  border-bottom: 1px solid #dcd4c6;
+  color: #211f1d;
 }
 
 .header-inner {
-  width: min(1200px, calc(100% - 32px));
-  min-height: 76px;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 168px;
+
   margin: 0 auto;
+  padding: 0 42px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
 }
 
 
-/* ---------- Header Brand ---------- */
+/* =========================================================
+   HEADER LOGO
+   ========================================================= */
 
 .header-brand {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 32px;
 
-  color: #d4af37;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  color: #211f1d;
+  text-decoration: none;
 }
 
 .header-logo img {
-  width: 42px;
-  height: 42px;
+  width: 112px;
+  height: 112px;
+
+  display: block;
+  flex: 0 0 112px;
+
   object-fit: contain;
 }
 
+.header-logo span {
+  color: #211f1d;
 
-/* ---------- Header Navigation ---------- */
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1;
+
+  letter-spacing: -2px;
+}
+
+
+/* =========================================================
+   HEADER NAV
+   ========================================================= */
 
 .header-nav {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 26px;
+  gap: 28px;
 }
 
 .header-nav a {
-  position: relative;
+  color: #211f1d;
+  text-decoration: none;
 
-  color: #d8d0bd;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
 
-  padding: 8px 0;
-
-  transition:
-    color 0.2s ease,
-    opacity 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .header-nav a:hover {
-  color: #d4af37;
+  opacity: 0.55;
 }
 
-.header-nav a::after {
-  content: "";
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+/* =========================================================
+   HAMBURGER
+   ========================================================= */
 
-  height: 1px;
+.header-menu {
+  width: 116px;
+  height: 116px;
 
-  background: #d4af37;
+  border: 2px solid #ded6c8;
+  border-radius: 50%;
 
-  transform: scaleX(0);
-  transform-origin: center;
+  background: transparent;
 
-  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
 }
 
-.header-nav a:hover::after {
-  transform: scaleX(1);
+.header-menu span,
+.menu-icon span {
+  display: block;
+
+  width: 44px;
+  height: 4px;
+
+  margin: 6px 0;
+
+  background: #292622;
 }
 
 
@@ -125,27 +134,30 @@
 
 .site-footer {
   width: 100%;
-  margin-top: 60px;
+  margin-top: 70px;
 
-  background: #080808;
-  border-top: 1px solid rgba(212, 175, 55, 0.22);
+  background: #211f1d;
+  border-top: 1px solid #d8d0c2;
 
-  color: #bdb5a5;
+  color: #eee8dc;
 }
 
 .footer-inner {
-  width: min(1200px, calc(100% - 32px));
-  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
 
-  padding: 42px 0 24px;
+  margin: 0 auto;
+  padding: 55px 42px 35px;
 
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 40px;
+  gap: 60px;
 }
 
 
-/* ---------- Footer Brand ---------- */
+/* =========================================================
+   FOOTER BRAND
+   ========================================================= */
 
 .footer-brand {
   min-width: 0;
@@ -154,40 +166,56 @@
 .footer-logo {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 18px;
 
-  color: #d4af37;
-
-  font-size: 21px;
-  font-weight: 700;
+  color: #f5efe4;
+  text-decoration: none;
 }
 
 .footer-logo img {
-  width: 40px;
-  height: 40px;
+  width: 54px;
+  height: 54px;
+
+  display: block;
+  flex: 0 0 54px;
+
   object-fit: contain;
 }
 
+.footer-logo span {
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  letter-spacing: -1px;
+}
+
 .footer-brand p {
-  max-width: 360px;
-  margin: 14px 0 0;
+  max-width: 390px;
 
-  color: #938c7e;
+  margin: 18px 0 0;
 
-  font-size: 13px;
+  color: #bdb5a7;
+
+  font-size: 14px;
   line-height: 1.7;
 }
 
 
-/* ---------- Footer Sections ---------- */
+/* =========================================================
+   FOOTER SECTIONS
+   ========================================================= */
 
 .footer-section h3 {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
 
-  color: #e6d9ba;
+  color: #f1eadc;
 
   font-size: 14px;
   font-weight: 600;
+
+  letter-spacing: 0.8px;
 }
 
 .footer-section a {
@@ -195,37 +223,41 @@
 
   width: fit-content;
 
-  margin: 8px 0;
+  margin: 10px 0;
 
-  color: #928b7e;
+  color: #bdb5a7;
 
-  font-size: 13px;
+  font-size: 14px;
+
+  text-decoration: none;
 
   transition: color 0.2s ease;
 }
 
 .footer-section a:hover {
-  color: #d4af37;
+  color: #ffffff;
 }
 
 
-/* ---------- Footer Bottom ---------- */
+/* =========================================================
+   FOOTER BOTTOM
+   ========================================================= */
 
 .footer-bottom {
-  width: min(1200px, calc(100% - 32px));
+  width: 100%;
+  max-width: 1400px;
+
   margin: 0 auto;
+  padding: 20px 42px;
 
-  padding: 18px 0;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
 
-  color: #6f6a60;
-
+  color: #918a7e;
   font-size: 12px;
 }
 
@@ -235,41 +267,47 @@
 
 
 /* =========================================================
-   MOBILE
+   TABLET
    ========================================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   .header-inner {
-    min-height: 68px;
-    width: min(100% - 24px, 1200px);
+    min-height: 125px;
+    padding: 0 28px;
   }
 
   .header-logo {
-    font-size: 19px;
+    gap: 22px;
   }
 
   .header-logo img {
-    width: 36px;
-    height: 36px;
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
   }
 
-  .header-nav {
-    gap: 16px;
+  .header-logo span {
+    font-size: 42px;
   }
 
-  .header-nav a {
-    font-size: 13px;
+  .header-menu {
+    width: 88px;
+    height: 88px;
   }
 
+  .header-menu span,
+  .menu-icon span {
+    width: 34px;
+    height: 3px;
+    margin: 5px 0;
+  }
 
   .footer-inner {
-    width: min(100% - 24px, 1200px);
-
-    padding: 34px 0 20px;
+    padding: 45px 28px 30px;
 
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 40px;
   }
 
   .footer-brand {
@@ -277,42 +315,127 @@
   }
 
   .footer-bottom {
-    width: min(100% - 24px, 1200px);
-
-    flex-direction: column;
-    align-items: flex-start;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 }
 
 
 /* =========================================================
-   SMALL MOBILE
+   MOBILE
    ========================================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 
   .header-inner {
-    min-height: 62px;
+    min-height: 168px;
+
+    padding: 0 28px;
   }
 
-  .header-nav {
-    gap: 12px;
+  .header-logo {
+    gap: 32px;
   }
 
-  .header-nav a {
-    font-size: 12px;
+  .header-logo img {
+    width: 112px;
+    height: 112px;
+    flex-basis: 112px;
   }
 
   .header-logo span {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .header-menu {
+    width: 116px;
+    height: 116px;
+
+    flex: 0 0 116px;
+  }
+
+  .header-menu span,
+  .menu-icon span {
+    width: 44px;
+    height: 4px;
+    margin: 6px 0;
+  }
+
+  .header-nav {
     display: none;
   }
 
+
+  /* ---------- Footer ---------- */
+
   .footer-inner {
+    padding: 40px 28px 25px;
+
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 30px;
   }
 
   .footer-brand {
     grid-column: auto;
+  }
+
+  .footer-logo img {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .footer-logo span {
+    font-size: 26px;
+  }
+
+  .footer-bottom {
+    padding: 18px 28px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .header-inner {
+    min-height: 125px;
+    padding: 0 20px;
+  }
+
+  .header-logo {
+    gap: 16px;
+  }
+
+  .header-logo img {
+    width: 76px;
+    height: 76px;
+    flex-basis: 76px;
+  }
+
+  .header-logo span {
+    font-size: 31px;
+    letter-spacing: -1px;
+  }
+
+  .header-menu {
+    width: 76px;
+    height: 76px;
+    flex-basis: 76px;
+  }
+
+  .header-menu span,
+  .menu-icon span {
+    width: 30px;
+    height: 3px;
+    margin: 4px 0;
   }
 }
