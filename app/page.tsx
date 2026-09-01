@@ -11,11 +11,12 @@ type LocationData = {
 };
 
 function getToday() {
-  const date = new Date();
+  const d = new Date();
 
-  return `${date.getFullYear()}-${String(
-    date.getMonth() + 1
-  ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function formatDate(date: string) {
@@ -52,10 +53,6 @@ export default function Home() {
 
   const [panchang, setPanchang] = useState<any>(null);
 
-  /* --------------------------------
-     FIND CITY
-  -------------------------------- */
-
   async function findCity(cityName: string) {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
@@ -79,10 +76,6 @@ export default function Home() {
       longitude: Number(results[0].lon),
     };
   }
-
-  /* --------------------------------
-     DETECT LOCATION
-  -------------------------------- */
 
   function detectLocation() {
     setError("");
@@ -134,7 +127,6 @@ export default function Home() {
       },
       () => {
         setCity("");
-
         setError(
           "Unable to detect your location. Please enter your city manually."
         );
@@ -147,10 +139,6 @@ export default function Home() {
     );
   }
 
-  /* --------------------------------
-     LOAD PANCHANG
-  -------------------------------- */
-
   async function loadPanchang() {
     setError("");
     setPanchang(null);
@@ -161,10 +149,7 @@ export default function Home() {
     }
 
     if (!city || city === "Detecting...") {
-      if (
-        location.latitude === null ||
-        location.longitude === null
-      ) {
+      if (location.latitude === null || location.longitude === null) {
         setError("Please enter a city or use Detect.");
         return;
       }
@@ -175,14 +160,8 @@ export default function Home() {
     try {
       let selectedLocation = location;
 
-      /*
-       * If the user typed a city,
-       * convert it to coordinates.
-       */
-
       if (city && city !== "Detecting...") {
         selectedLocation = await findCity(city);
-
         setLocation(selectedLocation);
       }
 
@@ -200,25 +179,13 @@ export default function Home() {
       const params = new URLSearchParams();
 
       params.set("date", date);
-
-      params.set(
-        "latitude",
-        String(selectedLocation.latitude)
-      );
-
-      params.set(
-        "longitude",
-        String(selectedLocation.longitude)
-      );
-
+      params.set("latitude", String(selectedLocation.latitude));
+      params.set("longitude", String(selectedLocation.longitude));
       params.set("timezone", timezone);
 
-      const url =
-        `${API_BASE}/api/panchang?${params.toString()}`;
-
-      console.log("Panchang request:", url);
-
-      const response = await fetch(url);
+      const response = await fetch(
+        `${API_BASE}/api/panchang?${params.toString()}`
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -227,8 +194,6 @@ export default function Home() {
       }
 
       const result = await response.json();
-
-      console.log("Panchang response:", result);
 
       setPanchang(result);
     } catch (err: any) {
@@ -243,37 +208,19 @@ export default function Home() {
     }
   }
 
-  /* --------------------------------
-     CHOGHADIYA
-  -------------------------------- */
-
-  function Choghadiya({
-    items,
-  }: {
-    items: any;
-  }) {
+  function Choghadiya({ items }: { items: any }) {
     if (!Array.isArray(items) || items.length === 0) {
-      return (
-        <div className="empty">
-          No data available.
-        </div>
-      );
+      return <div className="empty">No data available.</div>;
     }
 
     return (
-      <div className="choghadiya-list">
+      <div>
         {items.map((item: any, index: number) => (
-          <div
-            className="choghadiya-row"
-            key={index}
-          >
-            <span>
-              {display(item?.name)}
-            </span>
+          <div className="choghadiya-row" key={index}>
+            <span>{display(item?.name)}</span>
 
             <strong>
-              {display(item?.start)} –{" "}
-              {display(item?.end)}
+              {display(item?.start)} – {display(item?.end)}
             </strong>
           </div>
         ))}
@@ -287,64 +234,66 @@ export default function Home() {
     <>
       <main className="page">
 
-        {/* ============================
-            HERO
-        ============================ */}
+        {/* HERO */}
 
         <section className="hero">
+          <div className="eyebrow">DAILY VEDIC PANCHANG</div>
 
-          <div className="eyebrow">
-            DAILY VEDIC PANCHANG
-          </div>
-
-          <h1>
-            Daily
-            <br />
-            Panchang
-          </h1>
+          <h1>Daily Panchang</h1>
 
           <p>
-            {formatDate(date)}
+            Accurate Vedic Panchang for your date and location
           </p>
-
         </section>
 
 
-        {/* ============================
-            DATE & LOCATION
-        ============================ */}
+        {/* SEARCH */}
 
-        <section className="controls-section">
+        <section className="search-section">
 
-          <h2>DATE & LOCATION</h2>
-
-          <div className="controls">
+          <div className="search-card">
 
             <div className="field">
 
-              <label>DATE</label>
+              <label htmlFor="date">
+                DATE
+              </label>
 
-              <input
-                type="date"
-                value={date}
-                onChange={(event) =>
-                  setDate(event.target.value)
-                }
-              />
+              <div className="date-input-wrap">
+
+                <span className="calendar-icon">
+                  ◷
+                </span>
+
+                <input
+                  id="date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                    setPanchang(null);
+                    setError("");
+                  }}
+                />
+
+              </div>
 
             </div>
 
 
-            <div className="field">
+            <div className="field location-field">
 
-              <label>LOCATION</label>
+              <label htmlFor="city">
+                LOCATION
+              </label>
 
               <input
+                id="city"
                 type="text"
                 value={city}
                 placeholder="Enter city"
-                onChange={(event) => {
-                  setCity(event.target.value);
+                onChange={(e) => {
+                  setCity(e.target.value);
 
                   setLocation({
                     city: "",
@@ -352,8 +301,8 @@ export default function Home() {
                     longitude: null,
                   });
                 }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
                     loadPanchang();
                   }
                 }}
@@ -367,7 +316,7 @@ export default function Home() {
               className="detect-button"
               onClick={detectLocation}
             >
-              Detect
+              Use my location
             </button>
 
 
@@ -377,16 +326,15 @@ export default function Home() {
               onClick={loadPanchang}
               disabled={loading}
             >
-              {loading
-                ? "Calculating..."
-                : "View Panchang"}
+              {loading ? "Calculating..." : "View Panchang"}
             </button>
 
           </div>
 
 
           {location.city && (
-            <div className="location-text">
+            <div className="location-confirmed">
+              <span>●</span>
               {location.city}
             </div>
           )}
@@ -401,29 +349,27 @@ export default function Home() {
         </section>
 
 
-        {/* ============================
-            PANCHANG RESULTS
-        ============================ */}
+        {/* RESULTS */}
 
         {panchang && (
 
           <section className="results">
 
-            {/* DATE */}
-
-            <div className="date-card">
+            <div className="date-summary">
 
               <div>
 
-                <span>PANCHANG FOR</span>
+                <span className="summary-label">
+                  PANCHANG FOR
+                </span>
 
-                <strong>
+                <h2>
                   {formatDate(date)}
-                </strong>
+                </h2>
 
               </div>
 
-              <div className="date-location">
+              <div className="summary-location">
                 {location.city}
               </div>
 
@@ -434,189 +380,89 @@ export default function Home() {
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Panchang</h2>
+                <div />
               </div>
 
 
               <div className="panchang-grid">
 
-                <div className="panchang-card">
+                <PanchangCard
+                  icon="☀"
+                  label="Vara"
+                  value={panchang?.vara?.name}
+                />
 
-                  <div className="icon">
-                    ☀
-                  </div>
+                <PanchangCard
+                  icon="☾"
+                  label="Tithi"
+                  value={panchang?.tithi?.name}
+                  end={panchang?.tithi?.ends}
+                />
 
-                  <span>Vara</span>
+                <PanchangCard
+                  icon="✦"
+                  label="Nakshatra"
+                  value={panchang?.nakshatra?.name}
+                  end={panchang?.nakshatra?.ends}
+                />
 
-                  <strong>
-                    {display(
-                      panchang?.vara?.name
-                    )}
-                  </strong>
+                <PanchangCard
+                  icon="✧"
+                  label="Yoga"
+                  value={panchang?.yoga?.name}
+                  end={panchang?.yoga?.ends}
+                />
 
-                </div>
-
-
-                <div className="panchang-card">
-
-                  <div className="icon">
-                    ☾
-                  </div>
-
-                  <span>Tithi</span>
-
-                  <strong>
-                    {display(
-                      panchang?.tithi?.name
-                    )}
-                  </strong>
-
-                  {panchang?.tithi?.ends && (
-                    <small>
-                      Ends {panchang.tithi.ends}
-                    </small>
-                  )}
-
-                </div>
-
-
-                <div className="panchang-card">
-
-                  <div className="icon">
-                    ✦
-                  </div>
-
-                  <span>Nakshatra</span>
-
-                  <strong>
-                    {display(
-                      panchang?.nakshatra?.name
-                    )}
-                  </strong>
-
-                  {panchang?.nakshatra?.ends && (
-                    <small>
-                      Ends {panchang.nakshatra.ends}
-                    </small>
-                  )}
-
-                </div>
-
-
-                <div className="panchang-card">
-
-                  <div className="icon">
-                    ✧
-                  </div>
-
-                  <span>Yoga</span>
-
-                  <strong>
-                    {display(
-                      panchang?.yoga?.name
-                    )}
-                  </strong>
-
-                  {panchang?.yoga?.ends && (
-                    <small>
-                      Ends {panchang.yoga.ends}
-                    </small>
-                  )}
-
-                </div>
-
-
-                <div className="panchang-card">
-
-                  <div className="icon">
-                    ◐
-                  </div>
-
-                  <span>Karana</span>
-
-                  <strong>
-                    {display(
-                      panchang?.karana?.name
-                    )}
-                  </strong>
-
-                  {panchang?.karana?.ends && (
-                    <small>
-                      Ends {panchang.karana.ends}
-                    </small>
-                  )}
-
-                </div>
+                <PanchangCard
+                  icon="◐"
+                  label="Karana"
+                  value={panchang?.karana?.name}
+                  end={panchang?.karana?.ends}
+                />
 
               </div>
 
             </section>
 
 
-            {/* SUN & MOON */}
+            {/* SUN MOON */}
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Sun & Moon</h2>
+                <div />
               </div>
 
 
               <div className="two-columns">
 
-                <div className="info-card">
+                <InfoCard title="Sun">
+                  <TimeRow
+                    label="Sunrise"
+                    value={panchang?.sun?.rise}
+                  />
 
-                  <h3>Sun</h3>
-
-                  <div className="time-row">
-                    <span>Sunrise</span>
-
-                    <strong>
-                      {display(
-                        panchang?.sun?.rise
-                      )}
-                    </strong>
-                  </div>
-
-                  <div className="time-row">
-                    <span>Sunset</span>
-
-                    <strong>
-                      {display(
-                        panchang?.sun?.set
-                      )}
-                    </strong>
-                  </div>
-
-                </div>
+                  <TimeRow
+                    label="Sunset"
+                    value={panchang?.sun?.set}
+                  />
+                </InfoCard>
 
 
-                <div className="info-card">
+                <InfoCard title="Moon">
+                  <TimeRow
+                    label="Moonrise"
+                    value={panchang?.moon?.rise}
+                  />
 
-                  <h3>Moon</h3>
-
-                  <div className="time-row">
-                    <span>Moonrise</span>
-
-                    <strong>
-                      {display(
-                        panchang?.moon?.rise
-                      )}
-                    </strong>
-                  </div>
-
-                  <div className="time-row">
-                    <span>Moonset</span>
-
-                    <strong>
-                      {display(
-                        panchang?.moon?.set
-                      )}
-                    </strong>
-                  </div>
-
-                </div>
+                  <TimeRow
+                    label="Moonset"
+                    value={panchang?.moon?.set}
+                  />
+                </InfoCard>
 
               </div>
 
@@ -627,10 +473,9 @@ export default function Home() {
 
             <section className="section">
 
-              <div className="section-heading">
-                <h2>
-                  Shubh & Ashubh Kaal
-                </h2>
+              <div className="section-title">
+                <h2>Shubh & Ashubh Kaal</h2>
+                <div />
               </div>
 
 
@@ -670,8 +515,9 @@ export default function Home() {
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Choghadiya</h2>
+                <div />
               </div>
 
 
@@ -679,14 +525,10 @@ export default function Home() {
 
                 <div className="large-card">
 
-                  <h3>
-                    Day Choghadiya
-                  </h3>
+                  <h3>Day Choghadiya</h3>
 
                   <Choghadiya
-                    items={
-                      panchang?.choghadiya?.day
-                    }
+                    items={panchang?.choghadiya?.day}
                   />
 
                 </div>
@@ -694,14 +536,10 @@ export default function Home() {
 
                 <div className="large-card">
 
-                  <h3>
-                    Night Choghadiya
-                  </h3>
+                  <h3>Night Choghadiya</h3>
 
                   <Choghadiya
-                    items={
-                      panchang?.choghadiya?.night
-                    }
+                    items={panchang?.choghadiya?.night}
                   />
 
                 </div>
@@ -715,10 +553,9 @@ export default function Home() {
 
             <section className="section">
 
-              <div className="section-heading">
-                <h2>
-                  Additional Panchang
-                </h2>
+              <div className="section-title">
+                <h2>Additional Panchang</h2>
+                <div />
               </div>
 
 
@@ -746,30 +583,22 @@ export default function Home() {
 
                 <SimpleCard
                   label="Vikram Samvat"
-                  value={
-                    panchang?.vikramSamvat
-                  }
+                  value={panchang?.vikramSamvat}
                 />
 
                 <SimpleCard
                   label="Shaka Samvat"
-                  value={
-                    panchang?.shakaSamvat
-                  }
+                  value={panchang?.shakaSamvat}
                 />
 
                 <SimpleCard
                   label="Sun Rashi"
-                  value={
-                    panchang?.sun?.rashi?.name
-                  }
+                  value={panchang?.sun?.rashi?.name}
                 />
 
                 <SimpleCard
                   label="Moon Rashi"
-                  value={
-                    panchang?.moon?.rashi?.name
-                  }
+                  value={panchang?.moon?.rashi?.name}
                 />
 
                 <SimpleCard
@@ -786,123 +615,241 @@ export default function Home() {
             </section>
 
           </section>
-
         )}
 
       </main>
 
 
-      {/* ============================
-          PAGE CSS
-      ============================ */}
-
       <style jsx>{`
+
+        /* =========================
+           PAGE
+        ========================= */
 
         .page {
           min-height: 100vh;
-          background: #f7f3eb;
+          background: #f8f5ef;
           color: #29251f;
           padding-bottom: 90px;
         }
 
+
+        /* =========================
+           HERO
+        ========================= */
+
         .hero {
-          max-width: 1100px;
+          max-width: 1080px;
           margin: 0 auto;
-          padding: 70px 28px 55px;
+          padding: 65px 24px 45px;
         }
 
         .eyebrow {
           color: #a87935;
-          font-size: 15px;
-          font-weight: 600;
-          letter-spacing: 4px;
-          margin-bottom: 32px;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 2.5px;
+          margin-bottom: 17px;
         }
 
         .hero h1 {
           margin: 0;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(64px, 9vw, 115px);
-          line-height: .88;
-          letter-spacing: -5px;
+          font-size: clamp(42px, 6vw, 70px);
+          line-height: 1;
           font-weight: 600;
+          letter-spacing: -2px;
         }
 
         .hero p {
-          margin: 36px 0 0;
+          margin: 16px 0 0;
           color: #756f64;
-          font-size: 22px;
+          font-size: 16px;
         }
 
-        .controls-section {
-          max-width: 1100px;
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-section {
+          max-width: 1080px;
           margin: 0 auto;
-          padding: 0 28px 55px;
+          padding: 0 24px 40px;
         }
 
-        .controls-section h2 {
-          margin: 0 0 18px;
-          font-size: 14px;
-          letter-spacing: 2px;
-          font-weight: 700;
-        }
-
-        .controls {
+        .search-card {
           display: grid;
-          grid-template-columns: 220px 1fr 130px 190px;
+          grid-template-columns: 210px 1fr 145px 175px;
           gap: 12px;
           align-items: end;
+
+          padding: 18px;
+
+          background: #fffdf9;
+          border: 1px solid #dfd7ca;
+          border-radius: 18px;
+
+          box-shadow:
+            0 8px 30px rgba(70, 50, 30, .055);
         }
 
         .field {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
+          min-width: 0;
         }
 
         .field label {
+          display: block;
+          margin-bottom: 8px;
+
           color: #756f64;
-          font-size: 11px;
+
+          font-size: 10px;
           font-weight: 700;
-          letter-spacing: 1px;
+          letter-spacing: 1.3px;
         }
 
-        .field input {
+
+        /* DATE */
+
+        .date-input-wrap {
+          position: relative;
+        }
+
+        .date-input-wrap input {
+          appearance: none;
+          -webkit-appearance: none;
+
           width: 100%;
-          height: 54px;
-          padding: 0 17px;
-          border: 1px solid #dcd3c5;
-          border-radius: 27px;
-          background: #fffdf9;
+          height: 50px;
+
+          padding: 0 42px 0 42px;
+
+          border: 1px solid #d8d0c3;
+          border-radius: 12px;
+
+          background: #fff;
+
           color: #29251f;
-          font-size: 16px;
+
+          font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+          font-size: 14px;
+
           outline: none;
-        }
-
-        .field input:focus {
-          border-color: #a87935;
-        }
-
-        .detect-button,
-        .view-button {
-          height: 54px;
-          border-radius: 27px;
-          padding: 0 20px;
-          font-size: 15px;
-          font-weight: 600;
           cursor: pointer;
         }
 
-        .detect-button {
-          border: 1px solid #dcd3c5;
-          background: #fffdf9;
+        .date-input-wrap input:hover {
+          border-color: #c5b9a8;
+        }
+
+        .date-input-wrap input:focus {
+          border-color: #a87935;
+          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
+        }
+
+        .date-input-wrap input::-webkit-calendar-picker-indicator {
+          position: absolute;
+          right: 13px;
+
+          width: 17px;
+          height: 17px;
+
+          opacity: .55;
+
+          cursor: pointer;
+        }
+
+        .calendar-icon {
+          position: absolute;
+          left: 15px;
+          top: 50%;
+
+          transform: translateY(-50%);
+
+          color: #a87935;
+          font-size: 17px;
+
+          pointer-events: none;
+          z-index: 1;
+        }
+
+
+        /* LOCATION */
+
+        .location-field input {
+          width: 100%;
+          height: 50px;
+
+          padding: 0 15px;
+
+          border: 1px solid #d8d0c3;
+          border-radius: 12px;
+
+          background: #fff;
+
           color: #29251f;
+
+          font-size: 14px;
+
+          outline: none;
+        }
+
+        .location-field input:focus {
+          border-color: #a87935;
+          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
+        }
+
+        .location-field input::placeholder {
+          color: #aaa196;
+        }
+
+
+        /* BUTTONS */
+
+        .detect-button,
+        .view-button {
+          height: 50px;
+
+          border-radius: 12px;
+
+          font-size: 13px;
+          font-weight: 600;
+
+          cursor: pointer;
+
+          transition:
+            transform .15s ease,
+            opacity .15s ease;
+        }
+
+        .detect-button {
+          border: 1px solid #d8d0c3;
+
+          background: #f7f3eb;
+
+          color: #60482f;
+        }
+
+        .detect-button:hover {
+          background: #f0e9de;
         }
 
         .view-button {
           border: 1px solid #29251f;
+
           background: #29251f;
-          color: white;
+
+          color: #fff;
+        }
+
+        .view-button:hover {
+          transform: translateY(-1px);
         }
 
         .view-button:disabled {
@@ -910,144 +857,245 @@ export default function Home() {
           cursor: wait;
         }
 
-        .location-text {
-          margin-top: 10px;
+
+        /* LOCATION STATUS */
+
+        .location-confirmed {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+
+          margin-top: 11px;
+
+          color: #756f64;
+
+          font-size: 12px;
+        }
+
+        .location-confirmed span {
+          color: #a87935;
+          font-size: 9px;
+        }
+
+
+        /* ERROR */
+
+        .error {
+          margin-top: 13px;
+
+          padding: 13px 15px;
+
+          border: 1px solid #e3c9c0;
+          border-radius: 11px;
+
+          background: #f9eae6;
+
+          color: #863c31;
+
+          font-size: 13px;
+        }
+
+
+        /* =========================
+           RESULTS
+        ========================= */
+
+        .results {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+
+
+        /* DATE SUMMARY */
+
+        .date-summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 20px;
+
+          padding: 25px 0;
+
+          border-top: 1px solid #ded6ca;
+          border-bottom: 1px solid #ded6ca;
+        }
+
+        .summary-label {
+          display: block;
+
+          margin-bottom: 7px;
+
+          color: #756f64;
+
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 1.4px;
+        }
+
+        .date-summary h2 {
+          margin: 0;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 24px;
+          font-weight: 600;
+        }
+
+        .summary-location {
           color: #756f64;
           font-size: 13px;
         }
 
-        .error {
-          margin-top: 15px;
-          padding: 14px 17px;
-          border: 1px solid #e2c6bd;
-          border-radius: 12px;
-          background: #f8e9e4;
-          color: #863c31;
-          font-size: 14px;
-        }
 
-        .results {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 0 28px;
-        }
-
-        .date-card {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 20px;
-          padding: 25px 0;
-          border-top: 1px solid #ddd4c6;
-          border-bottom: 1px solid #ddd4c6;
-        }
-
-        .date-card span {
-          display: block;
-          margin-bottom: 7px;
-          color: #756f64;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 1.5px;
-        }
-
-        .date-card strong {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 25px;
-        }
-
-        .date-location {
-          color: #756f64;
-          font-size: 14px;
-        }
+        /* =========================
+           SECTIONS
+        ========================= */
 
         .section {
-          margin-top: 52px;
+          margin-top: 48px;
         }
 
-        .section-heading {
+        .section-title {
           display: flex;
           align-items: center;
-          gap: 18px;
-          margin-bottom: 17px;
+          gap: 15px;
+
+          margin-bottom: 15px;
         }
 
-        .section-heading::after {
-          content: "";
-          flex: 1;
-          height: 1px;
-          background: #ddd4c6;
-        }
-
-        .section-heading h2 {
+        .section-title h2 {
           margin: 0;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 27px;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 24px;
           font-weight: 600;
         }
 
+        .section-title div {
+          flex: 1;
+
+          height: 1px;
+
+          background: #ded6ca;
+        }
+
+
+        /* =========================
+           PANCHANG
+        ========================= */
+
         .panchang-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+
+          grid-template-columns:
+            repeat(5, 1fr);
+
           gap: 10px;
         }
 
         .panchang-card {
-          min-height: 160px;
+          min-height: 150px;
+
           display: flex;
           flex-direction: column;
+
           align-items: center;
           justify-content: center;
+
+          padding: 18px 10px;
+
           text-align: center;
-          padding: 20px 12px;
-          border: 1px solid #ddd4c6;
-          border-radius: 14px;
+
           background: #fffdf9;
+
+          border: 1px solid #dfd7ca;
+          border-radius: 14px;
+
+          transition:
+            transform .15s ease,
+            box-shadow .15s ease;
         }
 
-        .icon {
-          margin-bottom: 13px;
+        .panchang-card:hover {
+          transform: translateY(-2px);
+
+          box-shadow:
+            0 8px 22px rgba(70, 50, 30, .06);
+        }
+
+        .panchang-icon {
+          margin-bottom: 10px;
+
           color: #a87935;
+
           font-family: Georgia, serif;
-          font-size: 27px;
+
+          font-size: 24px;
         }
 
-        .panchang-card span {
+        .panchang-card .label {
+          margin-bottom: 7px;
+
           color: #756f64;
-          font-size: 12px;
-          margin-bottom: 8px;
+
+          font-size: 11px;
         }
 
         .panchang-card strong {
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
         }
 
         .panchang-card small {
-          margin-top: 7px;
-          color: #756f64;
-          font-size: 11px;
+          margin-top: 6px;
+
+          color: #8b8378;
+
+          font-size: 10px;
         }
+
+
+        /* =========================
+           GENERAL CARDS
+        ========================= */
 
         .two-columns {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+
+          grid-template-columns:
+            1fr 1fr;
+
           gap: 12px;
         }
 
         .info-card,
         .large-card {
-          padding: 22px;
-          border: 1px solid #ddd4c6;
-          border-radius: 14px;
+          padding: 20px;
+
           background: #fffdf9;
+
+          border: 1px solid #dfd7ca;
+          border-radius: 14px;
         }
 
         .info-card h3,
         .large-card h3 {
-          margin: 0 0 15px;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 20px;
+          margin: 0 0 12px;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 19px;
           font-weight: 600;
         }
 
@@ -1056,9 +1104,12 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: center;
+
           gap: 20px;
-          padding: 13px 0;
-          border-bottom: 1px solid #e8e1d7;
+
+          padding: 12px 0;
+
+          border-bottom: 1px solid #ebe4da;
         }
 
         .time-row:last-child,
@@ -1068,79 +1119,146 @@ export default function Home() {
 
         .time-row span,
         .choghadiya-row span {
-          font-size: 14px;
+          color: #4b453e;
+          font-size: 13px;
         }
 
         .time-row strong,
         .choghadiya-row strong {
           color: #7b4b2a;
-          font-size: 14px;
+
+          font-size: 13px;
+          font-weight: 600;
+
           text-align: right;
         }
 
+
+        /* =========================
+           INFO GRID
+        ========================= */
+
         .info-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
+
+          grid-template-columns:
+            repeat(3, 1fr);
+
+          gap: 10px;
         }
 
         .simple-card {
-          padding: 20px;
-          border: 1px solid #ddd4c6;
-          border-radius: 14px;
+          padding: 18px;
+
           background: #fffdf9;
+
+          border: 1px solid #dfd7ca;
+          border-radius: 13px;
         }
 
         .simple-card span {
           display: block;
-          margin-bottom: 8px;
+
+          margin-bottom: 7px;
+
           color: #756f64;
-          font-size: 11px;
+
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: .2px;
         }
 
         .simple-card strong {
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
         }
 
+
+        /* =========================
+           EMPTY
+        ========================= */
+
         .empty {
-          color: #756f64;
-          font-size: 13px;
-          padding: 10px 0;
+          padding: 8px 0;
+
+          color: #8b8378;
+
+          font-size: 12px;
         }
 
-        @media (max-width: 800px) {
 
-          .hero {
-            padding: 55px 22px 42px;
-          }
+        /* =========================
+           TABLET
+        ========================= */
 
-          .hero h1 {
-            font-size: 70px;
-            letter-spacing: -3px;
-          }
+        @media (max-width: 850px) {
 
-          .hero p {
-            font-size: 18px;
-          }
-
-          .controls-section,
-          .results {
-            padding-left: 22px;
-            padding-right: 22px;
-          }
-
-          .controls {
-            grid-template-columns: 1fr;
-          }
-
-          .detect-button,
-          .view-button {
-            width: 100%;
+          .search-card {
+            grid-template-columns:
+              1fr 1fr;
           }
 
           .panchang-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns:
+              repeat(3, 1fr);
+          }
+
+          .info-grid {
+            grid-template-columns:
+              repeat(2, 1fr);
+          }
+
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+          .hero {
+            padding: 48px 18px 34px;
+          }
+
+          .hero h1 {
+            font-size: 44px;
+            letter-spacing: -1.5px;
+          }
+
+          .hero p {
+            font-size: 14px;
+            line-height: 1.5;
+          }
+
+          .search-section,
+          .results {
+            padding-left: 18px;
+            padding-right: 18px;
+          }
+
+          .search-card {
+            grid-template-columns: 1fr;
+
+            padding: 16px;
+
+            border-radius: 16px;
+          }
+
+          .field input,
+          .date-input-wrap input,
+          .detect-button,
+          .view-button {
+            height: 50px;
+          }
+
+          .panchang-grid {
+            grid-template-columns:
+              1fr 1fr;
+          }
+
+          .panchang-card {
+            min-height: 140px;
           }
 
           .two-columns {
@@ -1148,66 +1266,136 @@ export default function Home() {
           }
 
           .info-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
+          }
+
+          .date-summary {
+            display: block;
+          }
+
+          .summary-location {
+            margin-top: 8px;
+          }
+
+          .section {
+            margin-top: 40px;
+          }
+
+          .section-title h2 {
+            font-size: 22px;
           }
 
         }
 
-        @media (max-width: 480px) {
 
-          .hero {
-            padding: 48px 20px 40px;
-          }
-
-          .eyebrow {
-            font-size: 12px;
-            letter-spacing: 3px;
-          }
+        @media (max-width: 380px) {
 
           .hero h1 {
-            font-size: 64px;
-            line-height: .9;
-          }
-
-          .hero p {
-            margin-top: 28px;
-            font-size: 18px;
-          }
-
-          .controls-section,
-          .results {
-            padding-left: 20px;
-            padding-right: 20px;
-          }
-
-          .date-card {
-            display: block;
-          }
-
-          .date-location {
-            margin-top: 10px;
-          }
-
-          .panchang-grid {
-            grid-template-columns: 1fr 1fr;
+            font-size: 40px;
           }
 
           .panchang-card {
-            min-height: 145px;
+            padding-left: 7px;
+            padding-right: 7px;
           }
 
-          .info-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .section-heading h2 {
-            font-size: 23px;
+          .panchang-card strong {
+            font-size: 14px;
           }
 
         }
 
       `}</style>
     </>
+  );
+}
+
+
+/* =====================================
+   PANCHANG CARD
+===================================== */
+
+function PanchangCard({
+  icon,
+  label,
+  value,
+  end,
+}: {
+  icon: string;
+  label: string;
+  value: any;
+  end?: any;
+}) {
+  return (
+    <div className="panchang-card">
+
+      <div className="panchang-icon">
+        {icon}
+      </div>
+
+      <div className="label">
+        {label}
+      </div>
+
+      <strong>
+        {display(value)}
+      </strong>
+
+      {end && (
+        <small>
+          Ends {end}
+        </small>
+      )}
+
+    </div>
+  );
+}
+
+
+/* =====================================
+   INFO CARD
+===================================== */
+
+function InfoCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="info-card">
+
+      <h3>{title}</h3>
+
+      {children}
+
+    </div>
+  );
+}
+
+
+/* =====================================
+   TIME ROW
+===================================== */
+
+function TimeRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: any;
+}) {
+  return (
+    <div className="time-row">
+
+      <span>{label}</span>
+
+      <strong>
+        {display(value)}
+      </strong>
+
+    </div>
   );
 }
 
