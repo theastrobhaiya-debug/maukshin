@@ -1,17 +1,22 @@
 :root {
-  --bg: #f7f4ee;
-  --card: #fffdf9;
-  --text: #29251f;
-  --muted: #756f64;
-  --border: #e6ded1;
+  --bg: #f7f3eb;
+  --surface: #fffdf8;
+  --surface-2: #f1eadf;
+  --text: #29231d;
+  --muted: #756b5f;
+  --border: #e4dacb;
   --accent: #7b4b2a;
-  --accent-light: #f0e4d6;
-  --gold: #a87935;
-  --shadow: 0 6px 24px rgba(65, 45, 25, 0.06);
+  --accent-dark: #5e351d;
+  --gold: #b18445;
+  --shadow: 0 12px 35px rgba(55, 38, 20, 0.08);
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -21,8 +26,16 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(177, 132, 69, 0.08),
+      transparent 35%
+    ),
+    var(--bg);
+
   color: var(--text);
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -44,51 +57,56 @@ button {
   cursor: pointer;
 }
 
-.hidden {
-  display: none !important;
-}
-
-/* =========================================
-   KAALDARPAN HEADER
-   ========================================= */
+/* ================================
+   HEADER
+================================ */
 
 .site-header {
-  background: #fffdf9;
-  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
+
+  background: rgba(255, 253, 248, 0.94);
+  backdrop-filter: blur(14px);
+
+  border-bottom: 1px solid var(--border);
 }
 
 .nav {
-  max-width: 1100px;
-  margin: auto;
+  width: min(1120px, calc(100% - 32px));
   min-height: 76px;
-  padding: 10px 20px;
+
+  margin: auto;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+
+  gap: 24px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
+
   text-decoration: none;
-  color: var(--text);
 }
 
 .brand img {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
+
   object-fit: contain;
 }
 
 .brand-name {
   font-family: Georgia, serif;
-  font-size: 24px;
-  font-weight: 600;
+
+  font-size: 25px;
+  font-weight: 700;
+
+  letter-spacing: -0.4px;
 }
 
 .menu {
@@ -98,77 +116,663 @@ button {
 }
 
 .menu a {
-  color: var(--text);
   text-decoration: none;
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
   font-size: 14px;
-  padding: 9px 13px;
-  border-radius: 9px;
+  font-weight: 500;
+
+  color: var(--text);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .menu a:hover {
-  background: var(--accent-light);
+  background: var(--surface-2);
+  color: var(--accent);
 }
 
-
-/* =========================================
+/* ================================
    PAGE
-   ========================================= */
+================================ */
 
-.page-main {
-  max-width: 1100px;
-  margin: auto;
-  padding: 32px 18px 60px;
+.container {
+  width: min(1120px, calc(100% - 32px));
+
+  margin: 0 auto;
+
+  padding: 55px 0 80px;
 }
 
+/* ================================
+   HERO
+================================ */
 
-/* =========================================
-   FOOTER
-   ========================================= */
-
-.site-footer {
+.hero {
   text-align: center;
-  padding: 28px 15px;
-  color: var(--muted);
-  font-size: 11px;
+
+  padding: 35px 20px 42px;
 }
 
+.hero h1 {
+  margin: 0;
 
-/* =========================================
-   CARDS
-   ========================================= */
+  font-family: Georgia, serif;
 
-.card {
-  background: var(--card);
+  font-size: clamp(42px, 7vw, 72px);
+
+  line-height: 1.05;
+
+  letter-spacing: -2px;
+}
+
+.hero h1::after {
+  content: "";
+
+  display: block;
+
+  width: 55px;
+  height: 2px;
+
+  margin: 22px auto 0;
+
+  background: var(--gold);
+}
+
+.hero p {
+  margin: 22px auto 0;
+
+  max-width: 620px;
+
+  color: var(--muted);
+
+  font-size: 18px;
+
+  line-height: 1.6;
+}
+
+/* ================================
+   CONTROLS
+================================ */
+
+.controls {
+  background: var(--surface);
+
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
+
+  border-radius: 22px;
+
+  padding: 26px;
+
+  box-shadow: var(--shadow);
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(180px, 0.8fr)
+    minmax(300px, 1.5fr)
+    auto;
+
+  gap: 22px;
+
+  align-items: end;
+}
+
+.field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+.field label {
+  color: var(--muted);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.field input {
+  width: 100%;
+
+  min-height: 48px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  padding: 0 14px;
+
+  background: #fff;
+
+  color: var(--text);
+
+  outline: none;
+}
+
+.field input:focus {
+  border-color: var(--gold);
+
+  box-shadow:
+    0 0 0 3px rgba(177, 132, 69, 0.12);
+}
+
+.location-row {
+  display: flex;
+
+  gap: 9px;
+}
+
+.location-row input {
+  flex: 1;
+}
+
+.detect {
+  min-width: 88px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  background: var(--surface-2);
+
+  color: var(--text);
+}
+
+.detect:hover {
+  background: #e8dece;
+}
+
+.location-display {
+  margin-top: 8px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.button-wrap {
+  display: flex;
+}
+
+.button-wrap button {
+  min-height: 48px;
+
+  padding: 0 22px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background: var(--accent);
+
+  color: white;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 8px 18px rgba(123, 75, 42, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.button-wrap button:hover {
+  background: var(--accent-dark);
+
+  transform: translateY(-1px);
+}
+
+/* ================================
+   STATES
+================================ */
+
+.loading,
+.error {
+  margin-top: 20px;
+
+  padding: 16px 18px;
+
+  border-radius: 12px;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+.loading {
+  background: var(--surface-2);
+
+  color: var(--accent);
+}
+
+.error {
+  background: #f8e8e4;
+
+  border: 1px solid #e8c8bf;
+
+  color: #8b3d2d;
+}
+
+/* ================================
+   DATE CARD
+================================ */
+
+.date-card {
+  margin-top: 35px;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffdf8,
+      #f1e8da
+    );
+
+  border: 1px solid var(--border);
+
+  border-radius: 20px;
+
   box-shadow: var(--shadow);
 }
 
+.date-label {
+  color: var(--muted);
 
-/* =========================================
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+.date-value {
+  margin-top: 10px;
+
+  font-family: Georgia, serif;
+
+  font-size: clamp(24px, 4vw, 36px);
+
+  font-weight: 700;
+}
+
+.date-location {
+  margin-top: 7px;
+
+  color: var(--accent);
+
+  font-size: 14px;
+}
+
+/* ================================
+   SECTIONS
+================================ */
+
+.section {
+  margin-top: 45px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.section-heading::after {
+  content: "";
+
+  height: 1px;
+
+  flex: 1;
+
+  background: var(--border);
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  font-family: Georgia, serif;
+
+  font-size: 27px;
+
+  letter-spacing: -0.5px;
+}
+
+/* ================================
+   PANCHANG GRID
+================================ */
+
+.panchang-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.panchang-card {
+  min-height: 180px;
+
+  padding: 20px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 17px;
+
+  box-shadow: var(--shadow);
+
+  text-align: center;
+}
+
+.panchang-icon {
+  font-size: 25px;
+
+  margin-bottom: 15px;
+}
+
+.panchang-label,
+.card-label {
+  color: var(--muted);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1.3px;
+}
+
+.panchang-value {
+  margin-top: 10px;
+
+  font-family: Georgia, serif;
+
+  font-size: 19px;
+
+  font-weight: 700;
+}
+
+.panchang-end {
+  margin-top: 9px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+/* ================================
+   GENERAL GRIDS
+================================ */
+
+.grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.grid-three {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  padding: 22px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  box-shadow: var(--shadow);
+}
+
+.card-value {
+  margin-top: 12px;
+
+  font-family: Georgia, serif;
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+.time-list {
+  margin-top: 15px;
+}
+
+.time-row {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.time-row:last-child {
+  border-bottom: 0;
+}
+
+.time-row span {
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+.time-row strong {
+  font-size: 14px;
+}
+
+/* ================================
+   CHOGHADIYA
+================================ */
+
+.choghadiya-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.choghadiya-card {
+  padding: 22px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  box-shadow: var(--shadow);
+}
+
+.choghadiya-card h3 {
+  margin: 0 0 15px;
+
+  font-family: Georgia, serif;
+
+  font-size: 20px;
+}
+
+.choghadiya-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid var(--border);
+
+  font-size: 13px;
+}
+
+.choghadiya-row:last-child {
+  border-bottom: 0;
+}
+
+.choghadiya-row span {
+  color: var(--muted);
+}
+
+.empty {
+  padding: 15px;
+
+  color: var(--muted);
+
+  text-align: center;
+}
+
+/* ================================
+   FOOTER
+================================ */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+
+  padding: 30px 20px 35px;
+
+  text-align: center;
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+  background: var(--surface);
+}
+
+/* ================================
    MOBILE
-   ========================================= */
+================================ */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
+  .controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .button-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .button-wrap button {
+    width: 100%;
+  }
+
+  .panchang-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-three {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
   .nav {
+    min-height: auto;
+
+    padding: 12px 0;
+
     flex-direction: column;
-    padding: 12px;
+
+    gap: 10px;
   }
 
   .menu {
     width: 100%;
-    justify-content: center;
-  }
-}
 
-@media (max-width: 420px) {
-  .brand-name {
-    font-size: 22px;
+    justify-content: center;
   }
 
   .menu a {
-    padding: 8px 9px;
+    padding: 8px 10px;
+
     font-size: 13px;
+  }
+
+  .container {
+    width: min(100% - 22px, 1120px);
+
+    padding-top: 25px;
+  }
+
+  .hero {
+    padding: 25px 8px 30px;
+  }
+
+  .hero h1 {
+    font-size: 43px;
+
+    letter-spacing: -1.5px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+
+    padding: 18px;
+  }
+
+  .button-wrap {
+    grid-column: auto;
+  }
+
+  .panchang-grid,
+  .grid,
+  .grid-three,
+  .choghadiya-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panchang-card {
+    min-height: auto;
+
+    padding: 22px;
+  }
+
+  .date-card {
+    padding: 25px 18px;
+  }
+
+  .section-heading h2 {
+    font-size: 23px;
   }
 }
