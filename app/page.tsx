@@ -2,61 +2,398 @@
 
 import { useEffect, useState } from "react";
 
+const API_BASE =
+  "https://mauksh-kundali-engine.onrender.com";
+
+type LocationState = {
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+type PanchangData = {
+  vara?: {
+    name?: string;
+  };
+  tithi?: {
+    name?: string;
+    ends?: string;
+  };
+  nakshatra?: {
+    name?: string;
+    ends?: string;
+  };
+  yoga?: {
+    name?: string;
+    ends?: string;
+  };
+  karana?: {
+    name?: string;
+    ends?: string;
+  };
+  sun?: {
+    rise?: string;
+    set?: string;
+    rashi?: {
+      name?: string;
+    };
+  };
+  moon?: {
+    rise?: string;
+    set?: string;
+    rashi?: {
+      name?: string;
+    };
+    nakshatra?: {
+      pada?: number | string;
+    };
+  };
+  timings?: {
+    rahuKaal?: string;
+    yamaganda?: string;
+    gulika?: string;
+    abhijit?: string;
+    brahma?: string;
+  };
+  choghadiya?: {
+    day?: ChoghadiyaItem[];
+    night?: ChoghadiyaItem[];
+  };
+  ayana?: string;
+  ritu?: string;
+  paksha?: string;
+  masa?: string;
+  vikramSamvat?: string | number;
+  shakaSamvat?: string | number;
+};
+
+type ChoghadiyaItem = {
+  name?: string;
+  start?: string;
+  end?: string;
+};
+
+function getToday() {
+  const d = new Date();
+
+  return `${d.getFullYear()}-${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDate(date: string) {
+  return new Date(
+    `${date}T00:00:00`
+  ).toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export default function HomePage() {
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getToday());
+
+  const [city, setCity] = useState("");
+
+  const [location, setLocation] =
+    useState<LocationState>({
+      city: "",
+      latitude: null,
+      longitude: null,
+    });
+
+  const [data, setData] =
+    useState<PanchangData | null>(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  async function findCity(cityName: string) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+        cityName
+      )}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "Unable to find this city."
+      );
+    }
+
+    const results = await response.json();
+
+    if (!results.length) {
+      throw new Error(
+        "City not found. Please check the city name."
+      );
+    }
+
+    return {
+      city:
+        results[0].display_name.split(",")[0],
+      latitude: parseFloat(results[0].lat),
+      longitude: parseFloat(results[0].lon),
+    };
+  }
+
+  async function detectLocation() {
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError(
+        "Location detection is not supported by your browser."
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const latitude =
+            position.coords.latitude;
+
+          const longitude =
+            position.coords.longitude;
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+
+          const result =
+            await response.json();
+
+          const address =
+            result.address || {};
+
+          const detectedCity =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "Current location";
+
+          const detected = {
+            city: detectedCity,
+            latitude,
+            longitude,
+          };
+
+          setLocation(detected);
+          setCity(detectedCity);
+
+          await loadPanchang(
+            detected,
+            date
+          );
+        } catch {
+          setError(
+            "Unable to detect your location."
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      () => {
+        setLoading(false);
+        setError(
+          "Unable to detect location. Please enter your city."
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      }
+    );
+  }
+
+  async function loadPanchang(
+    selectedLocation?: LocationState,
+    selectedDate?: string
+  ) {
+    setError("");
+
+    const finalDate =
+      selectedDate || date;
+
+    let finalLocation =
+      selectedLocation || location;
+
+    try {
+      if (!finalDate) {
+        throw new Error(
+          "Please select a date."
+        );
+      }
+
+      if (
+        city &&
+        (!selectedLocation ||
+          city !== selectedLocation.city)
+      ) {
+        const found =
+          await findCity(city);
+
+        finalLocation = found;
+
+        setLocation(found);
+      }
+
+      if (
+        finalLocation.latitude === null ||
+        finalLocation.longitude === null
+      ) {
+        throw new Error(
+          "Please enter a city or use Detect."
+        );
+      }
+
+      setLoading(true);
+
+      const timezone =
+        Intl.DateTimeFormat()
+          .resolvedOptions()
+          .timeZone ||
+        "Asia/Kolkata";
+
+      const params =
+        new URLSearchParams({
+          date: finalDate,
+          latitude:
+            String(finalLocation.latitude),
+          longitude:
+            String(finalLocation.longitude),
+          timezone,
+        });
+
+      const response = await fetch(
+        `${API_BASE}/api/panchang?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Panchang engine returned an error."
+        );
+      }
+
+      const result =
+        await response.json();
+
+      setData(result);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to load Panchang."
+      );
+
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    const today = new Date();
+    const savedCity =
+      localStorage.getItem(
+        "kaaldarpan-city"
+      );
 
-    setDate(
-      today.toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    );
+    if (savedCity) {
+      setCity(savedCity);
+    }
   }, []);
+
+  function handleCityChange(
+    value: string
+  ) {
+    setCity(value);
+    localStorage.setItem(
+      "kaaldarpan-city",
+      value
+    );
+  }
 
   return (
     <div className="panchang-page">
 
-      {/* PAGE HEADER */}
+      {/* PAGE TITLE */}
+
       <section className="panchang-hero">
 
         <div className="panchang-eyebrow">
-          KAALDARPAN · VEDIC ASTROLOGY
+          DAILY VEDIC PANCHANG
         </div>
 
         <h1>Daily Panchang</h1>
 
         <p>
-          Today's Vedic Panchang
+          {formatDate(date)}
         </p>
-
-        <div className="panchang-date">
-          {date || "Loading date..."}
-        </div>
 
       </section>
 
 
-      {/* LOCATION */}
+      {/* CONTROLS */}
+
       <section className="panchang-location">
 
         <div className="location-label">
-          YOUR LOCATION
+          DATE & LOCATION
         </div>
 
         <div className="location-row">
 
           <input
+            type="date"
+            value={date}
+            onChange={(e) =>
+              setDate(e.target.value)
+            }
+            className="location-input"
+          />
+
+          <input
             type="text"
+            value={city}
+            onChange={(e) =>
+              handleCityChange(
+                e.target.value
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                loadPanchang();
+              }
+            }}
             placeholder="Enter city"
             className="location-input"
           />
 
-          <button className="location-button">
+          <button
+            className="location-button"
+            type="button"
+            onClick={detectLocation}
+          >
             Detect
+          </button>
+
+          <button
+            className="location-button"
+            type="button"
+            onClick={() =>
+              loadPanchang()
+            }
+          >
+            View Panchang
           </button>
 
         </div>
@@ -64,268 +401,492 @@ export default function HomePage() {
       </section>
 
 
-      {/* MAIN PANCHANG */}
-      <section className="panchang-content">
+      {/* STATUS */}
 
-        {/* TITHI */}
-        <article className="panchang-card featured">
-
-          <div className="card-label">
-            TITHI
-          </div>
-
-          <div className="card-value">
-            Shukla Panchami
-          </div>
-
-          <div className="card-detail">
-            Until 06:42 PM
-          </div>
-
-        </article>
-
-
-        {/* NAKSHATRA */}
-        <article className="panchang-card">
-
-          <div className="card-label">
-            NAKSHATRA
-          </div>
-
-          <div className="card-value">
-            Uttara Phalguni
-          </div>
-
-          <div className="card-detail">
-            Until 08:15 PM
-          </div>
-
-        </article>
-
-
-        {/* YOGA */}
-        <article className="panchang-card">
-
-          <div className="card-label">
-            YOGA
-          </div>
-
-          <div className="card-value">
-            Saubhagya
-          </div>
-
-          <div className="card-detail">
-            Until 04:31 PM
-          </div>
-
-        </article>
-
-
-        {/* KARANA */}
-        <article className="panchang-card">
-
-          <div className="card-label">
-            KARANA
-          </div>
-
-          <div className="card-value">
-            Taitila
-          </div>
-
-          <div className="card-detail">
-            Until 06:42 PM
-          </div>
-
-        </article>
-
-      </section>
-
-
-      {/* SUN & MOON */}
-      <section className="astronomical-section">
-
-        <div className="section-heading">
-          <span>ASTRONOMICAL TIMINGS</span>
-          <h2>Sun & Moon</h2>
+      {loading && (
+        <div className="panchang-status">
+          Calculating Panchang…
         </div>
+      )}
+
+      {error && (
+        <div className="panchang-error">
+          {error}
+        </div>
+      )}
 
 
-        <div className="timing-grid">
+      {data && (
+        <>
 
-          <div className="timing-card">
+          {/* DATE */}
 
-            <div className="timing-icon">
-              ☀
+          <section className="panchang-date-card">
+
+            <div>
+              <span>
+                PANCHANG FOR
+              </span>
+
+              <strong>
+                {formatDate(date)}
+              </strong>
             </div>
 
             <div>
-              <span>Sunrise</span>
-              <strong>06:12 AM</strong>
+              <span>
+                LOCATION
+              </span>
+
+              <strong>
+                {location.city}
+              </strong>
             </div>
 
-          </div>
+          </section>
 
 
-          <div className="timing-card">
+          {/* FIVE LIMBS */}
 
-            <div className="timing-icon">
-              ☀
+          <section className="panchang-section">
+
+            <div className="section-heading">
+              <span>
+                FIVE LIMBS OF PANCHANG
+              </span>
+
+              <h2>Panchang</h2>
             </div>
 
-            <div>
-              <span>Sunset</span>
-              <strong>06:43 PM</strong>
+
+            <div className="panchang-grid">
+
+              <PanchangCard
+                icon="☀"
+                label="Vara"
+                value={
+                  data.vara?.name
+                }
+              />
+
+              <PanchangCard
+                icon="☾"
+                label="Tithi"
+                value={
+                  data.tithi?.name
+                }
+                detail={
+                  data.tithi?.ends
+                    ? `Ends ${data.tithi.ends}`
+                    : undefined
+                }
+              />
+
+              <PanchangCard
+                icon="✦"
+                label="Nakshatra"
+                value={
+                  data.nakshatra?.name
+                }
+                detail={
+                  data.nakshatra?.ends
+                    ? `Ends ${data.nakshatra.ends}`
+                    : undefined
+                }
+              />
+
+              <PanchangCard
+                icon="✧"
+                label="Yoga"
+                value={
+                  data.yoga?.name
+                }
+                detail={
+                  data.yoga?.ends
+                    ? `Ends ${data.yoga.ends}`
+                    : undefined
+                }
+              />
+
+              <PanchangCard
+                icon="◐"
+                label="Karana"
+                value={
+                  data.karana?.name
+                }
+                detail={
+                  data.karana?.ends
+                    ? `Ends ${data.karana.ends}`
+                    : undefined
+                }
+              />
+
             </div>
 
-          </div>
+          </section>
 
 
-          <div className="timing-card">
+          {/* SUN & MOON */}
 
-            <div className="timing-icon">
-              ☾
+          <section className="panchang-section">
+
+            <div className="section-heading">
+              <span>
+                ASTRONOMICAL TIMINGS
+              </span>
+
+              <h2>Sun & Moon</h2>
             </div>
 
-            <div>
-              <span>Moonrise</span>
-              <strong>10:21 AM</strong>
+
+            <div className="timing-grid">
+
+              <TimingCard
+                icon="☀"
+                label="Sunrise"
+                value={
+                  data.sun?.rise
+                }
+              />
+
+              <TimingCard
+                icon="☀"
+                label="Sunset"
+                value={
+                  data.sun?.set
+                }
+              />
+
+              <TimingCard
+                icon="☾"
+                label="Moonrise"
+                value={
+                  data.moon?.rise
+                }
+              />
+
+              <TimingCard
+                icon="☽"
+                label="Moonset"
+                value={
+                  data.moon?.set
+                }
+              />
+
             </div>
 
-          </div>
+          </section>
 
 
-          <div className="timing-card">
+          {/* SHUBH ASHUBH */}
 
-            <div className="timing-icon">
-              ☽
+          <section className="panchang-section">
+
+            <div className="section-heading">
+              <span>
+                DAILY TIMINGS
+              </span>
+
+              <h2>
+                Shubh & Ashubh Kaal
+              </h2>
             </div>
 
-            <div>
-              <span>Moonset</span>
-              <strong>10:42 PM</strong>
+
+            <div className="muhurat-grid">
+
+              <SimpleCard
+                label="Rahu Kaal"
+                value={
+                  data.timings?.rahuKaal
+                }
+              />
+
+              <SimpleCard
+                label="Yamaganda"
+                value={
+                  data.timings?.yamaganda
+                }
+              />
+
+              <SimpleCard
+                label="Gulika Kaal"
+                value={
+                  data.timings?.gulika
+                }
+              />
+
+              <SimpleCard
+                label="Abhijit Muhurat"
+                value={
+                  data.timings?.abhijit
+                }
+              />
+
+              <SimpleCard
+                label="Brahma Muhurat"
+                value={
+                  data.timings?.brahma
+                }
+              />
+
             </div>
 
-          </div>
-
-        </div>
-
-      </section>
+          </section>
 
 
-      {/* MUHURAT */}
-      <section className="muhurat-section">
+          {/* CHOGHADIYA */}
 
-        <div className="section-heading">
-          <span>AUSPICIOUS & INAUSPICIOUS</span>
-          <h2>Today's Timings</h2>
-        </div>
+          <section className="panchang-section">
 
+            <div className="section-heading">
+              <span>
+                CHOGHADIYA
+              </span>
 
-        <div className="muhurat-grid">
-
-          <div className="muhurat-card good">
-
-            <div className="muhurat-title">
-              Abhijit Muhurat
+              <h2>Day & Night</h2>
             </div>
 
-            <div className="muhurat-time">
-              11:58 AM – 12:48 PM
+
+            <div className="choghadiya-grid">
+
+              <ChoghadiyaCard
+                title="Day Choghadiya"
+                items={
+                  data.choghadiya?.day
+                }
+              />
+
+              <ChoghadiyaCard
+                title="Night Choghadiya"
+                items={
+                  data.choghadiya?.night
+                }
+              />
+
             </div>
 
-            <div className="muhurat-status">
-              Auspicious
+          </section>
+
+
+          {/* ADDITIONAL */}
+
+          <section className="panchang-section">
+
+            <div className="section-heading">
+              <span>
+                VEDIC CALENDAR
+              </span>
+
+              <h2>
+                Additional Panchang
+              </h2>
             </div>
 
-          </div>
 
+            <div className="muhurat-grid">
 
-          <div className="muhurat-card">
+              <SimpleCard
+                label="Ayana"
+                value={data.ayana}
+              />
 
-            <div className="muhurat-title">
-              Rahu Kalam
+              <SimpleCard
+                label="Ritu"
+                value={data.ritu}
+              />
+
+              <SimpleCard
+                label="Paksha"
+                value={data.paksha}
+              />
+
+              <SimpleCard
+                label="Masa"
+                value={data.masa}
+              />
+
+              <SimpleCard
+                label="Vikram Samvat"
+                value={
+                  data.vikramSamvat
+                }
+              />
+
+              <SimpleCard
+                label="Shaka Samvat"
+                value={
+                  data.shakaSamvat
+                }
+              />
+
+              <SimpleCard
+                label="Sun Rashi"
+                value={
+                  data.sun?.rashi?.name
+                }
+              />
+
+              <SimpleCard
+                label="Moon Rashi"
+                value={
+                  data.moon?.rashi?.name
+                }
+              />
+
+              <SimpleCard
+                label="Moon Nakshatra Pada"
+                value={
+                  data.moon?.nakshatra
+                    ?.pada
+                    ? `Pada ${data.moon.nakshatra.pada}`
+                    : undefined
+                }
+              />
+
             </div>
 
-            <div className="muhurat-time">
-              03:15 PM – 04:47 PM
-            </div>
+          </section>
 
-            <div className="muhurat-status">
-              Avoid important work
-            </div>
-
-          </div>
-
-
-          <div className="muhurat-card">
-
-            <div className="muhurat-title">
-              Yamaganda
-            </div>
-
-            <div className="muhurat-time">
-              09:15 AM – 10:47 AM
-            </div>
-
-            <div className="muhurat-status">
-              Avoid important work
-            </div>
-
-          </div>
-
-
-          <div className="muhurat-card">
-
-            <div className="muhurat-title">
-              Gulika Kalam
-            </div>
-
-            <div className="muhurat-time">
-              12:19 PM – 01:51 PM
-            </div>
-
-            <div className="muhurat-status">
-              Traditionally avoided
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* DAY SUMMARY */}
-      <section className="panchang-summary">
-
-        <div className="summary-inner">
-
-          <div className="summary-symbol">
-            ✦
-          </div>
-
-          <div>
-
-            <div className="summary-label">
-              TODAY IN VEDIC CALENDAR
-            </div>
-
-            <h2>
-              A day to move with awareness.
-            </h2>
-
-            <p>
-              Panchang reflects the five key limbs of
-              the Vedic calendar — Tithi, Nakshatra,
-              Yoga, Karana and Vara.
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
+        </>
+      )}
 
     </div>
+  );
+}
+
+
+/* ========================================================
+   SMALL COMPONENTS
+======================================================== */
+
+function PanchangCard({
+  icon,
+  label,
+  value,
+  detail,
+}: {
+  icon: string;
+  label: string;
+  value?: string;
+  detail?: string;
+}) {
+  return (
+    <article className="panchang-card">
+
+      <div className="panchang-card-icon">
+        {icon}
+      </div>
+
+      <div className="card-label">
+        {label}
+      </div>
+
+      <div className="card-value">
+        {value || "—"}
+      </div>
+
+      {detail && (
+        <div className="card-detail">
+          {detail}
+        </div>
+      )}
+
+    </article>
+  );
+}
+
+
+function TimingCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value?: string;
+}) {
+  return (
+    <article className="timing-card">
+
+      <div className="timing-icon">
+        {icon}
+      </div>
+
+      <div>
+        <span>{label}</span>
+        <strong>
+          {value || "—"}
+        </strong>
+      </div>
+
+    </article>
+  );
+}
+
+
+function SimpleCard({
+  label,
+  value,
+}: {
+  label: string;
+  value?: string | number;
+}) {
+  return (
+    <article className="muhurat-card">
+
+      <div className="muhurat-title">
+        {label}
+      </div>
+
+      <div className="muhurat-time">
+        {value || "—"}
+      </div>
+
+    </article>
+  );
+}
+
+
+function ChoghadiyaCard({
+  title,
+  items,
+}: {
+  title: string;
+  items?: ChoghadiyaItem[];
+}) {
+  return (
+    <article className="choghadiya-card">
+
+      <h3>{title}</h3>
+
+      {!items?.length && (
+        <div className="card-detail">
+          No data available.
+        </div>
+      )}
+
+      {items?.map(
+        (item, index) => (
+          <div
+            className="choghadiya-row"
+            key={`${item.name}-${index}`}
+          >
+
+            <span>
+              {item.name || "—"}
+            </span>
+
+            <strong>
+              {item.start || "—"}
+              {" – "}
+              {item.end || "—"}
+            </strong>
+
+          </div>
+        )
+      )}
+
+    </article>
   );
 }
