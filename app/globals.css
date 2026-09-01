@@ -1,126 +1,318 @@
-:root {
-  --site-bg: #f7f4ee;
-  --site-card: #fffdf9;
-  --site-text: #29251f;
-  --site-muted: #756f64;
-  --site-border: #e6ded1;
-}
+/* =========================================================
+   KAALDARPAN — GLOBAL HEADER & FOOTER ONLY
+   ========================================================= */
 
-* {
+/* ---------- Global Reset for Header/Footer ---------- */
+
+.site-header *,
+.site-footer * {
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--site-bg);
-  color: var(--site-text);
+.site-header a,
+.site-footer a {
+  text-decoration: none;
 }
 
-body {
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Arial,
-    sans-serif;
+.site-header img,
+.site-footer img {
+  display: block;
 }
 
-/* HEADER */
 
-header {
-  background: var(--site-card);
-  border-bottom: 1px solid var(--site-border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.site-header {
+  width: 100%;
+  background: #0b0b0b;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+  color: #f5ead0;
 }
 
-.nav {
-  max-width: 1100px;
-  margin: auto;
+.header-inner {
+  width: min(1200px, calc(100% - 32px));
   min-height: 76px;
-  padding: 10px 20px;
+  margin: 0 auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
 }
 
-.brand {
+
+/* ---------- Header Brand ---------- */
+
+.header-brand {
   display: flex;
   align-items: center;
-  gap: 11px;
-  text-decoration: none;
-  color: var(--site-text);
+  flex-shrink: 0;
 }
 
-.brand img {
-  width: 50px;
-  height: 50px;
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #d4af37;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.header-logo img {
+  width: 42px;
+  height: 42px;
   object-fit: contain;
 }
 
-.brand-name {
-  font-family: Georgia, serif;
-  font-size: 24px;
+
+/* ---------- Header Navigation ---------- */
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 26px;
+}
+
+.header-nav a {
+  position: relative;
+
+  color: #d8d0bd;
+  font-size: 14px;
+  font-weight: 500;
+
+  padding: 8px 0;
+
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.header-nav a:hover {
+  color: #d4af37;
+}
+
+.header-nav a::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: #d4af37;
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition: transform 0.2s ease;
+}
+
+.header-nav a:hover::after {
+  transform: scaleX(1);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.site-footer {
+  width: 100%;
+  margin-top: 60px;
+
+  background: #080808;
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+
+  color: #bdb5a5;
+}
+
+.footer-inner {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+
+  padding: 42px 0 24px;
+
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 40px;
+}
+
+
+/* ---------- Footer Brand ---------- */
+
+.footer-brand {
+  min-width: 0;
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+
+  color: #d4af37;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.footer-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.footer-brand p {
+  max-width: 360px;
+  margin: 14px 0 0;
+
+  color: #938c7e;
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* ---------- Footer Sections ---------- */
+
+.footer-section h3 {
+  margin: 0 0 14px;
+
+  color: #e6d9ba;
+
+  font-size: 14px;
   font-weight: 600;
 }
 
-.menu {
+.footer-section a {
+  display: block;
+
+  width: fit-content;
+
+  margin: 8px 0;
+
+  color: #928b7e;
+
+  font-size: 13px;
+
+  transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+  color: #d4af37;
+}
+
+
+/* ---------- Footer Bottom ---------- */
+
+.footer-bottom {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+
+  padding: 18px 0;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+
   display: flex;
   align-items: center;
-  gap: 5px;
-}
+  justify-content: space-between;
+  gap: 16px;
 
-.menu a {
-  color: var(--site-text);
-  text-decoration: none;
-  font-size: 14px;
-  padding: 9px 13px;
-  border-radius: 9px;
-}
+  color: #6f6a60;
 
-.menu a:hover {
-  background: #f0e4d6;
-}
-
-/* FOOTER */
-
-footer {
-  background: #211e1a;
-  color: #b9b0a5;
-  text-align: center;
-  padding: 30px 15px;
   font-size: 12px;
 }
 
-/* MOBILE HEADER */
+.footer-bottom p {
+  margin: 0;
+}
 
-@media (max-width: 800px) {
 
-  .nav {
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .header-inner {
     min-height: 68px;
-    padding: 9px 16px;
+    width: min(100% - 24px, 1200px);
   }
 
-  .brand img {
-    width: 50px;
-    height: 50px;
+  .header-logo {
+    font-size: 19px;
   }
 
-  .brand-name {
-    font-size: 22px;
+  .header-logo img {
+    width: 36px;
+    height: 36px;
   }
 
-  .menu {
-    gap: 2px;
+  .header-nav {
+    gap: 16px;
   }
 
-  .menu a {
-    padding: 8px 9px;
+  .header-nav a {
     font-size: 13px;
+  }
+
+
+  .footer-inner {
+    width: min(100% - 24px, 1200px);
+
+    padding: 34px 0 20px;
+
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-bottom {
+    width: min(100% - 24px, 1200px);
+
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .header-inner {
+    min-height: 62px;
+  }
+
+  .header-nav {
+    gap: 12px;
+  }
+
+  .header-nav a {
+    font-size: 12px;
+  }
+
+  .header-logo span {
+    display: none;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-brand {
+    grid-column: auto;
   }
 }
