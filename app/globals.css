@@ -1,678 +1,126 @@
-/* =========================================================
-   KAALDARPAN — GLOBAL CSS
-   Global styling ONLY:
-   • Reset
-   • Body
-   • Header
-   • Footer
-   ========================================================= */
-
-
-/* =========================================================
-   RESET
-   ========================================================= */
+:root {
+  --site-bg: #f7f4ee;
+  --site-card: #fffdf9;
+  --site-text: #29251f;
+  --site-muted: #756f64;
+  --site-border: #e6ded1;
+}
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-}
-
+html,
 body {
   margin: 0;
   padding: 0;
-  background: #f7f2e8;
-  color: #211d19;
+  background: var(--site-bg);
+  color: var(--site-text);
+}
+
+body {
   font-family:
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
-    Helvetica,
     Arial,
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* HEADER */
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.site-header {
-  position: relative;
+header {
+  background: var(--site-card);
+  border-bottom: 1px solid var(--site-border);
+  position: sticky;
+  top: 0;
   z-index: 100;
-  width: 100%;
-  background: #fbf8f1;
-  border-bottom: 1px solid #ddd4c5;
 }
 
-.header-inner {
-  width: 100%;
-  max-width: 1400px;
-  min-height: 118px;
-  margin: 0 auto;
-  padding: 20px 42px;
+.nav {
+  max-width: 1100px;
+  margin: auto;
+  min-height: 76px;
+  padding: 10px 20px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+  gap: 20px;
 }
-
-
-/* =========================================================
-   BRAND
-   ========================================================= */
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 22px;
-  min-width: 0;
+  gap: 11px;
+  text-decoration: none;
+  color: var(--site-text);
 }
 
-.brand-logo {
-  width: 78px;
-  height: 78px;
-  flex: 0 0 78px;
-
+.brand img {
+  width: 50px;
+  height: 50px;
   object-fit: contain;
-  border-radius: 50%;
-}
-
-.brand-text {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
 }
 
 .brand-name {
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 48px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -2px;
-  white-space: nowrap;
-}
-
-.brand-tagline {
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  color: #5f584f;
-  font-size: 18px;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   DESKTOP NAVIGATION
-   ========================================================= */
-
-.main-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 34px;
-
-  margin-left: auto;
-}
-
-.main-nav a {
-  position: relative;
-
-  color: #302b26;
-  font-size: 16px;
-  font-weight: 500;
-
-  transition:
-    color 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.main-nav a::after {
-  content: "";
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -7px;
-
-  height: 1px;
-
-  background: #a47735;
-
-  transform: scaleX(0);
-  transform-origin: center;
-
-  transition: transform 0.2s ease;
-}
-
-.main-nav a:hover {
-  color: #a47735;
-}
-
-.main-nav a:hover::after {
-  transform: scaleX(1);
-}
-
-
-/* =========================================================
-   HEADER EXPLORE BUTTON
-   ========================================================= */
-
-.header-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-
-  min-width: 138px;
-  height: 48px;
-  padding: 0 22px;
-
-  border: 1px solid #cdbfaa;
-  border-radius: 28px;
-
-  background: transparent;
-  color: #211d19;
-
-  font-size: 16px;
+  font-family: Georgia, serif;
+  font-size: 24px;
   font-weight: 600;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
 }
 
-.header-button span {
-  font-size: 20px;
-  line-height: 1;
-  transition: transform 0.2s ease;
-}
-
-.header-button:hover {
-  background: #211d19;
-  border-color: #211d19;
-  color: #fbf8f1;
-}
-
-.header-button:hover span {
-  transform: translateX(3px);
-}
-
-
-/* =========================================================
-   MOBILE MENU BUTTON
-   ========================================================= */
-
-.menu-button {
-  display: none;
-
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
-
-  padding: 0;
-
-  border: 1px solid #d8cebd;
-  border-radius: 50%;
-
-  background: #fbf8f1;
-
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 7px;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.menu-button span {
-  display: block;
-
-  width: 28px;
-  height: 2px;
-
-  background: #211d19;
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.menu-button:hover {
-  background: #f0e9dc;
-}
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-.site-footer {
-  width: 100%;
-
-  background: #211d19;
-  color: #f7f2e8;
-
-  margin-top: 0;
-}
-
-.footer-inner {
-  width: 100%;
-  max-width: 1400px;
-
-  margin: 0 auto;
-  padding: 90px 42px 70px;
-
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 80px;
-}
-
-
-/* =========================================================
-   FOOTER BRAND
-   ========================================================= */
-
-.footer-brand {
-  max-width: 460px;
-}
-
-.footer-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.footer-logo img {
-  width: 76px;
-  height: 76px;
-
-  object-fit: contain;
-  border-radius: 50%;
-}
-
-.footer-logo span {
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 44px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -1.5px;
-}
-
-.footer-brand p {
-  margin: 38px 0 0;
-
-  color: #bdb3a6;
-
-  font-size: 20px;
-  line-height: 1.65;
-}
-
-
-/* =========================================================
-   FOOTER COLUMNS
-   ========================================================= */
-
-.footer-column {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  gap: 14px;
-}
-
-.footer-column h3 {
-  margin: 0 0 18px;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  color: #f7f2e8;
-
-  font-size: 27px;
-  line-height: 1.1;
-  font-weight: 700;
-}
-
-.footer-column a,
-.footer-column span {
-  color: #bdb3a6;
-
-  font-size: 16px;
-  line-height: 1.5;
-
-  transition: color 0.2s ease;
-}
-
-.footer-column a:hover {
-  color: #f7f2e8;
-}
-
-
-/* =========================================================
-   FOOTER BOTTOM
-   ========================================================= */
-
-.footer-bottom {
-  width: 100%;
-  max-width: 1400px;
-
-  margin: 0 auto;
-
-  padding: 24px 42px 30px;
-
-  border-top: 1px solid rgba(247, 242, 232, 0.16);
-
+.menu {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 5px;
+}
 
-  color: #8f877d;
-
+.menu a {
+  color: var(--site-text);
+  text-decoration: none;
   font-size: 14px;
+  padding: 9px 13px;
+  border-radius: 9px;
 }
 
+.menu a:hover {
+  background: #f0e4d6;
+}
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* FOOTER */
 
-@media (max-width: 1000px) {
+footer {
+  background: #211e1a;
+  color: #b9b0a5;
+  text-align: center;
+  padding: 30px 15px;
+  font-size: 12px;
+}
 
-  .header-inner {
-    min-height: 100px;
-    padding: 16px 28px;
+/* MOBILE HEADER */
+
+@media (max-width: 800px) {
+
+  .nav {
+    min-height: 68px;
+    padding: 9px 16px;
   }
 
-  .brand-logo {
-    width: 68px;
-    height: 68px;
-    flex-basis: 68px;
-  }
-
-  .brand {
-    gap: 17px;
+  .brand img {
+    width: 50px;
+    height: 50px;
   }
 
   .brand-name {
-    font-size: 40px;
+    font-size: 22px;
   }
 
-  .brand-tagline {
-    display: none;
+  .menu {
+    gap: 2px;
   }
 
-  .main-nav {
-    gap: 20px;
-  }
-
-  .header-button {
-    min-width: 120px;
-  }
-
-  .footer-inner {
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 45px;
-    padding: 75px 28px 60px;
-  }
-
-  .footer-bottom {
-    padding-left: 28px;
-    padding-right: 28px;
-  }
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 700px) {
-
-  .site-header {
-    background: #fbf8f1;
-  }
-
-  .header-inner {
-    min-height: 118px;
-
-    padding: 18px 28px;
-
-    gap: 15px;
-  }
-
-
-  /* Brand */
-
-  .brand {
-    gap: 16px;
-  }
-
-  .brand-logo {
-    width: 72px;
-    height: 72px;
-    flex-basis: 72px;
-  }
-
-  .brand-name {
-    font-size: 39px;
-    letter-spacing: -1.8px;
-  }
-
-
-  /* Hide desktop navigation */
-
-  .main-nav {
-    display: none;
-
-    position: absolute;
-
-    top: 100%;
-    left: 0;
-    right: 0;
-
-    margin: 0;
-
-    padding: 22px 28px 28px;
-
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-
-    background: #fbf8f1;
-
-    border-bottom: 1px solid #ddd4c5;
-
-    box-shadow: 0 14px 30px rgba(33, 29, 25, 0.08);
-  }
-
-  .main-nav.nav-open {
-    display: flex;
-  }
-
-  .main-nav a {
-    display: block;
-
-    padding: 17px 0;
-
-    border-bottom: 1px solid #e5ddd0;
-
-    font-size: 18px;
-  }
-
-  .main-nav a:last-child {
-    border-bottom: 0;
-  }
-
-  .main-nav a::after {
-    display: none;
-  }
-
-
-  /* Hide desktop Explore */
-
-  .header-button {
-    display: none;
-  }
-
-
-  /* Show hamburger */
-
-  .menu-button {
-    display: flex;
-    margin-left: auto;
-  }
-
-
-  /* Footer */
-
-  .footer-inner {
-    grid-template-columns: 1fr;
-
-    gap: 55px;
-
-    padding: 70px 28px 55px;
-  }
-
-  .footer-brand {
-    max-width: 100%;
-  }
-
-  .footer-logo {
-    gap: 16px;
-  }
-
-  .footer-logo img {
-    width: 68px;
-    height: 68px;
-  }
-
-  .footer-logo span {
-    font-size: 38px;
-  }
-
-  .footer-brand p {
-    margin-top: 28px;
-    font-size: 18px;
-    line-height: 1.65;
-  }
-
-  .footer-column h3 {
-    margin-bottom: 12px;
-    font-size: 25px;
-  }
-
-  .footer-column a,
-  .footer-column span {
-    font-size: 16px;
-  }
-
-  .footer-bottom {
-    padding: 22px 28px 28px;
-
-    flex-direction: column;
-    align-items: flex-start;
-
-    gap: 8px;
-
+  .menu a {
+    padding: 8px 9px;
     font-size: 13px;
-  }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 420px) {
-
-  .header-inner {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .brand {
-    gap: 12px;
-  }
-
-  .brand-logo {
-    width: 62px;
-    height: 62px;
-    flex-basis: 62px;
-  }
-
-  .brand-name {
-    font-size: 34px;
-  }
-
-  .menu-button {
-    width: 58px;
-    height: 58px;
-    flex-basis: 58px;
-  }
-
-  .menu-button span {
-    width: 25px;
-  }
-
-  .main-nav {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .footer-inner {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .footer-bottom {
-    padding-left: 20px;
-    padding-right: 20px;
   }
 }
