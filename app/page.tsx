@@ -13,14 +13,19 @@ type LocationData = {
 function getToday() {
   const d = new Date();
 
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(d.getDate()).padStart(2, "0")}`;
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
 }
 
 function formatDate(date: string) {
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
+  const d = new Date(date + "T00:00:00");
+
+  return d.toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -54,11 +59,14 @@ export default function Home() {
   const [panchang, setPanchang] = useState<any>(null);
 
   async function findCity(cityName: string) {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-        cityName
-      )}`
-    );
+    const url =
+      "https://nominatim.openstreetmap.org/search" +
+      "?format=json" +
+      "&limit=1" +
+      "&q=" +
+      encodeURIComponent(cityName);
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error("Unable to find this city.");
@@ -67,13 +75,15 @@ export default function Home() {
     const results = await response.json();
 
     if (!results.length) {
-      throw new Error("City not found. Please check the city name.");
+      throw new Error(
+        "City not found. Please check the city name."
+      );
     }
 
     return {
       city: results[0].display_name.split(",")[0],
-      latitude: Number(results[0].lat),
-      longitude: Number(results[0].lon),
+      latitude: parseFloat(results[0].lat),
+      longitude: parseFloat(results[0].lon),
     };
   }
 
@@ -81,24 +91,34 @@ export default function Home() {
     setError("");
 
     if (!navigator.geolocation) {
-      setError("Location detection is not supported by your browser.");
+      setError(
+        "Location detection is not supported by your browser."
+      );
       return;
     }
 
     setCity("Detecting...");
 
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
+      async function (position) {
         try {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
+          const url =
+            "https://nominatim.openstreetmap.org/reverse" +
+            "?format=json" +
+            "&lat=" +
+            latitude +
+            "&lon=" +
+            longitude;
+
+          const response = await fetch(url);
 
           if (!response.ok) {
-            throw new Error("Unable to identify your location.");
+            throw new Error(
+              "Unable to identify your location."
+            );
           }
 
           const result = await response.json();
@@ -122,11 +142,14 @@ export default function Home() {
           setCity(detectedCity);
         } catch {
           setCity("");
-          setError("Location detected, but the city could not be identified.");
+          setError(
+            "Location detected, but the city could not be identified."
+          );
         }
       },
-      () => {
+      function () {
         setCity("");
+
         setError(
           "Unable to detect your location. Please enter your city manually."
         );
@@ -149,8 +172,13 @@ export default function Home() {
     }
 
     if (!city || city === "Detecting...") {
-      if (location.latitude === null || location.longitude === null) {
-        setError("Please enter a city or use Detect.");
+      if (
+        location.latitude === null ||
+        location.longitude === null
+      ) {
+        setError(
+          "Please enter a city or use Detect."
+        );
         return;
       }
     }
@@ -176,12 +204,12 @@ export default function Home() {
         Intl.DateTimeFormat().resolvedOptions().timeZone ||
         "Asia/Kolkata";
 
-      const params = new URLSearchParams();
-
-      params.set("date", date);
-      params.set("latitude", String(selectedLocation.latitude));
-      params.set("longitude", String(selectedLocation.longitude));
-      params.set("timezone", timezone);
+      const params = new URLSearchParams({
+        date,
+        latitude: String(selectedLocation.latitude),
+        longitude: String(selectedLocation.longitude),
+        timezone,
+      });
 
       const response = await fetch(
         `${API_BASE}/api/panchang?${params.toString()}`
@@ -197,7 +225,7 @@ export default function Home() {
 
       setPanchang(result);
     } catch (err: any) {
-      console.error("Panchang error:", err);
+      console.error(err);
 
       setError(
         err?.message ||
@@ -208,46 +236,33 @@ export default function Home() {
     }
   }
 
-  function Choghadiya({ items }: { items: any }) {
-    if (!Array.isArray(items) || items.length === 0) {
-      return <div className="empty">No data available.</div>;
-    }
-
-    return (
-      <div>
-        {items.map((item: any, index: number) => (
-          <div className="choghadiya-row" key={index}>
-            <span>{display(item?.name)}</span>
-
-            <strong>
-              {display(item?.start)} – {display(item?.end)}
-            </strong>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const timings = panchang?.timings || {};
-
   return (
     <>
       <main className="page">
 
-        {/* HERO */}
+        {/* =========================
+            HERO
+        ========================= */}
 
         <section className="hero">
-          <div className="eyebrow">DAILY VEDIC PANCHANG</div>
+
+          <div className="eyebrow">
+            DAILY VEDIC PANCHANG
+          </div>
 
           <h1>Daily Panchang</h1>
 
           <p>
-            Accurate Vedic Panchang for your date and location
+            Vedic Panchang calculated for your location
           </p>
+
         </section>
 
 
-        {/* SEARCH */}
+        {/* =========================
+            INPUT AREA
+            DO NOT CHANGE THIS CSS
+        ========================= */}
 
         <section className="search-section">
 
@@ -255,7 +270,7 @@ export default function Home() {
 
             <div className="field">
 
-              <label htmlFor="date">
+              <label>
                 DATE
               </label>
 
@@ -266,7 +281,6 @@ export default function Home() {
                 </span>
 
                 <input
-                  id="date"
                   type="date"
                   value={date}
                   onChange={(e) => {
@@ -283,12 +297,11 @@ export default function Home() {
 
             <div className="field location-field">
 
-              <label htmlFor="city">
+              <label>
                 LOCATION
               </label>
 
               <input
-                id="city"
                 type="text"
                 value={city}
                 placeholder="Enter city"
@@ -326,7 +339,9 @@ export default function Home() {
               onClick={loadPanchang}
               disabled={loading}
             >
-              {loading ? "Calculating..." : "View Panchang"}
+              {loading
+                ? "Calculating..."
+                : "View Panchang"}
             </button>
 
           </div>
@@ -349,11 +364,15 @@ export default function Home() {
         </section>
 
 
-        {/* RESULTS */}
+        {/* =========================
+            OUTPUT
+        ========================= */}
 
         {panchang && (
 
           <section className="results">
+
+            {/* DATE HEADER */}
 
             <div className="date-summary">
 
@@ -376,13 +395,18 @@ export default function Home() {
             </div>
 
 
-            {/* PANCHANG */}
+            {/* =========================
+                PANCHANG
+            ========================= */}
 
             <section className="section">
 
               <div className="section-title">
+
                 <h2>Panchang</h2>
+
                 <div />
+
               </div>
 
 
@@ -427,19 +451,25 @@ export default function Home() {
             </section>
 
 
-            {/* SUN MOON */}
+            {/* =========================
+                SUN & MOON
+            ========================= */}
 
             <section className="section">
 
               <div className="section-title">
+
                 <h2>Sun & Moon</h2>
+
                 <div />
+
               </div>
 
 
               <div className="two-columns">
 
                 <InfoCard title="Sun">
+
                   <TimeRow
                     label="Sunrise"
                     value={panchang?.sun?.rise}
@@ -449,10 +479,12 @@ export default function Home() {
                     label="Sunset"
                     value={panchang?.sun?.set}
                   />
+
                 </InfoCard>
 
 
                 <InfoCard title="Moon">
+
                   <TimeRow
                     label="Moonrise"
                     value={panchang?.moon?.rise}
@@ -462,6 +494,7 @@ export default function Home() {
                     label="Moonset"
                     value={panchang?.moon?.set}
                   />
+
                 </InfoCard>
 
               </div>
@@ -469,13 +502,20 @@ export default function Home() {
             </section>
 
 
-            {/* SHUBH ASHUBH */}
+            {/* =========================
+                SHUBH / ASHUBH
+            ========================= */}
 
             <section className="section">
 
               <div className="section-title">
-                <h2>Shubh & Ashubh Kaal</h2>
+
+                <h2>
+                  Shubh & Ashubh Kaal
+                </h2>
+
                 <div />
+
               </div>
 
 
@@ -483,27 +523,27 @@ export default function Home() {
 
                 <SimpleCard
                   label="Rahu Kaal"
-                  value={timings.rahuKaal}
+                  value={panchang?.timings?.rahuKaal}
                 />
 
                 <SimpleCard
                   label="Yamaganda"
-                  value={timings.yamaganda}
+                  value={panchang?.timings?.yamaganda}
                 />
 
                 <SimpleCard
                   label="Gulika Kaal"
-                  value={timings.gulika}
+                  value={panchang?.timings?.gulika}
                 />
 
                 <SimpleCard
                   label="Abhijit Muhurat"
-                  value={timings.abhijit}
+                  value={panchang?.timings?.abhijit}
                 />
 
                 <SimpleCard
                   label="Brahma Muhurat"
-                  value={timings.brahma}
+                  value={panchang?.timings?.brahma}
                 />
 
               </div>
@@ -511,51 +551,56 @@ export default function Home() {
             </section>
 
 
-            {/* CHOGHADIYA */}
+            {/* =========================
+                CHOGHADIYA
+            ========================= */}
 
             <section className="section">
 
               <div className="section-title">
+
                 <h2>Choghadiya</h2>
+
                 <div />
+
               </div>
 
 
               <div className="two-columns">
 
-                <div className="large-card">
+                <ChoghadiyaCard
+                  title="Day Choghadiya"
+                  items={
+                    panchang?.choghadiya?.day
+                  }
+                />
 
-                  <h3>Day Choghadiya</h3>
-
-                  <Choghadiya
-                    items={panchang?.choghadiya?.day}
-                  />
-
-                </div>
-
-
-                <div className="large-card">
-
-                  <h3>Night Choghadiya</h3>
-
-                  <Choghadiya
-                    items={panchang?.choghadiya?.night}
-                  />
-
-                </div>
+                <ChoghadiyaCard
+                  title="Night Choghadiya"
+                  items={
+                    panchang?.choghadiya?.night
+                  }
+                />
 
               </div>
 
             </section>
 
 
-            {/* ADDITIONAL */}
+            {/* =========================
+                ADDITIONAL
+            ========================= */}
 
             <section className="section">
 
               <div className="section-title">
-                <h2>Additional Panchang</h2>
+
+                <h2>
+                  Additional Panchang
+                </h2>
+
                 <div />
+
               </div>
 
 
@@ -593,12 +638,16 @@ export default function Home() {
 
                 <SimpleCard
                   label="Sun Rashi"
-                  value={panchang?.sun?.rashi?.name}
+                  value={
+                    panchang?.sun?.rashi?.name
+                  }
                 />
 
                 <SimpleCard
                   label="Moon Rashi"
-                  value={panchang?.moon?.rashi?.name}
+                  value={
+                    panchang?.moon?.rashi?.name
+                  }
                 />
 
                 <SimpleCard
@@ -615,10 +664,19 @@ export default function Home() {
             </section>
 
           </section>
+
         )}
 
       </main>
 
+
+      {/* =====================================================
+          ALL PAGE CSS
+          
+          IMPORTANT:
+          INPUT CSS BELOW IS THE OLD WORKING CSS.
+          DO NOT CHANGE IT.
+      ===================================================== */}
 
       <style jsx>{`
 
@@ -668,9 +726,11 @@ export default function Home() {
         }
 
 
-        /* =========================
-           SEARCH
-        ========================= */
+        /* =====================================================
+           INPUT CSS
+           
+           THIS IS KEPT INTACT.
+        ===================================================== */
 
         .search-section {
           max-width: 1080px;
@@ -750,7 +810,8 @@ export default function Home() {
 
         .date-input-wrap input:focus {
           border-color: #a87935;
-          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
+          box-shadow:
+            0 0 0 3px rgba(168, 121, 53, .08);
         }
 
         .date-input-wrap input::-webkit-calendar-picker-indicator {
@@ -802,7 +863,8 @@ export default function Home() {
 
         .location-field input:focus {
           border-color: #a87935;
-          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
+          box-shadow:
+            0 0 0 3px rgba(168, 121, 53, .08);
         }
 
         .location-field input::placeholder {
@@ -896,489 +958,537 @@ export default function Home() {
         }
 
 
-        /* =========================
-           RESULTS
-        ========================= */
-/* =========================
-   RESULTS
-========================= */
+        /* =====================================================
+           NEW OUTPUT CSS
+        ===================================================== */
 
-.results {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+        .results {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
 
 
-/* =========================
-   DATE SUMMARY
-========================= */
+        /* DATE SUMMARY */
 
-.date-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
+        .date-summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
 
-  padding: 24px 26px;
+          gap: 24px;
 
-  background: #fffdf9;
+          padding: 25px 26px;
 
-  border: 1px solid #dfd7ca;
-  border-radius: 16px;
+          background: #fffdf9;
 
-  box-shadow: 0 5px 22px rgba(70, 50, 30, .045);
-}
+          border: 1px solid #dfd7ca;
+          border-radius: 16px;
 
-.summary-label {
-  display: block;
+          box-shadow:
+            0 5px 22px rgba(70, 50, 30, .045);
+        }
 
-  margin-bottom: 6px;
+        .summary-label {
+          display: block;
 
-  color: #a87935;
+          margin-bottom: 7px;
 
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-}
+          color: #a87935;
 
-.date-summary h2 {
-  margin: 0;
+          font-size: 10px;
+          font-weight: 700;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+          letter-spacing: 1.5px;
+        }
 
-  font-size: 25px;
-  line-height: 1.25;
+        .date-summary h2 {
+          margin: 0;
 
-  font-weight: 600;
-}
+          color: #29251f;
 
-.summary-location {
-  padding: 8px 13px;
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
 
-  background: #f5efe6;
+          font-size: 25px;
+          line-height: 1.25;
 
-  border-radius: 20px;
+          font-weight: 600;
+        }
 
-  color: #6f6253;
+        .summary-location {
+          padding: 8px 14px;
 
-  font-size: 12px;
-  white-space: nowrap;
-}
+          background: #f5efe6;
 
+          border-radius: 20px;
 
-/* =========================
-   SECTIONS
-========================= */
+          color: #6f6253;
 
-.section {
-  margin-top: 42px;
-}
+          font-size: 12px;
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+          white-space: nowrap;
+        }
 
-  margin-bottom: 16px;
-}
 
-.section-title h2 {
-  margin: 0;
+        /* SECTION */
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+        .section {
+          margin-top: 45px;
+        }
 
-  font-size: 23px;
-  line-height: 1.2;
+        .section-title {
+          display: flex;
+          align-items: center;
 
-  font-weight: 600;
-}
+          gap: 15px;
 
-.section-title div {
-  flex: 1;
+          margin-bottom: 17px;
+        }
 
-  height: 1px;
+        .section-title h2 {
+          margin: 0;
 
-  background: #ded6ca;
-}
+          color: #29251f;
 
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
 
-/* =========================
-   PANCHANG CARDS
-========================= */
+          font-size: 23px;
+          line-height: 1.2;
 
-.panchang-grid {
-  display: grid;
+          font-weight: 600;
+        }
 
-  grid-template-columns:
-    repeat(5, 1fr);
+        .section-title div {
+          flex: 1;
 
-  gap: 12px;
-}
+          height: 1px;
 
-.panchang-card {
-  position: relative;
+          background: #ded6ca;
+        }
 
-  min-height: 158px;
 
-  display: flex;
-  flex-direction: column;
+        /* PANCHANG */
 
-  align-items: center;
-  justify-content: center;
+        .panchang-grid {
+          display: grid;
 
-  padding: 20px 12px;
+          grid-template-columns:
+            repeat(5, 1fr);
 
-  text-align: center;
+          gap: 12px;
+        }
 
-  background: #fffdf9;
+        .panchang-card {
+          min-height: 158px;
 
-  border: 1px solid #dfd7ca;
-  border-radius: 15px;
+          display: flex;
 
-  box-shadow:
-    0 4px 18px rgba(70, 50, 30, .035);
+          flex-direction: column;
 
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    border-color .18s ease;
-}
+          align-items: center;
 
-.panchang-card:hover {
-  transform: translateY(-2px);
+          justify-content: center;
 
-  border-color: #d3c5b3;
+          padding: 20px 12px;
 
-  box-shadow:
-    0 9px 25px rgba(70, 50, 30, .07);
-}
+          text-align: center;
 
-.panchang-icon {
-  width: 42px;
-  height: 42px;
+          background: #fffdf9;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+          border: 1px solid #dfd7ca;
 
-  margin-bottom: 11px;
+          border-radius: 15px;
 
-  border-radius: 50%;
+          box-shadow:
+            0 4px 18px rgba(70, 50, 30, .035);
 
-  background: #f5ede2;
+          transition:
+            transform .18s ease,
+            box-shadow .18s ease;
+        }
 
-  color: #a87935;
+        .panchang-card:hover {
+          transform: translateY(-2px);
 
-  font-family: Georgia, serif;
+          box-shadow:
+            0 9px 25px rgba(70, 50, 30, .065);
+        }
 
-  font-size: 21px;
-}
+        .panchang-icon {
+          width: 42px;
+          height: 42px;
 
-.panchang-card .label {
-  margin-bottom: 7px;
+          display: flex;
 
-  color: #81786d;
+          align-items: center;
+          justify-content: center;
 
-  font-size: 11px;
-  font-weight: 500;
-}
+          margin-bottom: 11px;
 
-.panchang-card strong {
-  max-width: 100%;
+          border-radius: 50%;
 
-  color: #29251f;
+          background: #f5ede2;
 
-  font-size: 15px;
-  line-height: 1.35;
+          color: #a87935;
 
-  font-weight: 600;
-}
+          font-family: Georgia, serif;
 
-.panchang-card small {
-  margin-top: 7px;
+          font-size: 21px;
+        }
 
-  color: #92897e;
+        .panchang-card .label {
+          margin-bottom: 7px;
 
-  font-size: 10px;
-}
+          color: #81786d;
 
+          font-size: 11px;
+        }
 
-/* =========================
-   SUN & MOON
-========================= */
+        .panchang-card strong {
+          max-width: 100%;
 
-.two-columns {
-  display: grid;
+          color: #29251f;
 
-  grid-template-columns:
-    1fr 1fr;
+          font-size: 15px;
 
-  gap: 14px;
-}
+          line-height: 1.35;
 
-.info-card,
-.large-card {
-  background: #fffdf9;
+          font-weight: 600;
+        }
 
-  border: 1px solid #dfd7ca;
-  border-radius: 15px;
+        .panchang-card small {
+          margin-top: 7px;
 
-  padding: 21px 22px;
+          color: #92897e;
 
-  box-shadow:
-    0 4px 18px rgba(70, 50, 30, .035);
-}
+          font-size: 10px;
+        }
 
-.info-card h3,
-.large-card h3 {
-  margin: 0 0 14px;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+        /* SUN MOON */
 
-  font-size: 18px;
+        .two-columns {
+          display: grid;
 
-  font-weight: 600;
-}
+          grid-template-columns:
+            1fr 1fr;
 
-.time-row,
-.choghadiya-row {
-  display: flex;
+          gap: 14px;
+        }
 
-  justify-content: space-between;
-  align-items: center;
+        .info-card,
+        .large-card {
+          padding: 21px 22px;
 
-  gap: 20px;
+          background: #fffdf9;
 
-  padding: 13px 0;
+          border: 1px solid #dfd7ca;
 
-  border-bottom: 1px solid #ebe4da;
-}
+          border-radius: 15px;
 
-.time-row:last-child,
-.choghadiya-row:last-child {
-  border-bottom: 0;
-}
+          box-shadow:
+            0 4px 18px rgba(70, 50, 30, .035);
+        }
 
-.time-row span,
-.choghadiya-row span {
-  color: #655e55;
+        .info-card h3,
+        .large-card h3 {
+          margin: 0 0 13px;
 
-  font-size: 13px;
-}
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
 
-.time-row strong,
-.choghadiya-row strong {
-  color: #7b4b2a;
+          font-size: 18px;
 
-  font-size: 13px;
-  font-weight: 600;
+          font-weight: 600;
+        }
 
-  text-align: right;
-}
+        .time-row,
+        .choghadiya-row {
+          display: flex;
 
+          justify-content: space-between;
+          align-items: center;
 
-/* =========================
-   SHUBH / ASHUBH
-========================= */
+          gap: 20px;
 
-.info-grid {
-  display: grid;
+          padding: 13px 0;
 
-  grid-template-columns:
-    repeat(3, 1fr);
+          border-bottom:
+            1px solid #ebe4da;
+        }
 
-  gap: 12px;
-}
+        .time-row:last-child,
+        .choghadiya-row:last-child {
+          border-bottom: 0;
+        }
 
-.simple-card {
-  min-height: 92px;
+        .time-row span,
+        .choghadiya-row span {
+          color: #655e55;
 
-  display: flex;
-  flex-direction: column;
+          font-size: 13px;
+        }
 
-  justify-content: center;
+        .time-row strong,
+        .choghadiya-row strong {
+          color: #7b4b2a;
 
-  padding: 17px 18px;
+          font-size: 13px;
 
-  background: #fffdf9;
+          font-weight: 600;
 
-  border: 1px solid #dfd7ca;
-  border-radius: 14px;
+          text-align: right;
+        }
 
-  box-shadow:
-    0 4px 18px rgba(70, 50, 30, .03);
 
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease;
-}
+        /* INFO GRID */
 
-.simple-card:hover {
-  transform: translateY(-1px);
+        .info-grid {
+          display: grid;
 
-  box-shadow:
-    0 7px 22px rgba(70, 50, 30, .055);
-}
+          grid-template-columns:
+            repeat(3, 1fr);
 
-.simple-card span {
-  display: block;
+          gap: 12px;
+        }
 
-  margin-bottom: 8px;
+        .simple-card {
+          min-height: 92px;
 
-  color: #81786d;
+          display: flex;
 
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .4px;
-}
+          flex-direction: column;
 
-.simple-card strong {
-  color: #302b25;
+          justify-content: center;
 
-  font-size: 15px;
-  line-height: 1.35;
+          padding: 17px 18px;
 
-  font-weight: 600;
-}
+          background: #fffdf9;
 
+          border: 1px solid #dfd7ca;
 
-/* =========================
-   CHOGHADIYA
-========================= */
+          border-radius: 14px;
 
-.large-card {
-  padding: 22px;
-}
+          box-shadow:
+            0 4px 18px rgba(70, 50, 30, .03);
 
-.large-card h3 {
-  padding-bottom: 13px;
+          transition:
+            transform .18s ease,
+            box-shadow .18s ease;
+        }
 
-  border-bottom: 1px solid #ebe4da;
-}
+        .simple-card:hover {
+          transform: translateY(-1px);
 
-.choghadiya-row {
-  padding: 12px 2px;
-}
+          box-shadow:
+            0 7px 22px rgba(70, 50, 30, .055);
+        }
 
-.choghadiya-row span {
-  font-weight: 500;
-}
+        .simple-card span {
+          display: block;
 
-.choghadiya-row strong {
-  color: #7b4b2a;
-}
+          margin-bottom: 8px;
 
+          color: #81786d;
 
-/* =========================
-   EMPTY STATE
-========================= */
+          font-size: 10px;
 
-.empty {
-  padding: 15px 2px;
+          font-weight: 600;
 
-  color: #958c80;
+          letter-spacing: .4px;
+        }
 
-  font-size: 12px;
-}
+        .simple-card strong {
+          color: #302b25;
 
+          font-size: 15px;
 
-/* =========================
-   MOBILE RESULTS
-========================= */
+          line-height: 1.35;
 
-@media (max-width: 850px) {
+          font-weight: 600;
+        }
 
-  .panchang-grid {
-    grid-template-columns:
-      repeat(3, 1fr);
-  }
 
-  .info-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
+        /* CHOGHADIYA */
 
-}
+        .large-card {
+          padding: 22px;
+        }
 
+        .large-card h3 {
+          padding-bottom: 13px;
 
-@media (max-width: 600px) {
+          border-bottom:
+            1px solid #ebe4da;
+        }
 
-  .results {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
+        .choghadiya-row {
+          padding: 12px 2px;
+        }
 
-  .date-summary {
-    display: block;
+        .choghadiya-row span {
+          font-weight: 500;
+        }
 
-    padding: 20px;
-  }
+        .choghadiya-row strong {
+          color: #7b4b2a;
+        }
 
-  .date-summary h2 {
-    font-size: 21px;
-  }
 
-  .summary-location {
-    display: inline-block;
+        /* EMPTY */
 
-    margin-top: 12px;
-  }
+        .empty {
+          padding: 14px 2px;
 
-  .section {
-    margin-top: 36px;
-  }
+          color: #958c80;
 
-  .section-title h2 {
-    font-size: 21px;
-  }
+          font-size: 12px;
+        }
 
-  .panchang-grid {
-    grid-template-columns:
-      1fr 1fr;
 
-    gap: 10px;
-  }
+        /* =====================================================
+           INPUT RESPONSIVE CSS
+           
+           ALSO KEPT INTACT.
+        ===================================================== */
 
-  .panchang-card {
-    min-height: 145px;
-  }
+        @media (max-width: 850px) {
 
-  .two-columns {
-    grid-template-columns: 1fr;
-  }
+          .search-card {
+            grid-template-columns: 1fr 1fr;
+          }
 
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
+          .panchang-grid {
+            grid-template-columns:
+              repeat(3, 1fr);
+          }
 
-}
+          .info-grid {
+            grid-template-columns:
+              repeat(2, 1fr);
+          }
 
+        }
 
-@media (max-width: 380px) {
 
-  .panchang-card {
-    min-height: 135px;
+        /* =====================================================
+           MOBILE
+        ===================================================== */
 
-    padding-left: 7px;
-    padding-right: 7px;
-  }
+        @media (max-width: 600px) {
 
-  .panchang-card strong {
-    font-size: 14px;
-  }
+          .hero {
+            padding: 48px 18px 34px;
+          }
 
-}
-       
+          .hero h1 {
+            font-size: 44px;
+            letter-spacing: -1.5px;
+          }
+
+          .hero p {
+            font-size: 14px;
+            line-height: 1.5;
+          }
+
+          .search-section,
+          .results {
+            padding-left: 18px;
+            padding-right: 18px;
+          }
+
+          /* INPUT — unchanged */
+
+          .search-card {
+            grid-template-columns: 1fr;
+
+            padding: 16px;
+
+            border-radius: 16px;
+          }
+
+          .field input,
+          .date-input-wrap input,
+          .detect-button,
+          .view-button {
+            height: 50px;
+          }
+
+
+          /* OUTPUT */
+
+          .date-summary {
+            display: block;
+
+            padding: 20px;
+          }
+
+          .date-summary h2 {
+            font-size: 21px;
+          }
+
+          .summary-location {
+            display: inline-block;
+
+            margin-top: 12px;
+          }
+
+          .section {
+            margin-top: 38px;
+          }
+
+          .section-title h2 {
+            font-size: 21px;
+          }
+
+          .panchang-grid {
+            grid-template-columns:
+              1fr 1fr;
+
+            gap: 10px;
+          }
+
+          .panchang-card {
+            min-height: 145px;
+          }
+
+          .two-columns {
+            grid-template-columns: 1fr;
+          }
+
+          .info-grid {
+            grid-template-columns: 1fr;
+          }
+
+        }
+
+
+        @media (max-width: 380px) {
+
+          .hero h1 {
+            font-size: 40px;
+          }
+
+          .panchang-card {
+            min-height: 135px;
+
+            padding-left: 7px;
+            padding-right: 7px;
+          }
+
+          .panchang-card strong {
+            font-size: 14px;
+          }
+
+        }
 
       `}</style>
     </>
@@ -1386,9 +1496,9 @@ export default function Home() {
 }
 
 
-/* =====================================
+/* =========================================================
    PANCHANG CARD
-===================================== */
+========================================================= */
 
 function PanchangCard({
   icon,
@@ -1427,9 +1537,9 @@ function PanchangCard({
 }
 
 
-/* =====================================
+/* =========================================================
    INFO CARD
-===================================== */
+========================================================= */
 
 function InfoCard({
   title,
@@ -1450,9 +1560,9 @@ function InfoCard({
 }
 
 
-/* =====================================
+/* =========================================================
    TIME ROW
-===================================== */
+========================================================= */
 
 function TimeRow({
   label,
@@ -1464,7 +1574,9 @@ function TimeRow({
   return (
     <div className="time-row">
 
-      <span>{label}</span>
+      <span>
+        {label}
+      </span>
 
       <strong>
         {display(value)}
@@ -1475,9 +1587,9 @@ function TimeRow({
 }
 
 
-/* =====================================
+/* =========================================================
    SIMPLE CARD
-===================================== */
+========================================================= */
 
 function SimpleCard({
   label,
@@ -1489,11 +1601,74 @@ function SimpleCard({
   return (
     <div className="simple-card">
 
-      <span>{label}</span>
+      <span>
+        {label}
+      </span>
 
       <strong>
         {display(value)}
       </strong>
+
+    </div>
+  );
+}
+
+
+/* =========================================================
+   CHOGHADIYA CARD
+========================================================= */
+
+function ChoghadiyaCard({
+  title,
+  items,
+}: {
+  title: string;
+  items: any;
+}) {
+  return (
+    <div className="large-card">
+
+      <h3>
+        {title}
+      </h3>
+
+      {!Array.isArray(items) ||
+      items.length === 0 ? (
+
+        <div className="empty">
+          No data available.
+        </div>
+
+      ) : (
+
+        <div>
+
+          {items.map(
+            (item: any, index: number) => (
+
+              <div
+                className="choghadiya-row"
+                key={index}
+              >
+
+                <span>
+                  {display(item?.name)}
+                </span>
+
+                <strong>
+                  {display(item?.start)}{" "}
+                  –{" "}
+                  {display(item?.end)}
+                </strong>
+
+              </div>
+
+            )
+          )}
+
+        </div>
+
+      )}
 
     </div>
   );
