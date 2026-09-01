@@ -125,7 +125,7 @@ export default function HoroscopePage() {
           <div className="kd-brand-row">
 
             <div className="kd-brand">
-              KAALDARPAN
+              GRAHGANIT
             </div>
 
             <div className="kd-brand-line" />
@@ -377,7 +377,7 @@ export default function HoroscopePage() {
           <div>
 
             <div className="kd-footer-brand">
-              KAALDARPAN
+              GRAHGANIT
             </div>
 
             <p>
