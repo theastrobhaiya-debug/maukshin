@@ -60,6 +60,10 @@ export default function Header() {
             Horoscope
           </Link>
 
+<Link href="/name-checker">
+  Name Checker
+</Link>
+
           <Link
             href="/founder"
             onClick={closeMenu}
