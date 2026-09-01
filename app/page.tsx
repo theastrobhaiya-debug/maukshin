@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const API_BASE = "https://mauksh-kundali-engine.onrender.com";
+const API_BASE =
+  "https://mauksh-kundali-engine.onrender.com";
 
 type LocationData = {
   city: string;
@@ -10,40 +11,8 @@ type LocationData = {
   longitude: number | null;
 };
 
-function getToday() {
-  const d = new Date();
-
-  return (
-    d.getFullYear() +
-    "-" +
-    String(d.getMonth() + 1).padStart(2, "0") +
-    "-" +
-    String(d.getDate()).padStart(2, "0")
-  );
-}
-
-function formatDate(date: string) {
-  const d = new Date(date + "T00:00:00");
-
-  return d.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function display(value: any) {
-  if (value === undefined || value === null || value === "") {
-    return "—";
-  }
-
-  return String(value);
-}
-
 export default function Home() {
-  const [date, setDate] = useState(getToday());
-
+  const [date, setDate] = useState("");
   const [city, setCity] = useState("");
 
   const [location, setLocation] = useState<LocationData>({
@@ -53,10 +22,128 @@ export default function Home() {
   });
 
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
+  const [data, setData] = useState<any>(null);
 
-  const [panchang, setPanchang] = useState<any>(null);
+  /* =========================
+     TODAY
+  ========================= */
+
+  useEffect(() => {
+    const d = new Date();
+
+    const today =
+      d.getFullYear() +
+      "-" +
+      String(d.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(d.getDate()).padStart(2, "0");
+
+    setDate(today);
+  }, []);
+
+  /* =========================
+     DATE FORMAT
+  ========================= */
+
+  function formatDate(value: string) {
+    if (!value) return "";
+
+    const d = new Date(value + "T00:00:00");
+
+    return d.toLocaleDateString("en-IN", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  /* =========================
+     DETECT LOCATION
+  ========================= */
+
+  async function detectLocation() {
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError(
+        "Location detection is not supported by your browser."
+      );
+      return;
+    }
+
+    document.getElementById("locationDisplay")!.textContent =
+      "Detecting your location…";
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        try {
+          const url =
+            "https://nominatim.openstreetmap.org/reverse" +
+            "?format=json" +
+            "&lat=" +
+            latitude +
+            "&lon=" +
+            longitude;
+
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error(
+              "Unable to detect your city."
+            );
+          }
+
+          const result = await response.json();
+
+          const address = result.address || {};
+
+          const detectedCity =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "Current location";
+
+          setCity(detectedCity);
+
+          setLocation({
+            city: detectedCity,
+            latitude,
+            longitude,
+          });
+
+          document.getElementById(
+            "locationDisplay"
+          )!.textContent = detectedCity;
+        } catch {
+          document.getElementById(
+            "locationDisplay"
+          )!.textContent =
+            "Location detected.";
+        }
+      },
+      () => {
+        document.getElementById(
+          "locationDisplay"
+        )!.textContent =
+          "Unable to detect location. Enter your city.";
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      }
+    );
+  }
+
+  /* =========================
+     FIND CITY
+  ========================= */
 
   async function findCity(cityName: string) {
     const url =
@@ -69,7 +156,9 @@ export default function Home() {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error("Unable to find this city.");
+      throw new Error(
+        "Unable to find this city."
+      );
     }
 
     const results = await response.json();
@@ -87,129 +176,64 @@ export default function Home() {
     };
   }
 
-  function detectLocation() {
-    setError("");
-
-    if (!navigator.geolocation) {
-      setError(
-        "Location detection is not supported by your browser."
-      );
-      return;
-    }
-
-    setCity("Detecting...");
-
-    navigator.geolocation.getCurrentPosition(
-      async function (position) {
-        try {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-
-          const url =
-            "https://nominatim.openstreetmap.org/reverse" +
-            "?format=json" +
-            "&lat=" +
-            latitude +
-            "&lon=" +
-            longitude;
-
-          const response = await fetch(url);
-
-          if (!response.ok) {
-            throw new Error(
-              "Unable to identify your location."
-            );
-          }
-
-          const result = await response.json();
-
-          const address = result.address || {};
-
-          const detectedCity =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.municipality ||
-            "Current location";
-
-          const newLocation = {
-            city: detectedCity,
-            latitude,
-            longitude,
-          };
-
-          setLocation(newLocation);
-          setCity(detectedCity);
-        } catch {
-          setCity("");
-          setError(
-            "Location detected, but the city could not be identified."
-          );
-        }
-      },
-      function () {
-        setCity("");
-
-        setError(
-          "Unable to detect your location. Please enter your city manually."
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000,
-      }
-    );
-  }
+  /* =========================
+     LOAD PANCHANG
+  ========================= */
 
   async function loadPanchang() {
     setError("");
-    setPanchang(null);
 
     if (!date) {
       setError("Please select a date.");
       return;
     }
 
-    if (!city || city === "Detecting...") {
-      if (
-        location.latitude === null ||
-        location.longitude === null
-      ) {
-        setError(
-          "Please enter a city or use Detect."
-        );
-        return;
-      }
+    if (
+      !city.trim() &&
+      location.latitude === null
+    ) {
+      setError(
+        "Please enter a city or use Detect."
+      );
+      return;
     }
 
     setLoading(true);
+    setData(null);
 
     try {
       let selectedLocation = location;
 
-      if (city && city !== "Detecting...") {
-        selectedLocation = await findCity(city);
+      if (city.trim()) {
+        selectedLocation =
+          await findCity(city.trim());
+
         setLocation(selectedLocation);
       }
 
-      if (
-        selectedLocation.latitude === null ||
-        selectedLocation.longitude === null
-      ) {
-        throw new Error("Please enter a valid city.");
-      }
+      /*
+       * IMPORTANT:
+       * Use the browser timezone.
+       * For India this will normally be
+       * Asia/Calcutta / Asia/Kolkata.
+       */
 
       const timezone =
-        Intl.DateTimeFormat().resolvedOptions().timeZone ||
-        "Asia/Kolkata";
+        Intl.DateTimeFormat()
+          .resolvedOptions()
+          .timeZone || "Asia/Kolkata";
 
-      const params = new URLSearchParams({
-        date,
-        latitude: String(selectedLocation.latitude),
-        longitude: String(selectedLocation.longitude),
-        timezone,
-      });
+      const params =
+        new URLSearchParams({
+          date,
+          latitude: String(
+            selectedLocation.latitude
+          ),
+          longitude: String(
+            selectedLocation.longitude
+          ),
+          timezone,
+        });
 
       const response = await fetch(
         `${API_BASE}/api/panchang?${params.toString()}`
@@ -217,89 +241,179 @@ export default function Home() {
 
       if (!response.ok) {
         throw new Error(
-          `Panchang engine returned ${response.status}.`
+          "Panchang engine returned an error."
         );
       }
 
       const result = await response.json();
 
-      setPanchang(result);
+      console.log(
+        "KAALDARPAN PANCHANG:",
+        result
+      );
+
+      setData(result);
     } catch (err: any) {
       console.error(err);
 
       setError(
         err?.message ||
-          "Unable to load Panchang. Please try again."
+          "Unable to load Panchang."
       );
     } finally {
       setLoading(false);
     }
   }
 
+  /* =========================
+     SAFE VALUE
+  ========================= */
+
+  function value(input: any) {
+    if (
+      input === undefined ||
+      input === null ||
+      input === ""
+    ) {
+      return "—";
+    }
+
+    return String(input);
+  }
+
+  /* =========================
+     CHOGHADIYA
+  ========================= */
+
+  function renderChoghadiya(
+    items: any[]
+  ) {
+    if (
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
+      return (
+        <div className="noData">
+          No data available.
+        </div>
+      );
+    }
+
+    return (
+      <div className="choghadiyaList">
+        {items.map((item, index) => (
+          <div
+            className="choghadiyaRow"
+            key={index}
+          >
+            <div className="choghadiyaInfo">
+
+              <div className="choghadiyaName">
+                {value(item?.name)}
+              </div>
+
+              {item?.type && (
+                <div className="choghadiyaType">
+                  {item.type}
+                </div>
+              )}
+
+            </div>
+
+            <div className="choghadiyaTime">
+              {value(item?.start)}
+              <span> – </span>
+              {value(item?.end)}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  /* =========================
+     DATA SHORTCUTS
+  ========================= */
+
+  const tithi =
+    data?.tithi;
+
+  const nakshatra =
+    data?.nakshatra;
+
+  const yoga =
+    data?.yoga;
+
+  const karana =
+    data?.karana;
+
+  const sun =
+    data?.sun;
+
+  const moon =
+    data?.moon;
+
+  const timings =
+    data?.timings || {};
+
   return (
     <>
       <main className="page">
 
-        {/* =========================
-            HERO
-        ========================= */}
+        {/* =================================
+            PAGE HEADER
+        ================================= */}
 
-        <section className="hero">
+        <section className="pageHeader">
 
           <div className="eyebrow">
             DAILY VEDIC PANCHANG
           </div>
 
-          <h1>Daily Panchang</h1>
+          <h1>
+            Daily Panchang
+          </h1>
 
-          <p>
-            Vedic Panchang calculated for your location
-          </p>
+          {date && (
+            <div className="dateSubtitle">
+              {formatDate(date)}
+            </div>
+          )}
 
         </section>
 
 
-        {/* =========================
-            INPUT AREA
-            DO NOT CHANGE THIS CSS
-        ========================= */}
+        {/* =================================
+            INPUT
+            DO NOT CHANGE
+        ================================= */}
 
-        <section className="search-section">
+        <section className="controls">
 
-          <div className="search-card">
+          <div className="field">
 
-            <div className="field">
+            <label>
+              DATE
+            </label>
 
-              <label>
-                DATE
-              </label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) =>
+                setDate(e.target.value)
+              }
+            />
 
-              <div className="date-input-wrap">
-
-                <span className="calendar-icon">
-                  ◷
-                </span>
-
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                    setPanchang(null);
-                    setError("");
-                  }}
-                />
-
-              </div>
-
-            </div>
+          </div>
 
 
-            <div className="field location-field">
+          <div className="field">
 
-              <label>
-                LOCATION
-              </label>
+            <label>
+              LOCATION
+            </label>
+
+            <div className="locationRow">
 
               <input
                 type="text"
@@ -321,362 +435,614 @@ export default function Home() {
                 }}
               />
 
+              <button
+                className="detect"
+                type="button"
+                onClick={detectLocation}
+              >
+                Detect
+              </button>
+
             </div>
 
-
-            <button
-              type="button"
-              className="detect-button"
-              onClick={detectLocation}
+            <div
+              id="locationDisplay"
+              className="locationDisplay"
             >
-              Use my location
-            </button>
-
-
-            <button
-              type="button"
-              className="view-button"
-              onClick={loadPanchang}
-              disabled={loading}
-            >
-              {loading
-                ? "Calculating..."
-                : "View Panchang"}
-            </button>
+              Enter a city or detect your location.
+            </div>
 
           </div>
 
 
-          {location.city && (
-            <div className="location-confirmed">
-              <span>●</span>
-              {location.city}
-            </div>
-          )}
-
-
-          {error && (
-            <div className="error">
-              {error}
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={loadPanchang}
+          >
+            View Panchang
+          </button>
 
         </section>
 
 
-        {/* =========================
+        {/* =================================
+            LOADING
+        ================================= */}
+
+        {loading && (
+          <div className="loading">
+            Calculating Panchang…
+          </div>
+        )}
+
+
+        {/* =================================
+            ERROR
+        ================================= */}
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
+
+
+        {/* =================================
             OUTPUT
-        ========================= */}
+        ================================= */}
 
-        {panchang && (
+        {data && (
 
-          <section className="results">
+          <div className="output">
 
-            {/* DATE HEADER */}
+            {/* =============================
+                DATE
+            ============================= */}
 
-            <div className="date-summary">
+            <div className="dateCard">
 
-              <div>
-
-                <span className="summary-label">
-                  PANCHANG FOR
-                </span>
-
-                <h2>
-                  {formatDate(date)}
-                </h2>
-
+              <div className="dateLabel">
+                PANCHANG FOR
               </div>
 
-              <div className="summary-location">
+              <div className="dateValue">
+                {formatDate(date)}
+              </div>
+
+              <div className="dateLocation">
                 {location.city}
               </div>
 
             </div>
 
 
-            {/* =========================
+            {/* =============================
                 PANCHANG
-            ========================= */}
+            ============================= */}
 
             <section className="section">
 
-              <div className="section-title">
-
-                <h2>Panchang</h2>
-
-                <div />
-
+              <div className="sectionHeading">
+                <h2>
+                  Panchang
+                </h2>
               </div>
 
 
-              <div className="panchang-grid">
+              <div className="panchangGrid">
 
-                <PanchangCard
-                  icon="☀"
-                  label="Vara"
-                  value={panchang?.vara?.name}
-                />
 
-                <PanchangCard
-                  icon="☾"
-                  label="Tithi"
-                  value={panchang?.tithi?.name}
-                  end={panchang?.tithi?.ends}
-                />
+                {/* VARA */}
 
-                <PanchangCard
-                  icon="✦"
-                  label="Nakshatra"
-                  value={panchang?.nakshatra?.name}
-                  end={panchang?.nakshatra?.ends}
-                />
+                <div className="panchangCard">
 
-                <PanchangCard
-                  icon="✧"
-                  label="Yoga"
-                  value={panchang?.yoga?.name}
-                  end={panchang?.yoga?.ends}
-                />
+                  <div className="panchangIcon">
+                    ☀️
+                  </div>
 
-                <PanchangCard
-                  icon="◐"
-                  label="Karana"
-                  value={panchang?.karana?.name}
-                  end={panchang?.karana?.ends}
-                />
+                  <div className="panchangLabel">
+                    Vara
+                  </div>
+
+                  <div className="panchangValue">
+                    {value(
+                      data?.vara?.name
+                    )}
+                  </div>
+
+                </div>
+
+
+                {/* TITHI */}
+
+                <div className="panchangCard">
+
+                  <div className="panchangIcon">
+                    ☾
+                  </div>
+
+                  <div className="panchangLabel">
+                    Tithi
+                  </div>
+
+                  <div className="panchangValue">
+                    {value(tithi?.name)}
+                  </div>
+
+                  {tithi?.ends && (
+                    <div className="panchangEnd">
+                      Ends
+                      <strong>
+                        {tithi.ends}
+                      </strong>
+                    </div>
+                  )}
+
+                </div>
+
+
+                {/* NAKSHATRA */}
+
+                <div className="panchangCard">
+
+                  <div className="panchangIcon">
+                    ✦
+                  </div>
+
+                  <div className="panchangLabel">
+                    Nakshatra
+                  </div>
+
+                  <div className="panchangValue">
+                    {value(
+                      nakshatra?.name
+                    )}
+                  </div>
+
+                  {nakshatra?.ends && (
+                    <div className="panchangEnd">
+                      Ends
+                      <strong>
+                        {nakshatra.ends}
+                      </strong>
+                    </div>
+                  )}
+
+                </div>
+
+
+                {/* YOGA */}
+
+                <div className="panchangCard">
+
+                  <div className="panchangIcon">
+                    ✧
+                  </div>
+
+                  <div className="panchangLabel">
+                    Yoga
+                  </div>
+
+                  <div className="panchangValue">
+                    {value(
+                      yoga?.name
+                    )}
+                  </div>
+
+                  {yoga?.ends && (
+                    <div className="panchangEnd">
+                      Ends
+                      <strong>
+                        {yoga.ends}
+                      </strong>
+                    </div>
+                  )}
+
+                </div>
+
+
+                {/* KARANA */}
+
+                <div className="panchangCard">
+
+                  <div className="panchangIcon">
+                    ◐
+                  </div>
+
+                  <div className="panchangLabel">
+                    Karana
+                  </div>
+
+                  <div className="panchangValue">
+                    {value(
+                      karana?.name
+                    )}
+                  </div>
+
+                  {karana?.ends && (
+                    <div className="panchangEnd">
+                      Ends
+                      <strong>
+                        {karana.ends}
+                      </strong>
+                    </div>
+                  )}
+
+                </div>
 
               </div>
 
             </section>
 
 
-            {/* =========================
+            {/* =============================
                 SUN & MOON
-            ========================= */}
+            ============================= */}
 
             <section className="section">
 
-              <div className="section-title">
-
-                <h2>Sun & Moon</h2>
-
-                <div />
-
+              <div className="sectionHeading">
+                <h2>
+                  Sun & Moon
+                </h2>
               </div>
 
 
-              <div className="two-columns">
-
-                <InfoCard title="Sun">
-
-                  <TimeRow
-                    label="Sunrise"
-                    value={panchang?.sun?.rise}
-                  />
-
-                  <TimeRow
-                    label="Sunset"
-                    value={panchang?.sun?.set}
-                  />
-
-                </InfoCard>
+              <div className="sunMoonGrid">
 
 
-                <InfoCard title="Moon">
+                {/* SUN */}
 
-                  <TimeRow
-                    label="Moonrise"
-                    value={panchang?.moon?.rise}
-                  />
+                <div className="outputCard">
 
-                  <TimeRow
-                    label="Moonset"
-                    value={panchang?.moon?.set}
-                  />
+                  <div className="outputCardTitle">
+                    Sun
+                  </div>
 
-                </InfoCard>
+                  <div className="timeList">
+
+                    <div className="timeRow">
+
+                      <span>
+                        Sunrise
+                      </span>
+
+                      <strong>
+                        {value(
+                          sun?.rise
+                        )}
+                      </strong>
+
+                    </div>
+
+                    <div className="timeRow">
+
+                      <span>
+                        Sunset
+                      </span>
+
+                      <strong>
+                        {value(
+                          sun?.set
+                        )}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* MOON */}
+
+                <div className="outputCard">
+
+                  <div className="outputCardTitle">
+                    Moon
+                  </div>
+
+                  <div className="timeList">
+
+                    <div className="timeRow">
+
+                      <span>
+                        Moonrise
+                      </span>
+
+                      <strong>
+                        {value(
+                          moon?.rise
+                        )}
+                      </strong>
+
+                    </div>
+
+                    <div className="timeRow">
+
+                      <span>
+                        Moonset
+                      </span>
+
+                      <strong>
+                        {value(
+                          moon?.set
+                        )}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
 
               </div>
 
             </section>
 
 
-            {/* =========================
-                SHUBH / ASHUBH
-            ========================= */}
+            {/* =============================
+                SHUBH ASHUBH
+            ============================= */}
 
             <section className="section">
 
-              <div className="section-title">
-
+              <div className="sectionHeading">
                 <h2>
                   Shubh & Ashubh Kaal
                 </h2>
-
-                <div />
-
               </div>
 
 
-              <div className="info-grid">
+              <div className="timingGrid">
 
-                <SimpleCard
-                  label="Rahu Kaal"
-                  value={panchang?.timings?.rahuKaal}
-                />
 
-                <SimpleCard
-                  label="Yamaganda"
-                  value={panchang?.timings?.yamaganda}
-                />
+                <div className="timingCard">
 
-                <SimpleCard
-                  label="Gulika Kaal"
-                  value={panchang?.timings?.gulika}
-                />
+                  <span>
+                    Rahu Kaal
+                  </span>
 
-                <SimpleCard
-                  label="Abhijit Muhurat"
-                  value={panchang?.timings?.abhijit}
-                />
+                  <strong>
+                    {value(
+                      timings.rahuKaal
+                    )}
+                  </strong>
 
-                <SimpleCard
-                  label="Brahma Muhurat"
-                  value={panchang?.timings?.brahma}
-                />
+                </div>
+
+
+                <div className="timingCard">
+
+                  <span>
+                    Yamaganda
+                  </span>
+
+                  <strong>
+                    {value(
+                      timings.yamaganda
+                    )}
+                  </strong>
+
+                </div>
+
+
+                <div className="timingCard">
+
+                  <span>
+                    Gulika Kaal
+                  </span>
+
+                  <strong>
+                    {value(
+                      timings.gulika
+                    )}
+                  </strong>
+
+                </div>
+
+
+                <div className="timingCard">
+
+                  <span>
+                    Abhijit Muhurat
+                  </span>
+
+                  <strong>
+                    {value(
+                      timings.abhijit
+                    )}
+                  </strong>
+
+                </div>
+
+
+                <div className="timingCard">
+
+                  <span>
+                    Brahma Muhurat
+                  </span>
+
+                  <strong>
+                    {value(
+                      timings.brahma
+                    )}
+                  </strong>
+
+                </div>
 
               </div>
 
             </section>
 
 
-            {/* =========================
+            {/* =============================
                 CHOGHADIYA
-            ========================= */}
+            ============================= */}
 
             <section className="section">
 
-              <div className="section-title">
-
-                <h2>Choghadiya</h2>
-
-                <div />
-
+              <div className="sectionHeading">
+                <h2>
+                  Choghadiya
+                </h2>
               </div>
 
 
-              <div className="two-columns">
+              <div className="choghadiyaGrid">
 
-                <ChoghadiyaCard
-                  title="Day Choghadiya"
-                  items={
-                    panchang?.choghadiya?.day
-                  }
-                />
 
-                <ChoghadiyaCard
-                  title="Night Choghadiya"
-                  items={
-                    panchang?.choghadiya?.night
-                  }
-                />
+                <div className="outputCard">
+
+                  <div className="outputCardTitle">
+                    Day Choghadiya
+                  </div>
+
+                  {renderChoghadiya(
+                    data?.choghadiya?.day
+                  )}
+
+                </div>
+
+
+                <div className="outputCard">
+
+                  <div className="outputCardTitle">
+                    Night Choghadiya
+                  </div>
+
+                  {renderChoghadiya(
+                    data?.choghadiya?.night
+                  )}
+
+                </div>
 
               </div>
 
             </section>
 
 
-            {/* =========================
-                ADDITIONAL
-            ========================= */}
+            {/* =============================
+                ADDITIONAL PANCHANG
+            ============================= */}
 
             <section className="section">
 
-              <div className="section-title">
-
+              <div className="sectionHeading">
                 <h2>
                   Additional Panchang
                 </h2>
-
-                <div />
-
               </div>
 
 
-              <div className="info-grid">
+              <div className="additionalGrid">
 
-                <SimpleCard
-                  label="Ayana"
-                  value={panchang?.ayana}
-                />
 
-                <SimpleCard
-                  label="Ritu"
-                  value={panchang?.ritu}
-                />
+                <div className="additionalCard">
+                  <span>Ayana</span>
+                  <strong>
+                    {value(data?.ayana)}
+                  </strong>
+                </div>
 
-                <SimpleCard
-                  label="Paksha"
-                  value={panchang?.paksha}
-                />
 
-                <SimpleCard
-                  label="Masa"
-                  value={panchang?.masa}
-                />
+                <div className="additionalCard">
+                  <span>Ritu</span>
+                  <strong>
+                    {value(data?.ritu)}
+                  </strong>
+                </div>
 
-                <SimpleCard
-                  label="Vikram Samvat"
-                  value={panchang?.vikramSamvat}
-                />
 
-                <SimpleCard
-                  label="Shaka Samvat"
-                  value={panchang?.shakaSamvat}
-                />
+                <div className="additionalCard">
+                  <span>Paksha</span>
+                  <strong>
+                    {value(data?.paksha)}
+                  </strong>
+                </div>
 
-                <SimpleCard
-                  label="Sun Rashi"
-                  value={
-                    panchang?.sun?.rashi?.name
-                  }
-                />
 
-                <SimpleCard
-                  label="Moon Rashi"
-                  value={
-                    panchang?.moon?.rashi?.name
-                  }
-                />
+                <div className="additionalCard">
+                  <span>Masa</span>
+                  <strong>
+                    {value(data?.masa)}
+                  </strong>
+                </div>
 
-                <SimpleCard
-                  label="Moon Nakshatra Pada"
-                  value={
-                    panchang?.moon?.nakshatra?.pada
-                      ? `Pada ${panchang.moon.nakshatra.pada}`
-                      : "—"
-                  }
-                />
+
+                <div className="additionalCard">
+                  <span>
+                    Vikram Samvat
+                  </span>
+                  <strong>
+                    {value(
+                      data?.vikramSamvat
+                    )}
+                  </strong>
+                </div>
+
+
+                <div className="additionalCard">
+                  <span>
+                    Shaka Samvat
+                  </span>
+                  <strong>
+                    {value(
+                      data?.shakaSamvat
+                    )}
+                  </strong>
+                </div>
+
+
+                <div className="additionalCard">
+                  <span>
+                    Sun Rashi
+                  </span>
+                  <strong>
+                    {value(
+                      sun?.rashi?.name
+                    )}
+                  </strong>
+                </div>
+
+
+                <div className="additionalCard">
+                  <span>
+                    Moon Rashi
+                  </span>
+                  <strong>
+                    {value(
+                      moon?.rashi?.name
+                    )}
+                  </strong>
+                </div>
+
+
+                <div className="additionalCard">
+                  <span>
+                    Moon Nakshatra Pada
+                  </span>
+                  <strong>
+                    {moon?.nakshatra?.pada
+                      ? `Pada ${moon.nakshatra.pada}`
+                      : "—"}
+                  </strong>
+                </div>
 
               </div>
 
             </section>
 
-          </section>
+          </div>
 
         )}
 
       </main>
 
 
-      {/* =====================================================
-          ALL PAGE CSS
-          
-          IMPORTANT:
-          INPUT CSS BELOW IS THE OLD WORKING CSS.
-          DO NOT CHANGE IT.
-      ===================================================== */}
+      {/* =================================
+          PAGE CSS
+      ================================= */}
 
       <style jsx>{`
 
@@ -685,991 +1051,668 @@ export default function Home() {
         ========================= */
 
         .page {
-          min-height: 100vh;
-          background: #f8f5ef;
-          color: #29251f;
-          padding-bottom: 90px;
+          max-width:1100px;
+          margin:0 auto;
+          padding:48px 24px 80px;
         }
 
 
         /* =========================
-           HERO
+           HEADER
         ========================= */
 
-        .hero {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 65px 24px 45px;
+        .pageHeader {
+          margin-bottom:38px;
         }
 
         .eyebrow {
-          color: #a87935;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 2.5px;
-          margin-bottom: 17px;
+          color:#a87935;
+          font-size:13px;
+          font-weight:700;
+          letter-spacing:3px;
+          margin-bottom:22px;
         }
 
-        .hero h1 {
-          margin: 0;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(42px, 6vw, 70px);
-          line-height: 1;
-          font-weight: 600;
-          letter-spacing: -2px;
+        .pageHeader h1 {
+          margin:0;
+          font-family:Georgia,serif;
+          font-size:clamp(48px,7vw,82px);
+          line-height:.95;
+          font-weight:600;
+          letter-spacing:-3px;
         }
 
-        .hero p {
-          margin: 16px 0 0;
-          color: #756f64;
-          font-size: 16px;
+        .dateSubtitle {
+          margin-top:22px;
+          color:#756f64;
+          font-size:20px;
         }
 
 
-        /* =====================================================
+        /* =========================
            INPUT CSS
-           
-           THIS IS KEPT INTACT.
-        ===================================================== */
+           KEPT AS BEFORE
+        ========================= */
 
-        .search-section {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 0 24px 40px;
-        }
+        .controls {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:16px;
+          padding:18px;
+          box-shadow:0 6px 24px rgba(65,45,25,.06);
 
-        .search-card {
-          display: grid;
-          grid-template-columns: 210px 1fr 145px 175px;
-          gap: 12px;
-          align-items: end;
+          display:grid;
+          grid-template-columns:1fr 1.4fr auto;
+          gap:14px;
 
-          padding: 18px;
-
-          background: #fffdf9;
-          border: 1px solid #dfd7ca;
-          border-radius: 18px;
-
-          box-shadow:
-            0 8px 30px rgba(70, 50, 30, .055);
-        }
-
-        .field {
-          min-width: 0;
+          margin-bottom:45px;
         }
 
         .field label {
-          display: block;
-          margin-bottom: 8px;
+          display:block;
+          font-size:11px;
+          font-weight:700;
+          letter-spacing:.5px;
+          color:#756f64;
+          margin-bottom:7px;
+        }
 
-          color: #756f64;
+        .field input {
+          width:100%;
+          height:44px;
+          border:1px solid #e6ded1;
+          border-radius:10px;
+          background:white;
+          padding:0 12px;
+          font-size:14px;
+          color:#29251f;
+          outline:none;
+        }
 
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1.3px;
+        .field input:focus {
+          border-color:#a87935;
+        }
+
+        .locationRow {
+          display:flex;
+          gap:8px;
+        }
+
+        .locationRow input {
+          flex:1;
+        }
+
+        .controls button {
+          height:44px;
+          border:0;
+          border-radius:10px;
+          background:#7b4b2a;
+          color:white;
+          padding:0 20px;
+          font-size:14px;
+          font-weight:600;
+          cursor:pointer;
+        }
+
+        .controls button:hover {
+          opacity:.92;
+        }
+
+        .controls .detect {
+          background:#f0e4d6;
+          color:#7b4b2a;
+          white-space:nowrap;
+        }
+
+        .locationDisplay {
+          margin-top:7px;
+          font-size:11px;
+          color:#756f64;
         }
 
 
-        /* DATE */
+        /* =========================
+           STATUS
+        ========================= */
 
-        .date-input-wrap {
-          position: relative;
+        .loading,
+        .error {
+          padding:16px 18px;
+          border-radius:12px;
+          margin-bottom:25px;
+          text-align:center;
+          font-size:14px;
         }
 
-        .date-input-wrap input {
-          appearance: none;
-          -webkit-appearance: none;
-
-          width: 100%;
-          height: 50px;
-
-          padding: 0 42px 0 42px;
-
-          border: 1px solid #d8d0c3;
-          border-radius: 12px;
-
-          background: #fff;
-
-          color: #29251f;
-
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
-
-          font-size: 14px;
-
-          outline: none;
-          cursor: pointer;
+        .loading {
+          background:#f0e4d6;
+          color:#7b4b2a;
         }
-
-        .date-input-wrap input:hover {
-          border-color: #c5b9a8;
-        }
-
-        .date-input-wrap input:focus {
-          border-color: #a87935;
-          box-shadow:
-            0 0 0 3px rgba(168, 121, 53, .08);
-        }
-
-        .date-input-wrap input::-webkit-calendar-picker-indicator {
-          position: absolute;
-          right: 13px;
-
-          width: 17px;
-          height: 17px;
-
-          opacity: .55;
-
-          cursor: pointer;
-        }
-
-        .calendar-icon {
-          position: absolute;
-          left: 15px;
-          top: 50%;
-
-          transform: translateY(-50%);
-
-          color: #a87935;
-          font-size: 17px;
-
-          pointer-events: none;
-          z-index: 1;
-        }
-
-
-        /* LOCATION */
-
-        .location-field input {
-          width: 100%;
-          height: 50px;
-
-          padding: 0 15px;
-
-          border: 1px solid #d8d0c3;
-          border-radius: 12px;
-
-          background: #fff;
-
-          color: #29251f;
-
-          font-size: 14px;
-
-          outline: none;
-        }
-
-        .location-field input:focus {
-          border-color: #a87935;
-          box-shadow:
-            0 0 0 3px rgba(168, 121, 53, .08);
-        }
-
-        .location-field input::placeholder {
-          color: #aaa196;
-        }
-
-
-        /* BUTTONS */
-
-        .detect-button,
-        .view-button {
-          height: 50px;
-
-          border-radius: 12px;
-
-          font-size: 13px;
-          font-weight: 600;
-
-          cursor: pointer;
-
-          transition:
-            transform .15s ease,
-            opacity .15s ease;
-        }
-
-        .detect-button {
-          border: 1px solid #d8d0c3;
-
-          background: #f7f3eb;
-
-          color: #60482f;
-        }
-
-        .detect-button:hover {
-          background: #f0e9de;
-        }
-
-        .view-button {
-          border: 1px solid #29251f;
-
-          background: #29251f;
-
-          color: #fff;
-        }
-
-        .view-button:hover {
-          transform: translateY(-1px);
-        }
-
-        .view-button:disabled {
-          opacity: .6;
-          cursor: wait;
-        }
-
-
-        /* LOCATION STATUS */
-
-        .location-confirmed {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-
-          margin-top: 11px;
-
-          color: #756f64;
-
-          font-size: 12px;
-        }
-
-        .location-confirmed span {
-          color: #a87935;
-          font-size: 9px;
-        }
-
-
-        /* ERROR */
 
         .error {
-          margin-top: 13px;
-
-          padding: 13px 15px;
-
-          border: 1px solid #e3c9c0;
-          border-radius: 11px;
-
-          background: #f9eae6;
-
-          color: #863c31;
-
-          font-size: 13px;
+          background:#f5e3df;
+          color:#87372d;
         }
 
 
-        /* =====================================================
-           NEW OUTPUT CSS
-        ===================================================== */
+        /* =========================
+           OUTPUT DATE
+        ========================= */
 
-        .results {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 0 24px;
+        .dateCard {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:18px;
+          padding:24px;
+          margin-bottom:48px;
+        }
+
+        .dateLabel {
+          font-size:11px;
+          color:#756f64;
+          font-weight:700;
+          letter-spacing:1px;
+        }
+
+        .dateValue {
+          margin-top:8px;
+          font-family:Georgia,serif;
+          font-size:27px;
+          font-weight:600;
+        }
+
+        .dateLocation {
+          margin-top:7px;
+          color:#756f64;
+          font-size:14px;
         }
 
 
-        /* DATE SUMMARY */
-
-        .date-summary {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          gap: 24px;
-
-          padding: 25px 26px;
-
-          background: #fffdf9;
-
-          border: 1px solid #dfd7ca;
-          border-radius: 16px;
-
-          box-shadow:
-            0 5px 22px rgba(70, 50, 30, .045);
-        }
-
-        .summary-label {
-          display: block;
-
-          margin-bottom: 7px;
-
-          color: #a87935;
-
-          font-size: 10px;
-          font-weight: 700;
-
-          letter-spacing: 1.5px;
-        }
-
-        .date-summary h2 {
-          margin: 0;
-
-          color: #29251f;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 25px;
-          line-height: 1.25;
-
-          font-weight: 600;
-        }
-
-        .summary-location {
-          padding: 8px 14px;
-
-          background: #f5efe6;
-
-          border-radius: 20px;
-
-          color: #6f6253;
-
-          font-size: 12px;
-
-          white-space: nowrap;
-        }
-
-
-        /* SECTION */
+        /* =========================
+           SECTIONS
+        ========================= */
 
         .section {
-          margin-top: 45px;
+          margin-top:55px;
         }
 
-        .section-title {
-          display: flex;
-          align-items: center;
-
-          gap: 15px;
-
-          margin-bottom: 17px;
+        .sectionHeading {
+          display:flex;
+          align-items:center;
+          gap:18px;
+          margin-bottom:24px;
         }
 
-        .section-title h2 {
-          margin: 0;
-
-          color: #29251f;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 23px;
-          line-height: 1.2;
-
-          font-weight: 600;
+        .sectionHeading h2 {
+          margin:0;
+          font-family:Georgia,serif;
+          font-size:31px;
+          line-height:1;
+          font-weight:600;
+          white-space:nowrap;
         }
 
-        .section-title div {
-          flex: 1;
-
-          height: 1px;
-
-          background: #ded6ca;
+        .sectionHeading::after {
+          content:"";
+          flex:1;
+          height:1px;
+          background:#ded5c7;
         }
 
 
-        /* PANCHANG */
+        /* =========================
+           PANCHANG
+        ========================= */
 
-        .panchang-grid {
-          display: grid;
-
-          grid-template-columns:
-            repeat(5, 1fr);
-
-          gap: 12px;
+        .panchangGrid {
+          display:grid;
+          grid-template-columns:repeat(5,1fr);
+          gap:14px;
         }
 
-        .panchang-card {
-          min-height: 158px;
+        .panchangCard {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:16px;
+          padding:22px 18px;
+          min-height:180px;
 
-          display: flex;
+          display:flex;
+          flex-direction:column;
 
-          flex-direction: column;
-
-          align-items: center;
-
-          justify-content: center;
-
-          padding: 20px 12px;
-
-          text-align: center;
-
-          background: #fffdf9;
-
-          border: 1px solid #dfd7ca;
-
-          border-radius: 15px;
-
-          box-shadow:
-            0 4px 18px rgba(70, 50, 30, .035);
-
-          transition:
-            transform .18s ease,
-            box-shadow .18s ease;
+          box-shadow:0 5px 18px rgba(65,45,25,.035);
         }
 
-        .panchang-card:hover {
-          transform: translateY(-2px);
-
-          box-shadow:
-            0 9px 25px rgba(70, 50, 30, .065);
+        .panchangIcon {
+          font-size:23px;
+          line-height:1;
+          margin-bottom:21px;
         }
 
-        .panchang-icon {
-          width: 42px;
-          height: 42px;
-
-          display: flex;
-
-          align-items: center;
-          justify-content: center;
-
-          margin-bottom: 11px;
-
-          border-radius: 50%;
-
-          background: #f5ede2;
-
-          color: #a87935;
-
-          font-family: Georgia, serif;
-
-          font-size: 21px;
+        .panchangLabel {
+          color:#756f64;
+          font-size:13px;
+          margin-bottom:8px;
         }
 
-        .panchang-card .label {
-          margin-bottom: 7px;
-
-          color: #81786d;
-
-          font-size: 11px;
+        .panchangValue {
+          font-size:20px;
+          line-height:1.25;
+          font-weight:700;
+          color:#29251f;
         }
 
-        .panchang-card strong {
-          max-width: 100%;
+        .panchangEnd {
+          display:flex;
+          flex-direction:column;
+          gap:3px;
 
-          color: #29251f;
+          margin-top:14px;
 
-          font-size: 15px;
-
-          line-height: 1.35;
-
-          font-weight: 600;
+          color:#756f64;
+          font-size:12px;
+          line-height:1.4;
         }
 
-        .panchang-card small {
-          margin-top: 7px;
-
-          color: #92897e;
-
-          font-size: 10px;
+        .panchangEnd strong {
+          color:#7b4b2a;
+          font-size:13px;
+          font-weight:600;
         }
 
 
-        /* SUN MOON */
+        /* =========================
+           SUN / MOON
+        ========================= */
 
-        .two-columns {
-          display: grid;
-
-          grid-template-columns:
-            1fr 1fr;
-
-          gap: 14px;
+        .sunMoonGrid {
+          display:grid;
+          grid-template-columns:repeat(2,1fr);
+          gap:16px;
         }
 
-        .info-card,
-        .large-card {
-          padding: 21px 22px;
-
-          background: #fffdf9;
-
-          border: 1px solid #dfd7ca;
-
-          border-radius: 15px;
-
-          box-shadow:
-            0 4px 18px rgba(70, 50, 30, .035);
+        .outputCard {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:16px;
+          padding:23px;
+          box-shadow:0 5px 18px rgba(65,45,25,.035);
         }
 
-        .info-card h3,
-        .large-card h3 {
-          margin: 0 0 13px;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 18px;
-
-          font-weight: 600;
+        .outputCardTitle {
+          font-family:Georgia,serif;
+          font-size:23px;
+          font-weight:600;
+          margin-bottom:18px;
         }
 
-        .time-row,
-        .choghadiya-row {
-          display: flex;
-
-          justify-content: space-between;
-          align-items: center;
-
-          gap: 20px;
-
-          padding: 13px 0;
-
-          border-bottom:
-            1px solid #ebe4da;
+        .timeList {
+          display:flex;
+          flex-direction:column;
         }
 
-        .time-row:last-child,
-        .choghadiya-row:last-child {
-          border-bottom: 0;
+        .timeRow {
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:20px;
+
+          padding:15px 0;
+
+          border-bottom:1px solid #e6ded1;
         }
 
-        .time-row span,
-        .choghadiya-row span {
-          color: #655e55;
-
-          font-size: 13px;
+        .timeRow:last-child {
+          border-bottom:0;
         }
 
-        .time-row strong,
-        .choghadiya-row strong {
-          color: #7b4b2a;
+        .timeRow span {
+          font-size:15px;
+          color:#756f64;
+        }
 
-          font-size: 13px;
-
-          font-weight: 600;
-
-          text-align: right;
+        .timeRow strong {
+          font-size:16px;
+          color:#29251f;
+          text-align:right;
+          white-space:nowrap;
         }
 
 
-        /* INFO GRID */
+        /* =========================
+           SHUBH / ASHUBH
+        ========================= */
 
-        .info-grid {
-          display: grid;
-
-          grid-template-columns:
-            repeat(3, 1fr);
-
-          gap: 12px;
+        .timingGrid {
+          display:grid;
+          grid-template-columns:repeat(2,1fr);
+          gap:12px;
         }
 
-        .simple-card {
-          min-height: 92px;
+        .timingCard {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:15px;
+          padding:20px 22px;
 
-          display: flex;
-
-          flex-direction: column;
-
-          justify-content: center;
-
-          padding: 17px 18px;
-
-          background: #fffdf9;
-
-          border: 1px solid #dfd7ca;
-
-          border-radius: 14px;
-
-          box-shadow:
-            0 4px 18px rgba(70, 50, 30, .03);
-
-          transition:
-            transform .18s ease,
-            box-shadow .18s ease;
+          display:flex;
+          flex-direction:column;
+          gap:9px;
         }
 
-        .simple-card:hover {
-          transform: translateY(-1px);
-
-          box-shadow:
-            0 7px 22px rgba(70, 50, 30, .055);
+        .timingCard span {
+          color:#756f64;
+          font-size:13px;
         }
 
-        .simple-card span {
-          display: block;
-
-          margin-bottom: 8px;
-
-          color: #81786d;
-
-          font-size: 10px;
-
-          font-weight: 600;
-
-          letter-spacing: .4px;
-        }
-
-        .simple-card strong {
-          color: #302b25;
-
-          font-size: 15px;
-
-          line-height: 1.35;
-
-          font-weight: 600;
+        .timingCard strong {
+          font-size:17px;
+          line-height:1.4;
+          color:#29251f;
         }
 
 
-        /* CHOGHADIYA */
+        /* =========================
+           CHOGHADIYA
+        ========================= */
 
-        .large-card {
-          padding: 22px;
+        .choghadiyaGrid {
+          display:grid;
+          grid-template-columns:repeat(2,1fr);
+          gap:16px;
         }
 
-        .large-card h3 {
-          padding-bottom: 13px;
-
-          border-bottom:
-            1px solid #ebe4da;
+        .choghadiyaList {
+          display:flex;
+          flex-direction:column;
         }
 
-        .choghadiya-row {
-          padding: 12px 2px;
+        .choghadiyaRow {
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+
+          gap:20px;
+
+          padding:14px 0;
+
+          border-bottom:1px solid #e6ded1;
         }
 
-        .choghadiya-row span {
-          font-weight: 500;
+        .choghadiyaRow:last-child {
+          border-bottom:0;
         }
 
-        .choghadiya-row strong {
-          color: #7b4b2a;
+        .choghadiyaInfo {
+          min-width:0;
+        }
+
+        .choghadiyaName {
+          font-size:14px;
+          font-weight:600;
+        }
+
+        .choghadiyaType {
+          margin-top:3px;
+          color:#756f64;
+          font-size:11px;
+        }
+
+        .choghadiyaTime {
+          color:#7b4b2a;
+          font-size:12px;
+          font-weight:600;
+          text-align:right;
+          white-space:nowrap;
+        }
+
+        .noData {
+          color:#756f64;
+          font-size:13px;
+          padding:10px 0;
         }
 
 
-        /* EMPTY */
+        /* =========================
+           ADDITIONAL
+        ========================= */
 
-        .empty {
-          padding: 14px 2px;
+        .additionalGrid {
+          display:grid;
+          grid-template-columns:repeat(3,1fr);
+          gap:13px;
+        }
 
-          color: #958c80;
+        .additionalCard {
+          background:#fffdf9;
+          border:1px solid #e6ded1;
+          border-radius:15px;
+          padding:20px;
+        }
 
-          font-size: 12px;
+        .additionalCard span {
+          display:block;
+          color:#756f64;
+          font-size:12px;
+          margin-bottom:9px;
+        }
+
+        .additionalCard strong {
+          display:block;
+          font-size:16px;
+          line-height:1.4;
+          color:#29251f;
         }
 
 
-        /* =====================================================
-           INPUT RESPONSIVE CSS
-           
-           ALSO KEPT INTACT.
-        ===================================================== */
+        /* =========================
+           TABLET
+        ========================= */
 
-        @media (max-width: 850px) {
+        @media(max-width:900px) {
 
-          .search-card {
-            grid-template-columns: 1fr 1fr;
+          .page {
+            padding:40px 20px 70px;
           }
 
-          .panchang-grid {
-            grid-template-columns:
-              repeat(3, 1fr);
+          .panchangGrid {
+            grid-template-columns:repeat(2,1fr);
           }
 
-          .info-grid {
-            grid-template-columns:
-              repeat(2, 1fr);
+          .additionalGrid {
+            grid-template-columns:repeat(2,1fr);
           }
 
         }
 
 
-        /* =====================================================
+        /* =========================
            MOBILE
-        ===================================================== */
+        ========================= */
 
-        @media (max-width: 600px) {
+        @media(max-width:650px) {
 
-          .hero {
-            padding: 48px 18px 34px;
+          .page {
+            padding:34px 16px 60px;
           }
 
-          .hero h1 {
-            font-size: 44px;
-            letter-spacing: -1.5px;
+          .pageHeader {
+            margin-bottom:30px;
           }
 
-          .hero p {
-            font-size: 14px;
-            line-height: 1.5;
+          .eyebrow {
+            font-size:11px;
+            letter-spacing:2px;
+            margin-bottom:18px;
           }
 
-          .search-section,
-          .results {
-            padding-left: 18px;
-            padding-right: 18px;
+          .pageHeader h1 {
+            font-size:52px;
+            line-height:.92;
+            letter-spacing:-2px;
           }
 
-          /* INPUT — unchanged */
-
-          .search-card {
-            grid-template-columns: 1fr;
-
-            padding: 16px;
-
-            border-radius: 16px;
+          .dateSubtitle {
+            font-size:17px;
+            margin-top:18px;
           }
 
-          .field input,
-          .date-input-wrap input,
-          .detect-button,
-          .view-button {
-            height: 50px;
+
+          /*
+             INPUT LAYOUT
+             SAME VISUAL STYLE,
+             STACKED FOR MOBILE
+          */
+
+          .controls {
+            grid-template-columns:1fr;
+            gap:14px;
+            padding:16px;
+          }
+
+          .locationRow {
+            display:flex;
+          }
+
+          .locationRow input {
+            min-width:0;
           }
 
 
           /* OUTPUT */
 
-          .date-summary {
-            display: block;
-
-            padding: 20px;
+          .dateCard {
+            padding:20px;
+            margin-bottom:38px;
           }
 
-          .date-summary h2 {
-            font-size: 21px;
-          }
-
-          .summary-location {
-            display: inline-block;
-
-            margin-top: 12px;
+          .dateValue {
+            font-size:23px;
           }
 
           .section {
-            margin-top: 38px;
+            margin-top:44px;
           }
 
-          .section-title h2 {
-            font-size: 21px;
+          .sectionHeading {
+            gap:12px;
+            margin-bottom:20px;
           }
 
-          .panchang-grid {
-            grid-template-columns:
-              1fr 1fr;
-
-            gap: 10px;
+          .sectionHeading h2 {
+            font-size:26px;
           }
 
-          .panchang-card {
-            min-height: 145px;
+
+          .panchangGrid {
+            grid-template-columns:1fr 1fr;
+            gap:11px;
           }
 
-          .two-columns {
-            grid-template-columns: 1fr;
+          .panchangCard {
+            min-height:160px;
+            padding:18px 15px;
           }
 
-          .info-grid {
-            grid-template-columns: 1fr;
+          .panchangIcon {
+            margin-bottom:17px;
+          }
+
+          .panchangValue {
+            font-size:18px;
+          }
+
+          .panchangEnd {
+            margin-top:11px;
+          }
+
+
+          .sunMoonGrid,
+          .choghadiyaGrid {
+            grid-template-columns:1fr;
+          }
+
+
+          .timingGrid {
+            grid-template-columns:1fr;
+          }
+
+
+          .additionalGrid {
+            grid-template-columns:1fr 1fr;
+          }
+
+
+          .outputCard {
+            padding:20px;
+          }
+
+          .outputCardTitle {
+            font-size:21px;
+          }
+
+          .timeRow {
+            padding:13px 0;
+          }
+
+          .timeRow span {
+            font-size:14px;
+          }
+
+          .timeRow strong {
+            font-size:14px;
+          }
+
+
+          .choghadiyaRow {
+            gap:12px;
           }
 
         }
 
 
-        @media (max-width: 380px) {
+        /* =========================
+           SMALL PHONES
+        ========================= */
 
-          .hero h1 {
-            font-size: 40px;
+        @media(max-width:420px) {
+
+          .page {
+            padding-left:14px;
+            padding-right:14px;
           }
 
-          .panchang-card {
-            min-height: 135px;
-
-            padding-left: 7px;
-            padding-right: 7px;
+          .pageHeader h1 {
+            font-size:46px;
           }
 
-          .panchang-card strong {
-            font-size: 14px;
+          .panchangCard {
+            padding:17px 13px;
+          }
+
+          .panchangValue {
+            font-size:17px;
+          }
+
+          .panchangEnd {
+            font-size:11px;
+          }
+
+          .sectionHeading h2 {
+            font-size:24px;
+          }
+
+          .additionalGrid {
+            grid-template-columns:1fr;
+          }
+
+          .choghadiyaTime {
+            font-size:11px;
           }
 
         }
 
       `}</style>
     </>
-  );
-}
-
-
-/* =========================================================
-   PANCHANG CARD
-========================================================= */
-
-function PanchangCard({
-  icon,
-  label,
-  value,
-  end,
-}: {
-  icon: string;
-  label: string;
-  value: any;
-  end?: any;
-}) {
-  return (
-    <div className="panchang-card">
-
-      <div className="panchang-icon">
-        {icon}
-      </div>
-
-      <div className="label">
-        {label}
-      </div>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-      {end && (
-        <small>
-          Ends {end}
-        </small>
-      )}
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   INFO CARD
-========================================================= */
-
-function InfoCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="info-card">
-
-      <h3>{title}</h3>
-
-      {children}
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   TIME ROW
-========================================================= */
-
-function TimeRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: any;
-}) {
-  return (
-    <div className="time-row">
-
-      <span>
-        {label}
-      </span>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   SIMPLE CARD
-========================================================= */
-
-function SimpleCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: any;
-}) {
-  return (
-    <div className="simple-card">
-
-      <span>
-        {label}
-      </span>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   CHOGHADIYA CARD
-========================================================= */
-
-function ChoghadiyaCard({
-  title,
-  items,
-}: {
-  title: string;
-  items: any;
-}) {
-  return (
-    <div className="large-card">
-
-      <h3>
-        {title}
-      </h3>
-
-      {!Array.isArray(items) ||
-      items.length === 0 ? (
-
-        <div className="empty">
-          No data available.
-        </div>
-
-      ) : (
-
-        <div>
-
-          {items.map(
-            (item: any, index: number) => (
-
-              <div
-                className="choghadiya-row"
-                key={index}
-              >
-
-                <span>
-                  {display(item?.name)}
-                </span>
-
-                <strong>
-                  {display(item?.start)}{" "}
-                  –{" "}
-                  {display(item?.end)}
-                </strong>
-
-              </div>
-
-            )
-          )}
-
-        </div>
-
-      )}
-
-    </div>
   );
 }
