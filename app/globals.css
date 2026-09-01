@@ -1,32 +1,32 @@
-/* =========================================================
-   KAALDARPAN — GLOBAL DESIGN SYSTEM
-   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 
 :root {
-  --bg: #f4efe5;
-  --bg-soft: #eee6d7;
-  --surface: #faf7f0;
-  --ink: #29231e;
-  --muted: #756c61;
-  --line: #d8cebd;
-  --gold: #a87938;
-  --gold-dark: #7f5b28;
-  --white: #fffdf8;
-  --black: #211d19;
+  --kd-bg: #f5f0e7;
+  --kd-surface: #fbf8f2;
+  --kd-surface-2: #eee7da;
 
-  --serif: Georgia, "Times New Roman", serif;
-  --sans: Inter, Arial, Helvetica, sans-serif;
+  --kd-ink: #24201c;
+  --kd-muted: #756d63;
+  --kd-light-text: #bdb4a8;
 
-  --container: 1180px;
-  --radius: 18px;
+  --kd-gold: #a67b3c;
+  --kd-gold-light: #c7a66a;
+
+  --kd-dark: #211e1a;
+  --kd-border: #d9d0c2;
+
+  --kd-radius: 18px;
+  --kd-max-width: 1240px;
 }
 
-/* =========================================================
+/* --------------------------------------------------
    RESET
-   ========================================================= */
+-------------------------------------------------- */
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -34,13 +34,13 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--sans);
+  background: var(--kd-bg);
+  color: var(--kd-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -49,84 +49,118 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 img {
-  display: block;
   max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-/* =========================================================
+/* --------------------------------------------------
+   TYPOGRAPHY
+-------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--kd-ink);
+  line-height: 1.05;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  letter-spacing: -0.045em;
+}
+
+h2 {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  letter-spacing: -0.035em;
+}
+
+h3 {
+  font-size: clamp(1.7rem, 3vw, 2.8rem);
+}
+
+p {
+  color: var(--kd-muted);
+}
+
+/* --------------------------------------------------
    GLOBAL CONTAINER
-   ========================================================= */
+-------------------------------------------------- */
 
-.header-inner,
-.footer-inner,
-.footer-bottom,
-main > section > div {
-  width: min(calc(100% - 48px), var(--container));
-  margin-left: auto;
-  margin-right: auto;
+.container {
+  width: min(calc(100% - 48px), var(--kd-max-width));
+  margin-inline: auto;
 }
 
-/* =========================================================
+.section {
+  padding: 100px 0;
+}
+
+/* --------------------------------------------------
    HEADER
-   ========================================================= */
+-------------------------------------------------- */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1000;
+
   width: 100%;
-  background: rgba(250, 247, 240, 0.94);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+
+  background: rgba(251, 248, 242, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid var(--kd-border);
 }
 
 .header-inner {
-  min-height: 84px;
+  min-height: 96px;
+
+  width: min(calc(100% - 48px), var(--kd-max-width));
+  margin-inline: auto;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 32px;
+  gap: 30px;
 }
 
-/* Brand */
+/* Logo */
 
-.brand {
+.site-logo {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 16px;
+
   flex-shrink: 0;
 }
 
-.brand-logo {
-  width: 58px;
-  height: 58px;
+.site-logo img {
+  width: 64px;
+  height: 64px;
   object-fit: contain;
-  border-radius: 50%;
 }
 
-.brand-text {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.brand-name {
-  font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: -1px;
-}
-
-.brand-tagline {
-  color: var(--muted);
-  font-size: 14px;
-  white-space: nowrap;
+.site-logo-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
 }
 
 /* Navigation */
@@ -134,759 +168,721 @@ main > section > div {
 .main-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 34px;
-  margin-left: auto;
 }
 
 .main-nav a {
   position: relative;
-  color: var(--ink);
+
   font-size: 15px;
   font-weight: 500;
-  transition: color 0.2s ease;
+  color: var(--kd-ink);
+
+  padding: 8px 0;
+
+  transition:
+    color 180ms ease,
+    opacity 180ms ease;
 }
 
 .main-nav a::after {
-  content: "";
+  content: '';
+
   position: absolute;
   left: 0;
-  bottom: -7px;
+  bottom: 0;
+
   width: 0;
   height: 1px;
-  background: var(--gold);
-  transition: width 0.2s ease;
+
+  background: var(--kd-gold);
+
+  transition: width 180ms ease;
 }
 
 .main-nav a:hover {
-  color: var(--gold-dark);
+  color: var(--kd-gold);
 }
 
 .main-nav a:hover::after {
   width: 100%;
 }
 
-/* Header CTA */
-
-.header-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 19px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 600;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.header-button span {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.header-button:hover {
-  background: var(--gold-dark);
-  border-color: var(--gold-dark);
-  transform: translateY(-1px);
-}
-
-/* Mobile menu button */
+/* Mobile menu */
 
 .menu-button {
+  width: 54px;
+  height: 54px;
+
   display: none;
-  width: 44px;
-  height: 44px;
-  padding: 10px;
-  border: 1px solid var(--line);
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--kd-border);
   border-radius: 50%;
+
   background: transparent;
-  cursor: pointer;
+  color: var(--kd-ink);
+}
+
+.menu-button span,
+.menu-button span::before,
+.menu-button span::after {
+  display: block;
+
+  width: 22px;
+  height: 2px;
+
+  background: currentColor;
+
+  transition: 180ms ease;
 }
 
 .menu-button span {
-  display: block;
-  width: 21px;
-  height: 1.5px;
-  margin: 5px auto;
-  background: var(--ink);
+  position: relative;
 }
 
-/* =========================================================
-   HERO
-   ========================================================= */
+.menu-button span::before,
+.menu-button span::after {
+  content: '';
 
-.hero {
-  position: relative;
-  overflow: hidden;
-  padding: 110px 0 100px;
-  background:
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(168, 121, 56, 0.10),
-      transparent 30%
-    ),
-    var(--bg);
+  position: absolute;
+  left: 0;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 850px;
+.menu-button span::before {
+  top: -7px;
+}
+
+.menu-button span::after {
+  top: 7px;
+}
+
+/* --------------------------------------------------
+   PAGE HEADER
+-------------------------------------------------- */
+
+.page-header {
+  padding: 90px 0 50px;
 }
 
 .eyebrow {
-  margin: 0 0 24px;
-  color: var(--gold-dark);
+  display: inline-block;
+
+  margin-bottom: 22px;
+
+  color: var(--kd-gold);
+
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-}
-
-.hero h1 {
-  max-width: 850px;
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(58px, 8vw, 108px);
-  line-height: 0.94;
-  letter-spacing: -4px;
-  font-weight: 700;
-}
-
-.hero h1 span {
-  display: block;
-  color: var(--gold-dark);
-}
-
-.hero p {
-  max-width: 690px;
-  margin: 34px 0 0;
-  color: var(--muted);
-  font-size: 20px;
-  line-height: 1.75;
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 38px;
-}
-
-.hero-actions a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 23px;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.hero-actions a:first-child {
-  background: var(--ink);
-  color: var(--white);
-}
-
-.hero-actions a:last-child {
-  border: 1px solid var(--line);
-  background: transparent;
-}
-
-.hero-actions a:hover {
-  transform: translateY(-2px);
-}
-
-.hero-visual {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  width: 340px;
-  height: 340px;
-  transform: translateY(-50%);
-  border: 1px solid rgba(168, 121, 56, 0.3);
-  border-radius: 50%;
-  opacity: 0.8;
-}
-
-.hero-visual::before,
-.hero-visual::after {
-  content: "";
-  position: absolute;
-  inset: 35px;
-  border: 1px solid rgba(168, 121, 56, 0.25);
-  border-radius: 50%;
-}
-
-.hero-visual::after {
-  inset: 95px;
-}
-
-/* =========================================================
-   TRUST STRIP
-   ========================================================= */
-
-.trust-strip {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.trust-strip > div {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.trust-item {
-  padding: 27px 20px;
-  border-right: 1px solid var(--line);
-}
-
-.trust-item:last-child {
-  border-right: 0;
-}
-
-.trust-item strong {
-  display: block;
-  margin-bottom: 3px;
-  font-family: var(--serif);
-  font-size: 20px;
-}
-
-.trust-item span {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* =========================================================
-   SECTION BASICS
-   ========================================================= */
-
-section {
-  position: relative;
-}
-
-.section {
-  padding: 110px 0;
-}
-
-.section-heading {
-  max-width: 720px;
-  margin-bottom: 55px;
-}
-
-.section-heading .eyebrow {
-  margin-bottom: 16px;
-}
-
-.section-heading h2 {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(42px, 5vw, 68px);
-  line-height: 1;
-  letter-spacing: -2px;
-}
-
-.section-heading p {
-  margin: 22px 0 0;
-  color: var(--muted);
-  font-size: 18px;
-}
-
-/* =========================================================
-   FEATURE GRID
-   ========================================================= */
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.feature-card {
-  min-height: 300px;
-  padding: 34px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(168, 121, 56, 0.55);
-}
-
-.feature-card-number {
-  color: var(--gold);
-  font-family: var(--serif);
-  font-size: 16px;
-}
-
-.feature-card h3 {
-  margin: 70px 0 12px;
-  font-family: var(--serif);
-  font-size: 29px;
-  line-height: 1.1;
-}
-
-.feature-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15px;
-}
-
-/* =========================================================
-   HOROSCOPE CTA
-   ========================================================= */
-
-.horoscope-cta {
-  padding: 100px 0;
-  background: var(--black);
-  color: var(--white);
-}
-
-.horoscope-cta > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 60px;
-}
-
-.horoscope-cta h2 {
-  max-width: 700px;
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(44px, 6vw, 78px);
-  line-height: 0.98;
-  letter-spacing: -2px;
-}
-
-.horoscope-cta p {
-  max-width: 560px;
-  margin: 22px 0 0;
-  color: #c9c0b3;
-  font-size: 17px;
-}
-
-.horoscope-cta a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  min-width: 190px;
-  min-height: 55px;
-  padding: 0 25px;
-  border-radius: 999px;
-  background: var(--white);
-  color: var(--black);
-  font-weight: 600;
-}
-
-/* =========================================================
-   FOUNDER PREVIEW
-   ========================================================= */
-
-.founder-preview {
-  padding: 110px 0;
-}
-
-.founder-preview > div {
-  display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  align-items: center;
-  gap: 80px;
-}
-
-.founder-preview img {
-  width: 100%;
-  max-height: 600px;
-  object-fit: cover;
-  border-radius: var(--radius);
-}
-
-.founder-preview h2 {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(42px, 5vw, 66px);
-  line-height: 1;
-  letter-spacing: -2px;
-}
-
-.founder-preview p {
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.75;
-}
-
-.founder-preview a {
-  display: inline-flex;
-  margin-top: 15px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--ink);
-}
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-.site-footer {
-  padding: 75px 0 0;
-  background: var(--black);
-  color: var(--white);
-}
-
-.footer-inner {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 70px;
-  padding-bottom: 65px;
-}
-
-.footer-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.footer-logo img {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  border-radius: 50%;
-}
-
-.footer-logo span {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.footer-brand p {
-  max-width: 300px;
-  margin-top: 20px;
-  color: #aaa095;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.footer-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-column h3 {
-  margin: 0 0 12px;
-  color: var(--white);
-  font-family: var(--serif);
-  font-size: 20px;
-}
-
-.footer-column a,
-.footer-column span {
-  color: #aaa095;
-  font-size: 14px;
-}
-
-.footer-column a:hover {
-  color: var(--white);
-}
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 22px 0;
-  border-top: 1px solid #403b35;
-  color: #827a70;
-  font-size: 12px;
-}
-
-/* =========================================================
-   INNER PAGES
-   ========================================================= */
-
-.page-header {
-  padding: 100px 0 70px;
-  border-bottom: 1px solid var(--line);
 }
 
 .page-header h1 {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(50px, 7vw, 90px);
-  line-height: 0.95;
-  letter-spacing: -3px;
+  max-width: 900px;
 }
 
 .page-header p {
-  max-width: 650px;
-  margin: 25px 0 0;
-  color: var(--muted);
-  font-size: 18px;
+  max-width: 680px;
+  margin-top: 24px;
+
+  font-size: 1.2rem;
 }
 
-/* =========================================================
-   FORMS / HOROSCOPE
-   ========================================================= */
+/* --------------------------------------------------
+   PANCHANG
+-------------------------------------------------- */
 
-.horoscope-form {
-  padding: 60px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+.panchang-page {
+  min-height: 70vh;
 }
 
-.horoscope-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.panchang-hero {
+  padding: 80px 0 50px;
+}
+
+.panchang-title {
+  margin-bottom: 18px;
+}
+
+.panchang-date {
+  margin-top: 12px;
+
+  color: var(--kd-muted);
+  font-size: 1.2rem;
+}
+
+.panchang-controls {
+  margin-top: 42px;
+
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.panchang-controls input,
+.panchang-controls button,
+.date-control {
+  min-height: 58px;
+
+  border: 1px solid var(--kd-border);
+  border-radius: 999px;
+
+  background: var(--kd-surface);
+
+  color: var(--kd-ink);
+}
+
+.panchang-controls input {
+  width: 100%;
+  padding: 0 22px;
+
+  outline: none;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.panchang-controls input::placeholder {
+  color: #a49b90;
+}
+
+.panchang-controls input:focus {
+  border-color: var(--kd-gold);
+  box-shadow: 0 0 0 4px rgba(166, 123, 60, 0.1);
+}
+
+.date-control {
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+}
+
+.panchang-controls button {
+  padding: 0 28px;
+
+  font-weight: 600;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.panchang-controls button:hover {
+  background: var(--kd-ink);
+  color: var(--kd-surface);
+}
+
+.panchang-controls button:active {
+  transform: translateY(1px);
+}
+
+.panchang-action {
+  margin-top: 14px;
+}
+
+/* Panchang grid */
+
+.panchang-grid {
+  margin-top: 55px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.panchang-card {
+  min-height: 180px;
+
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background: var(--kd-surface);
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.panchang-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 14px 40px rgba(45, 37, 28, 0.07);
+}
+
+.panchang-card-label {
+  color: var(--kd-muted);
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.horoscope-form input,
-.horoscope-form select {
-  width: 100%;
-  min-height: 52px;
-  padding: 0 15px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  outline: none;
-  background: var(--white);
-  color: var(--ink);
-}
+.panchang-card-value {
+  margin-top: 20px;
 
-.horoscope-form input:focus,
-.horoscope-form select:focus {
-  border-color: var(--gold);
-}
+  font-family: 'Playfair Display', Georgia, serif;
 
-.horoscope-form button {
-  min-height: 52px;
-  padding: 0 25px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--white);
+  font-size: 1.7rem;
   font-weight: 600;
-  cursor: pointer;
+
+  color: var(--kd-ink);
 }
 
-/* =========================================================
+.panchang-card-subtitle {
+  margin-top: 5px;
+
+  color: var(--kd-muted);
+  font-size: 14px;
+}
+
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+
+.btn {
+  min-height: 54px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 0 28px;
+
+  border-radius: 999px;
+
+  border: 1px solid var(--kd-ink);
+
+  background: var(--kd-ink);
+  color: var(--kd-surface);
+
+  font-weight: 600;
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+
+  background: transparent;
+  color: var(--kd-ink);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--kd-ink);
+  border-color: var(--kd-border);
+}
+
+.btn-secondary:hover {
+  background: var(--kd-ink);
+  color: var(--kd-surface);
+}
+
+/* --------------------------------------------------
+   DIVIDERS
+-------------------------------------------------- */
+
+.divider {
+  width: 100%;
+  height: 1px;
+
+  background: var(--kd-border);
+}
+
+.gold-divider {
+  width: 100px;
+  height: 3px;
+
+  margin: 28px 0;
+
+  background: var(--kd-gold);
+}
+
+/* --------------------------------------------------
+   HOROSCOPE
+-------------------------------------------------- */
+
+.horoscope-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+
+  margin-top: 50px;
+}
+
+.zodiac-card {
+  padding: 30px;
+
+  background: var(--kd-surface);
+
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius);
+}
+
+.zodiac-symbol {
+  font-family: 'Playfair Display', Georgia, serif;
+
+  font-size: 3rem;
+  line-height: 1;
+
+  color: var(--kd-gold);
+}
+
+.zodiac-name {
+  margin-top: 18px;
+
+  font-family: 'Playfair Display', Georgia, serif;
+
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.zodiac-text {
+  margin-top: 14px;
+
+  color: var(--kd-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* --------------------------------------------------
+   FOUNDER
+-------------------------------------------------- */
+
+.founder-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 80px;
+
+  align-items: center;
+}
+
+.founder-image {
+  overflow: hidden;
+
+  border-radius: var(--kd-radius);
+
+  background: var(--kd-surface-2);
+}
+
+.founder-content p {
+  margin-top: 22px;
+
+  max-width: 650px;
+
+  font-size: 1.1rem;
+}
+
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
+
+.site-footer {
+  margin-top: 100px;
+
+  padding: 80px 0 35px;
+
+  background: var(--kd-dark);
+  color: #f5f0e7;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 60px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-brand img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.footer-brand-name {
+  font-family: 'Playfair Display', Georgia, serif;
+
+  font-size: 2.4rem;
+  font-weight: 600;
+}
+
+.footer-description {
+  max-width: 350px;
+
+  margin-top: 28px;
+
+  color: var(--kd-light-text);
+
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.footer-column h3 {
+  margin-bottom: 22px;
+
+  color: #f5f0e7;
+
+  font-size: 1.35rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  color: var(--kd-light-text);
+
+  transition: color 180ms ease;
+}
+
+.footer-links a:hover {
+  color: #f5f0e7;
+}
+
+.footer-bottom {
+  margin-top: 70px;
+  padding-top: 24px;
+
+  border-top: 1px solid rgba(245, 240, 231, 0.15);
+
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  color: var(--kd-light-text);
+
+  font-size: 13px;
+}
+
+/* --------------------------------------------------
+   LOADING / EMPTY STATES
+-------------------------------------------------- */
+
+.empty-state {
+  margin-top: 40px;
+
+  padding: 60px 30px;
+
+  text-align: center;
+
+  border: 1px dashed var(--kd-border);
+  border-radius: var(--kd-radius);
+
+  background: rgba(251, 248, 242, 0.5);
+}
+
+.empty-state h3 {
+  font-size: 2rem;
+}
+
+.empty-state p {
+  margin-top: 12px;
+}
+
+/* --------------------------------------------------
    RESPONSIVE
-   ========================================================= */
+-------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .header-inner,
-  .footer-inner,
-  .footer-bottom,
-  main > section > div {
-    width: min(calc(100% - 32px), var(--container));
+
+  .header-inner {
+    min-height: 82px;
   }
 
-  .brand-tagline {
-    display: none;
+  .site-logo img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .site-logo-text {
+    font-size: 2rem;
   }
 
   .main-nav {
-    gap: 20px;
-  }
-
-  .hero {
-    padding: 80px 0;
-  }
-
-  .hero h1 {
-    letter-spacing: -2px;
-  }
-
-  .hero-visual {
-    right: -120px;
-    opacity: 0.35;
-  }
-
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .horoscope-cta > div {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .founder-preview > div {
-    grid-template-columns: 1fr;
-    gap: 45px;
-  }
-
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-    gap: 45px;
-  }
-
-  .footer-brand {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 680px) {
-  .site-header {
-    position: relative;
-  }
-
-  .header-inner {
-    min-height: 72px;
-  }
-
-  .brand-logo {
-    width: 46px;
-    height: 46px;
-  }
-
-  .brand-name {
-    font-size: 25px;
-  }
-
-  .header-button {
     display: none;
   }
 
   .menu-button {
-    display: block;
-  }
-
-  .main-nav {
-    position: absolute;
-    top: 72px;
-    left: 0;
-    right: 0;
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    margin: 0;
-    padding: 10px 16px 18px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface);
-  }
-
-  .main-nav.nav-open {
     display: flex;
   }
 
-  .main-nav a {
-    padding: 14px 4px;
-    border-bottom: 1px solid var(--line);
+  .section {
+    padding: 75px 0;
   }
 
-  .main-nav a:last-child {
-    border-bottom: 0;
+  .panchang-hero {
+    padding: 65px 0 40px;
   }
 
-  .main-nav a::after {
-    display: none;
-  }
-
-  .hero {
-    padding: 65px 0 75px;
-  }
-
-  .hero h1 {
-    font-size: clamp(48px, 15vw, 72px);
-    letter-spacing: -2px;
-  }
-
-  .hero p {
-    font-size: 17px;
-  }
-
-  .hero-visual {
-    display: none;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hero-actions a {
-    width: 100%;
-  }
-
-  .trust-strip > div {
+  .panchang-controls {
     grid-template-columns: 1fr 1fr;
   }
 
-  .trust-item:nth-child(2) {
-    border-right: 0;
+  .panchang-controls input {
+    grid-column: span 2;
   }
 
-  .trust-item:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--line);
+  .panchang-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .section,
-  .founder-preview {
-    padding: 75px 0;
+  .horoscope-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .section-heading {
-    margin-bottom: 35px;
-  }
-
-  .feature-card {
-    min-height: 250px;
-    padding: 27px;
-  }
-
-  .feature-card h3 {
-    margin-top: 50px;
-  }
-
-  .horoscope-cta {
-    padding: 75px 0;
-  }
-
-  .horoscope-cta h2 {
-    letter-spacing: -1px;
-  }
-
-  .footer-inner {
+  .founder-layout {
     grid-template-columns: 1fr;
-    gap: 35px;
+    gap: 45px;
   }
 
-  .footer-brand {
-    grid-column: auto;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .horoscope-form {
-    padding: 25px;
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-/* =========================================================
+@media (max-width: 600px) {
+
+  .container {
+    width: min(calc(100% - 32px), var(--kd-max-width));
+  }
+
+  .header-inner {
+    width: calc(100% - 32px);
+  }
+
+  .site-logo {
+    gap: 11px;
+  }
+
+  .site-logo img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .site-logo-text {
+    font-size: 1.8rem;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 14vw, 4.5rem);
+  }
+
+  h2 {
+    font-size: clamp(2.4rem, 11vw, 3.5rem);
+  }
+
+  .page-header {
+    padding: 60px 0 35px;
+  }
+
+  .panchang-hero {
+    padding: 55px 0 30px;
+  }
+
+  .panchang-controls {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panchang-controls input {
+    order: 2;
+  }
+
+  .date-control {
+    order: 1;
+    justify-content: flex-start;
+  }
+
+  .panchang-controls button {
+    order: 3;
+    width: 100%;
+  }
+
+  .panchang-action {
+    width: 100%;
+  }
+
+  .panchang-action .btn {
+    width: 100%;
+  }
+
+  .panchang-grid {
+    grid-template-columns: 1fr;
+    margin-top: 40px;
+  }
+
+  .panchang-card {
+    min-height: 155px;
+  }
+
+  .horoscope-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .site-footer {
+    margin-top: 70px;
+    padding: 60px 0 30px;
+  }
+
+  .footer-bottom {
+    margin-top: 45px;
+
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* --------------------------------------------------
    ACCESSIBILITY
-   ========================================================= */
+-------------------------------------------------- */
 
 :focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
+  outline: 2px solid var(--kd-gold);
+  outline-offset: 4px;
+}
+
+/* --------------------------------------------------
+   REDUCED MOTION
+-------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
 }
