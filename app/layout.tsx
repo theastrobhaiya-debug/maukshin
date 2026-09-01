@@ -6,12 +6,12 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: {
-    default: "KaalDarpan — Vedic Astrology",
-    template: "%s — KaalDarpan",
+    default: "GrahGanit by Mauksh",
+    template: "%s — GrahGanit",
   },
 
   description:
-    "KaalDarpan brings Vedic astrology and planetary wisdom into a simple modern experience.",
+    "GrahGanit brings Vedic astrology and planetary wisdom into a simple modern experience.",
 
   
 };
