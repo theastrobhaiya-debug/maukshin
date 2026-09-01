@@ -16,11 +16,11 @@ export default function Header() {
         <link
           rel="icon"
           type="image/png"
-          href="/assets/kaaldarpan-logo.png"
+          href="/assets/mauksh-logo.jpg"
         />
         <link
           rel="apple-touch-icon"
-          href="/assets/kaaldarpan-logo.png"
+          href="/assets/mauksh-logo.jpg"
         />
       </head>
 
@@ -34,15 +34,15 @@ export default function Header() {
             onClick={closeMenu}
           >
             <img
-              src="/assets/kaaldarpan-logo.png"
-              alt="KaalDarpan"
+              src="/assets/mauksh-logo.jpg"
+              alt="Mauksh"
               className="brand-logo"
             />
 
             <div className="brand-text">
 
               <span className="brand-name">
-                GrahGanit
+                Mauksh
               </span>
 
               <span className="brand-tagline">
