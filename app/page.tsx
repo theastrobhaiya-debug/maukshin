@@ -899,6 +899,7 @@ export default function Home() {
 
         /* =====================================================
            KAALDARPAN OUTPUT
+           CLEAR BLACK TEXT
         ===================================================== */
 
         .results {
@@ -906,7 +907,7 @@ export default function Home() {
           margin: 0 auto;
           padding: 0 24px 70px;
 
-          color: #eee7d8;
+          color: #111111;
         }
 
 
@@ -920,53 +921,44 @@ export default function Home() {
           align-items: flex-end;
           gap: 20px;
 
-          padding: 28px 24px;
+          padding: 25px 24px;
 
-          background:
-            radial-gradient(
-              circle at 85% 20%,
-              rgba(173, 126, 48, .13),
-              transparent 32%
-            ),
-            #171512;
+          background: #fffdf9;
 
-          border: 1px solid #5d4a2c;
-          border-radius: 18px;
+          border-top: 1px solid #c9b894;
+          border-bottom: 1px solid #c9b894;
 
-          box-shadow:
-            0 15px 45px rgba(20, 15, 8, .16);
+          border-radius: 0;
         }
 
         .summary-label {
           display: block;
 
-          margin-bottom: 8px;
+          margin-bottom: 7px;
 
-          color: #b9975b;
+          color: #6a5a42;
 
           font-size: 10px;
           font-weight: 700;
-          letter-spacing: 1.8px;
+          letter-spacing: 1.4px;
         }
 
         .date-summary h2 {
           margin: 0;
 
-          color: #f2eadc;
+          color: #111111;
 
           font-family:
             Georgia,
             "Times New Roman",
             serif;
 
-          font-size: 26px;
+          font-size: 24px;
           font-weight: 600;
-
-          letter-spacing: -.3px;
         }
 
         .summary-location {
-          color: #b9ae9d;
+          color: #333333;
           font-size: 13px;
         }
 
@@ -984,23 +976,21 @@ export default function Home() {
           align-items: center;
           gap: 15px;
 
-          margin-bottom: 17px;
+          margin-bottom: 15px;
         }
 
         .section-title h2 {
           margin: 0;
 
-          color: #f0e6d4;
+          color: #111111;
 
           font-family:
             Georgia,
             "Times New Roman",
             serif;
 
-          font-size: 25px;
+          font-size: 24px;
           font-weight: 600;
-
-          letter-spacing: -.2px;
         }
 
         .section-title div {
@@ -1008,17 +998,12 @@ export default function Home() {
 
           height: 1px;
 
-          background:
-            linear-gradient(
-              to right,
-              #67502d,
-              rgba(103, 80, 45, .12)
-            );
+          background: #c9b894;
         }
 
 
         /* =========================
-           PANCHANG CARDS
+           PANCHANG
         ========================= */
 
         .panchang-grid {
@@ -1027,11 +1012,11 @@ export default function Home() {
           grid-template-columns:
             repeat(5, 1fr);
 
-          gap: 11px;
+          gap: 10px;
         }
 
         .panchang-card {
-          min-height: 158px;
+          min-height: 150px;
 
           display: flex;
           flex-direction: column;
@@ -1039,116 +1024,66 @@ export default function Home() {
           align-items: center;
           justify-content: center;
 
-          position: relative;
-          overflow: hidden;
-
-          padding: 19px 10px;
+          padding: 18px 10px;
 
           text-align: center;
 
-          background:
-            radial-gradient(
-              circle at 50% -20%,
-              rgba(183, 139, 65, .13),
-              transparent 55%
-            ),
-            linear-gradient(
-              145deg,
-              #211d17,
-              #151310
-            );
+          background: #fffdf9;
 
-          border: 1px solid #5b482a;
-          border-radius: 15px;
+          border: 1px solid #d9cdbb;
+          border-radius: 14px;
 
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,.025),
-            0 12px 30px rgba(10, 8, 5, .13);
+            0 8px 22px rgba(70, 50, 30, .045);
 
           transition:
-            transform .18s ease,
-            border-color .18s ease,
-            box-shadow .18s ease;
-        }
-
-        .panchang-card::after {
-          content: "";
-
-          position: absolute;
-
-          width: 70px;
-          height: 1px;
-
-          bottom: 13px;
-
-          background:
-            linear-gradient(
-              to right,
-              transparent,
-              #a87935,
-              transparent
-            );
-
-          opacity: .55;
+            transform .15s ease,
+            box-shadow .15s ease;
         }
 
         .panchang-card:hover {
-          transform: translateY(-3px);
-
-          border-color: #9a7135;
+          transform: translateY(-2px);
 
           box-shadow:
-            0 17px 35px rgba(10, 8, 5, .2),
-            inset 0 1px 0 rgba(205, 165, 91, .05);
+            0 8px 22px rgba(70, 50, 30, .08);
         }
 
         .panchang-icon {
-          margin-bottom: 11px;
+          margin-bottom: 10px;
 
-          color: #c29a56;
+          color: #a87935;
 
           font-family: Georgia, serif;
 
-          font-size: 25px;
-
-          text-shadow:
-            0 0 15px rgba(194, 154, 86, .16);
+          font-size: 24px;
         }
 
         .panchang-card .label {
-          margin-bottom: 8px;
+          margin-bottom: 7px;
 
-          color: #a99d89;
+          color: #625847;
 
-          font-size: 10px;
-          font-weight: 600;
-
-          letter-spacing: 1.1px;
-          text-transform: uppercase;
+          font-size: 11px;
         }
 
         .panchang-card strong {
-          max-width: 100%;
-
-          color: #eee5d4;
+          color: #111111;
 
           font-size: 15px;
           font-weight: 600;
-
-          line-height: 1.35;
         }
 
         .panchang-card small {
-          margin-top: 7px;
+          margin-top: 6px;
 
-          color: #918575;
+          color: #55504a;
 
           font-size: 10px;
         }
 
 
         /* =========================
-           SUN / MOON + LARGE CARDS
+           GENERAL CARDS
         ========================= */
 
         .two-columns {
@@ -1162,34 +1097,29 @@ export default function Home() {
 
         .info-card,
         .large-card {
-          padding: 21px;
+          padding: 20px;
 
-          background:
-            linear-gradient(
-              145deg,
-              #211d17,
-              #161411
-            );
+          background: #fffdf9;
 
-          border: 1px solid #5b482a;
-          border-radius: 15px;
+          border: 1px solid #d9cdbb;
+          border-radius: 14px;
 
           box-shadow:
-            0 12px 30px rgba(10, 8, 5, .11);
+            0 8px 22px rgba(70, 50, 30, .045);
         }
 
         .info-card h3,
         .large-card h3 {
-          margin: 0 0 13px;
+          margin: 0 0 12px;
 
-          color: #d4b06e;
+          color: #111111;
 
           font-family:
             Georgia,
             "Times New Roman",
             serif;
 
-          font-size: 20px;
+          font-size: 19px;
           font-weight: 600;
         }
 
@@ -1201,9 +1131,9 @@ export default function Home() {
 
           gap: 20px;
 
-          padding: 13px 0;
+          padding: 12px 0;
 
-          border-bottom: 1px solid #332c21;
+          border-bottom: 1px solid #ebe4da;
         }
 
         .time-row:last-child,
@@ -1213,13 +1143,13 @@ export default function Home() {
 
         .time-row span,
         .choghadiya-row span {
-          color: #b7ad9d;
+          color: #333333;
           font-size: 13px;
         }
 
         .time-row strong,
         .choghadiya-row strong {
-          color: #c9a35e;
+          color: #111111;
 
           font-size: 13px;
           font-weight: 600;
@@ -1242,98 +1172,34 @@ export default function Home() {
         }
 
         .simple-card {
-          position: relative;
+          padding: 18px;
 
-          padding: 18px 19px;
+          background: #fffdf9;
 
-          background:
-            linear-gradient(
-              145deg,
-              #211d17,
-              #171512
-            );
-
-          border: 1px solid #4d3c24;
+          border: 1px solid #d9cdbb;
           border-radius: 13px;
 
           box-shadow:
-            0 8px 22px rgba(10, 8, 5, .08);
-        }
-
-        .simple-card::before {
-          content: "";
-
-          position: absolute;
-
-          left: 0;
-          top: 14px;
-          bottom: 14px;
-
-          width: 2px;
-
-          background: #9b7338;
-
-          opacity: .65;
+            0 6px 18px rgba(70, 50, 30, .035);
         }
 
         .simple-card span {
           display: block;
 
-          margin-bottom: 8px;
+          margin-bottom: 7px;
 
-          color: #9d9180;
+          color: #625847;
 
           font-size: 10px;
           font-weight: 600;
-
-          letter-spacing: .7px;
-          text-transform: uppercase;
+          letter-spacing: .2px;
         }
 
         .simple-card strong {
-          color: #e5dac8;
+          color: #111111;
 
           font-size: 15px;
           font-weight: 600;
-
-          line-height: 1.4;
-        }
-
-
-        /* =========================
-           CHOGHADIYA
-        ========================= */
-
-        .large-card {
-          background:
-            radial-gradient(
-              circle at 90% 0%,
-              rgba(168, 121, 53, .09),
-              transparent 38%
-            ),
-            linear-gradient(
-              145deg,
-              #211d17,
-              #151310
-            );
-        }
-
-        .large-card h3 {
-          padding-bottom: 12px;
-
-          border-bottom: 1px solid #514027;
-        }
-
-        .choghadiya-row {
-          min-height: 43px;
-        }
-
-        .choghadiya-row span {
-          color: #d0c5b3;
-        }
-
-        .choghadiya-row strong {
-          color: #c39a53;
         }
 
 
@@ -1344,7 +1210,7 @@ export default function Home() {
         .empty {
           padding: 8px 0;
 
-          color: #877c6d;
+          color: #55504a;
 
           font-size: 12px;
         }
@@ -1421,7 +1287,7 @@ export default function Home() {
           }
 
           .panchang-card {
-            min-height: 145px;
+            min-height: 140px;
           }
 
           .two-columns {
@@ -1434,17 +1300,10 @@ export default function Home() {
 
           .date-summary {
             display: block;
-
-            padding: 22px 19px;
-          }
-
-          .date-summary h2 {
-            font-size: 22px;
-            line-height: 1.3;
           }
 
           .summary-location {
-            margin-top: 9px;
+            margin-top: 8px;
           }
 
           .section {
@@ -1453,15 +1312,6 @@ export default function Home() {
 
           .section-title h2 {
             font-size: 22px;
-          }
-
-          .section-title {
-            gap: 11px;
-          }
-
-          .info-card,
-          .large-card {
-            padding: 18px;
           }
 
         }
