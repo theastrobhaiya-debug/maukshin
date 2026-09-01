@@ -1,112 +1,57 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const API_BASE =
-  "https://mauksh-kundali-engine.onrender.com";
+const API_BASE = "https://mauksh-kundali-engine.onrender.com";
 
-type LocationState = {
+type LocationData = {
   city: string;
   latitude: number | null;
   longitude: number | null;
 };
 
-export default function Home() {
-  const [date, setDate] = useState("");
-  const [city, setCity] = useState("");
-  const [locationDisplay, setLocationDisplay] = useState(
-    "Enter a city or detect your location."
-  );
+function getToday() {
+  const d = new Date();
 
-  const [selectedLocation, setSelectedLocation] =
-    useState<LocationState>({
-      city: "",
-      latitude: null,
-      longitude: null,
-    });
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDate(date: string) {
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function display(value: any) {
+  if (value === undefined || value === null || value === "") {
+    return "—";
+  }
+
+  return String(value);
+}
+
+export default function Home() {
+  const [date, setDate] = useState(getToday());
+
+  const [city, setCity] = useState("");
+
+  const [location, setLocation] = useState<LocationData>({
+    city: "",
+    latitude: null,
+    longitude: null,
+  });
 
   const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
 
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    const d = new Date();
-
-    const today =
-      d.getFullYear() +
-      "-" +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(d.getDate()).padStart(2, "0");
-
-    setDate(today);
-  }, []);
-
-  async function detectLocation() {
-    setError("");
-
-    if (!navigator.geolocation) {
-      setError(
-        "Location detection is not supported by your browser."
-      );
-      return;
-    }
-
-    setLocationDisplay("Detecting your location…");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
-
-          const result = await response.json();
-
-          const address = result.address || {};
-
-          const detectedCity =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.municipality ||
-            "Current location";
-
-          setCity(detectedCity);
-
-          setSelectedLocation({
-            city: detectedCity,
-            latitude,
-            longitude,
-          });
-
-          setLocationDisplay(detectedCity);
-        } catch {
-          setSelectedLocation({
-            city: "Current location",
-            latitude,
-            longitude,
-          });
-
-          setLocationDisplay("Location detected.");
-        }
-      },
-      () => {
-        setLocationDisplay(
-          "Unable to detect location. Enter your city."
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000,
-      }
-    );
-  }
+  const [panchang, setPanchang] = useState<any>(null);
 
   async function findCity(cityName: string) {
     const response = await fetch(
@@ -122,58 +67,121 @@ export default function Home() {
     const results = await response.json();
 
     if (!results.length) {
-      throw new Error(
-        "City not found. Please check the city name."
-      );
+      throw new Error("City not found. Please check the city name.");
     }
 
     return {
       city: results[0].display_name.split(",")[0],
-      latitude: parseFloat(results[0].lat),
-      longitude: parseFloat(results[0].lon),
+      latitude: Number(results[0].lat),
+      longitude: Number(results[0].lon),
     };
+  }
+
+  function detectLocation() {
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError("Location detection is not supported by your browser.");
+      return;
+    }
+
+    setCity("Detecting...");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+
+          if (!response.ok) {
+            throw new Error("Unable to identify your location.");
+          }
+
+          const result = await response.json();
+
+          const address = result.address || {};
+
+          const detectedCity =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "Current location";
+
+          const newLocation = {
+            city: detectedCity,
+            latitude,
+            longitude,
+          };
+
+          setLocation(newLocation);
+          setCity(detectedCity);
+        } catch {
+          setCity("");
+          setError("Location detected, but the city could not be identified.");
+        }
+      },
+      () => {
+        setCity("");
+        setError(
+          "Unable to detect your location. Please enter your city manually."
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      }
+    );
   }
 
   async function loadPanchang() {
     setError("");
+    setPanchang(null);
 
     if (!date) {
       setError("Please select a date.");
       return;
     }
 
-    if (
-      !city.trim() &&
-      selectedLocation.latitude === null
-    ) {
-      setError("Please enter a city or use Detect.");
-      return;
+    if (!city || city === "Detecting...") {
+      if (location.latitude === null || location.longitude === null) {
+        setError("Please enter a city or use Detect.");
+        return;
+      }
     }
 
     setLoading(true);
-    setData(null);
 
     try {
-      let location = selectedLocation;
+      let selectedLocation = location;
 
-      if (city.trim()) {
-        location = await findCity(city.trim());
+      if (city && city !== "Detecting...") {
+        selectedLocation = await findCity(city);
+        setLocation(selectedLocation);
+      }
 
-        setSelectedLocation(location);
-        setCity(location.city);
-        setLocationDisplay(location.city);
+      if (
+        selectedLocation.latitude === null ||
+        selectedLocation.longitude === null
+      ) {
+        throw new Error("Please enter a valid city.");
       }
 
       const timezone =
         Intl.DateTimeFormat().resolvedOptions().timeZone ||
         "Asia/Kolkata";
 
-      const params = new URLSearchParams({
-        date,
-        latitude: String(location.latitude),
-        longitude: String(location.longitude),
-        timezone,
-      });
+      const params = new URLSearchParams();
+
+      params.set("date", date);
+      params.set("latitude", String(selectedLocation.latitude));
+      params.set("longitude", String(selectedLocation.longitude));
+      params.set("timezone", timezone);
 
       const response = await fetch(
         `${API_BASE}/api/panchang?${params.toString()}`
@@ -181,129 +189,118 @@ export default function Home() {
 
       if (!response.ok) {
         throw new Error(
-          "Panchang engine returned an error."
+          `Panchang engine returned ${response.status}.`
         );
       }
 
       const result = await response.json();
 
-      setData(result);
+      setPanchang(result);
     } catch (err: any) {
-      console.error(err);
+      console.error("Panchang error:", err);
 
       setError(
         err?.message ||
-          "Unable to load Panchang."
+          "Unable to load Panchang. Please try again."
       );
     } finally {
       setLoading(false);
     }
   }
 
-  function formatDate(value: string) {
-    if (!value) return "";
-
-    const d = new Date(`${value}T00:00:00`);
-
-    return d.toLocaleDateString("en-IN", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  }
-
-  function value(
-    item: any,
-    key: string
-  ) {
-    return item?.[key] || "—";
-  }
-
-  function renderChoghadiya(items: any[]) {
+  function Choghadiya({ items }: { items: any }) {
     if (!Array.isArray(items) || items.length === 0) {
-      return (
-        <div className="empty-output">
-          No data available.
-        </div>
-      );
+      return <div className="empty">No data available.</div>;
     }
 
     return (
-      <div className="choghadiya-list">
-        {items.map((item, index) => (
-          <div
-            className="choghadiya-row"
-            key={index}
-          >
-            <div className="choghadiya-name">
-              {item?.name || "—"}
-            </div>
+      <div>
+        {items.map((item: any, index: number) => (
+          <div className="choghadiya-row" key={index}>
+            <span>{display(item?.name)}</span>
 
-            <div className="choghadiya-time">
-              {item?.start || "—"}
-              <span className="time-dash">
-                {" "}
-                –{" "}
-              </span>
-              {item?.end || "—"}
-            </div>
+            <strong>
+              {display(item?.start)} – {display(item?.end)}
+            </strong>
           </div>
         ))}
       </div>
     );
   }
 
+  const timings = panchang?.timings || {};
+
   return (
     <>
-      <main className="panchang-page">
+      <main className="page">
 
         {/* HERO */}
 
         <section className="hero">
-          <div className="eyebrow">
-            DAILY VEDIC PANCHANG
-          </div>
+          <div className="eyebrow">DAILY VEDIC PANCHANG</div>
 
-          <h1>
-            Daily
-            <br />
-            Panchang
-          </h1>
+          <h1>Daily Panchang</h1>
 
           <p>
-            {formatDate(date)}
+            Accurate Vedic Panchang for your date and location
           </p>
         </section>
 
-        {/* INPUT
-            DO NOT CHANGE THIS CSS BLOCK */}
 
-        <section className="controls">
+        {/* SEARCH */}
 
-          <div className="field">
-            <label>DATE</label>
+        <section className="search-section">
 
-            <input
-              type="date"
-              value={date}
-              onChange={(e) =>
-                setDate(e.target.value)
-              }
-            />
-          </div>
+          <div className="search-card">
 
-          <div className="field">
-            <label>LOCATION</label>
+            <div className="field">
 
-            <div className="location-row">
+              <label htmlFor="date">
+                DATE
+              </label>
+
+              <div className="date-input-wrap">
+
+                <span className="calendar-icon">
+                  ◷
+                </span>
+
+                <input
+                  id="date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                    setPanchang(null);
+                    setError("");
+                  }}
+                />
+
+              </div>
+
+            </div>
+
+
+            <div className="field location-field">
+
+              <label htmlFor="city">
+                LOCATION
+              </label>
+
               <input
+                id="city"
                 type="text"
                 value={city}
-                placeholder="Enter city name"
-                onChange={(e) =>
-                  setCity(e.target.value)
-                }
+                placeholder="Enter city"
+                onChange={(e) => {
+                  setCity(e.target.value);
+
+                  setLocation({
+                    city: "",
+                    latitude: null,
+                    longitude: null,
+                  });
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     loadPanchang();
@@ -311,928 +308,1297 @@ export default function Home() {
                 }}
               />
 
-              <button
-                type="button"
-                className="detect"
-                onClick={detectLocation}
-              >
-                Detect
-              </button>
             </div>
 
-            <div className="location-display">
-              {locationDisplay}
-            </div>
+
+            <button
+              type="button"
+              className="detect-button"
+              onClick={detectLocation}
+            >
+              Use my location
+            </button>
+
+
+            <button
+              type="button"
+              className="view-button"
+              onClick={loadPanchang}
+              disabled={loading}
+            >
+              {loading ? "Calculating..." : "View Panchang"}
+            </button>
+
           </div>
 
-          <button
-            type="button"
-            onClick={loadPanchang}
-          >
-            View Panchang
-          </button>
+
+          {location.city && (
+            <div className="location-confirmed">
+              <span>●</span>
+              {location.city}
+            </div>
+          )}
+
+
+          {error && (
+            <div className="error">
+              {error}
+            </div>
+          )}
 
         </section>
 
-        {/* STATUS */}
 
-        {loading && (
-          <div className="loading">
-            Calculating Panchang…
-          </div>
-        )}
+        {/* RESULTS */}
 
-        {error && (
-          <div className="error">
-            {error}
-          </div>
-        )}
+        {panchang && (
 
-        {/* OUTPUT */}
+          <section className="results">
 
-        {data && !loading && (
-          <div className="output">
+            <div className="date-summary">
 
-            {/* DATE */}
+              <div>
 
-            <div className="date-card">
-              <div className="date-label">
-                PANCHANG FOR
+                <span className="summary-label">
+                  PANCHANG FOR
+                </span>
+
+                <h2>
+                  {formatDate(date)}
+                </h2>
+
               </div>
 
-              <div className="date-value">
-                {formatDate(date)}
+              <div className="summary-location">
+                {location.city}
               </div>
 
-              <div className="date-location">
-                {selectedLocation.city}
-              </div>
             </div>
+
 
             {/* PANCHANG */}
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Panchang</h2>
+                <div />
               </div>
+
 
               <div className="panchang-grid">
 
-                <div className="panchang-card">
-                  <div className="panchang-icon">
-                    ☀️
-                  </div>
+                <PanchangCard
+                  icon="☀"
+                  label="Vara"
+                  value={panchang?.vara?.name}
+                />
 
-                  <div className="panchang-label">
-                    Vara
-                  </div>
+                <PanchangCard
+                  icon="☾"
+                  label="Tithi"
+                  value={panchang?.tithi?.name}
+                  end={panchang?.tithi?.ends}
+                />
 
-                  <div className="panchang-value">
-                    {value(data.vara, "name")}
-                  </div>
-                </div>
+                <PanchangCard
+                  icon="✦"
+                  label="Nakshatra"
+                  value={panchang?.nakshatra?.name}
+                  end={panchang?.nakshatra?.ends}
+                />
 
-                <div className="panchang-card">
-                  <div className="panchang-icon">
-                    ☾
-                  </div>
+                <PanchangCard
+                  icon="✧"
+                  label="Yoga"
+                  value={panchang?.yoga?.name}
+                  end={panchang?.yoga?.ends}
+                />
 
-                  <div className="panchang-label">
-                    Tithi
-                  </div>
-
-                  <div className="panchang-value">
-                    {value(data.tithi, "name")}
-                  </div>
-
-                  {data.tithi?.ends && (
-                    <div className="panchang-end">
-                      Ends {data.tithi.ends}
-                    </div>
-                  )}
-                </div>
-
-                <div className="panchang-card">
-                  <div className="panchang-icon">
-                    ✦
-                  </div>
-
-                  <div className="panchang-label">
-                    Nakshatra
-                  </div>
-
-                  <div className="panchang-value">
-                    {value(
-                      data.nakshatra,
-                      "name"
-                    )}
-                  </div>
-
-                  {data.nakshatra?.ends && (
-                    <div className="panchang-end">
-                      Ends {data.nakshatra.ends}
-                    </div>
-                  )}
-                </div>
-
-                <div className="panchang-card">
-                  <div className="panchang-icon">
-                    ✧
-                  </div>
-
-                  <div className="panchang-label">
-                    Yoga
-                  </div>
-
-                  <div className="panchang-value">
-                    {value(data.yoga, "name")}
-                  </div>
-
-                  {data.yoga?.ends && (
-                    <div className="panchang-end">
-                      Ends {data.yoga.ends}
-                    </div>
-                  )}
-                </div>
-
-                <div className="panchang-card">
-                  <div className="panchang-icon">
-                    ◐
-                  </div>
-
-                  <div className="panchang-label">
-                    Karana
-                  </div>
-
-                  <div className="panchang-value">
-                    {value(data.karana, "name")}
-                  </div>
-
-                  {data.karana?.ends && (
-                    <div className="panchang-end">
-                      Ends {data.karana.ends}
-                    </div>
-                  )}
-                </div>
+                <PanchangCard
+                  icon="◐"
+                  label="Karana"
+                  value={panchang?.karana?.name}
+                  end={panchang?.karana?.ends}
+                />
 
               </div>
+
             </section>
 
-            {/* SUN & MOON */}
+
+            {/* SUN MOON */}
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Sun & Moon</h2>
+                <div />
               </div>
 
-              <div className="grid">
 
-                <div className="card">
-                  <div className="card-title">
-                    Sun
-                  </div>
+              <div className="two-columns">
 
-                  <div className="time-list">
+                <InfoCard title="Sun">
+                  <TimeRow
+                    label="Sunrise"
+                    value={panchang?.sun?.rise}
+                  />
 
-                    <div className="time-row">
-                      <span>
-                        Sunrise
-                      </span>
+                  <TimeRow
+                    label="Sunset"
+                    value={panchang?.sun?.set}
+                  />
+                </InfoCard>
 
-                      <strong>
-                        {data.sun?.rise || "—"}
-                      </strong>
-                    </div>
 
-                    <div className="time-row">
-                      <span>
-                        Sunset
-                      </span>
+                <InfoCard title="Moon">
+                  <TimeRow
+                    label="Moonrise"
+                    value={panchang?.moon?.rise}
+                  />
 
-                      <strong>
-                        {data.sun?.set || "—"}
-                      </strong>
-                    </div>
-
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-title">
-                    Moon
-                  </div>
-
-                  <div className="time-list">
-
-                    <div className="time-row">
-                      <span>
-                        Moonrise
-                      </span>
-
-                      <strong>
-                        {data.moon?.rise || "—"}
-                      </strong>
-                    </div>
-
-                    <div className="time-row">
-                      <span>
-                        Moonset
-                      </span>
-
-                      <strong>
-                        {data.moon?.set || "—"}
-                      </strong>
-                    </div>
-
-                  </div>
-                </div>
+                  <TimeRow
+                    label="Moonset"
+                    value={panchang?.moon?.set}
+                  />
+                </InfoCard>
 
               </div>
+
             </section>
+
 
             {/* SHUBH ASHUBH */}
 
             <section className="section">
 
-              <div className="section-heading">
-                <h2>
-                  Shubh & Ashubh Kaal
-                </h2>
+              <div className="section-title">
+                <h2>Shubh & Ashubh Kaal</h2>
+                <div />
               </div>
 
-              <div className="grid grid-three">
 
-                <div className="card">
-                  <div className="card-label">
-                    Rahu Kaal
-                  </div>
-                  <div className="card-value">
-                    {data.timings?.rahuKaal || "—"}
-                  </div>
-                </div>
+              <div className="info-grid">
 
-                <div className="card">
-                  <div className="card-label">
-                    Yamaganda
-                  </div>
-                  <div className="card-value">
-                    {data.timings?.yamaganda || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Rahu Kaal"
+                  value={timings.rahuKaal}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Gulika Kaal
-                  </div>
-                  <div className="card-value">
-                    {data.timings?.gulika || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Yamaganda"
+                  value={timings.yamaganda}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Abhijit Muhurat
-                  </div>
-                  <div className="card-value">
-                    {data.timings?.abhijit || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Gulika Kaal"
+                  value={timings.gulika}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Brahma Muhurat
-                  </div>
-                  <div className="card-value">
-                    {data.timings?.brahma || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Abhijit Muhurat"
+                  value={timings.abhijit}
+                />
+
+                <SimpleCard
+                  label="Brahma Muhurat"
+                  value={timings.brahma}
+                />
 
               </div>
+
             </section>
+
 
             {/* CHOGHADIYA */}
 
             <section className="section">
 
-              <div className="section-heading">
+              <div className="section-title">
                 <h2>Choghadiya</h2>
+                <div />
               </div>
 
-              <div className="choghadiya-grid">
 
-                <div className="choghadiya-card">
+              <div className="two-columns">
 
-                  <div className="choghadiya-title">
-                    Day Choghadiya
-                  </div>
+                <div className="large-card">
 
-                  {renderChoghadiya(
-                    data.choghadiya?.day
-                  )}
+                  <h3>Day Choghadiya</h3>
+
+                  <Choghadiya
+                    items={panchang?.choghadiya?.day}
+                  />
 
                 </div>
 
-                <div className="choghadiya-card">
 
-                  <div className="choghadiya-title">
-                    Night Choghadiya
-                  </div>
+                <div className="large-card">
 
-                  {renderChoghadiya(
-                    data.choghadiya?.night
-                  )}
+                  <h3>Night Choghadiya</h3>
+
+                  <Choghadiya
+                    items={panchang?.choghadiya?.night}
+                  />
 
                 </div>
 
               </div>
 
             </section>
+
 
             {/* ADDITIONAL */}
 
             <section className="section">
 
-              <div className="section-heading">
-                <h2>
-                  Additional Panchang
-                </h2>
+              <div className="section-title">
+                <h2>Additional Panchang</h2>
+                <div />
               </div>
 
-              <div className="grid grid-three">
 
-                <div className="card">
-                  <div className="card-label">
-                    Ayana
-                  </div>
-                  <div className="card-value">
-                    {data.ayana || "—"}
-                  </div>
-                </div>
+              <div className="info-grid">
 
-                <div className="card">
-                  <div className="card-label">
-                    Ritu
-                  </div>
-                  <div className="card-value">
-                    {data.ritu || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Ayana"
+                  value={panchang?.ayana}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Paksha
-                  </div>
-                  <div className="card-value">
-                    {data.paksha || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Ritu"
+                  value={panchang?.ritu}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Masa
-                  </div>
-                  <div className="card-value">
-                    {data.masa || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Paksha"
+                  value={panchang?.paksha}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Vikram Samvat
-                  </div>
-                  <div className="card-value">
-                    {data.vikramSamvat || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Masa"
+                  value={panchang?.masa}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Shaka Samvat
-                  </div>
-                  <div className="card-value">
-                    {data.shakaSamvat || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Vikram Samvat"
+                  value={panchang?.vikramSamvat}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Sun Rashi
-                  </div>
-                  <div className="card-value">
-                    {data.sun?.rashi?.name || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Shaka Samvat"
+                  value={panchang?.shakaSamvat}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Moon Rashi
-                  </div>
-                  <div className="card-value">
-                    {data.moon?.rashi?.name || "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Sun Rashi"
+                  value={panchang?.sun?.rashi?.name}
+                />
 
-                <div className="card">
-                  <div className="card-label">
-                    Moon Nakshatra Pada
-                  </div>
-                  <div className="card-value">
-                    {data.moon?.nakshatra?.pada
-                      ? `Pada ${data.moon.nakshatra.pada}`
-                      : "—"}
-                  </div>
-                </div>
+                <SimpleCard
+                  label="Moon Rashi"
+                  value={panchang?.moon?.rashi?.name}
+                />
+
+                <SimpleCard
+                  label="Moon Nakshatra Pada"
+                  value={
+                    panchang?.moon?.nakshatra?.pada
+                      ? `Pada ${panchang.moon.nakshatra.pada}`
+                      : "—"
+                  }
+                />
 
               </div>
+
             </section>
 
-          </div>
+          </section>
         )}
 
       </main>
 
-      {/* PAGE CSS — INPUT STYLING PRESERVED */}
 
       <style jsx>{`
 
-        /* ======================================
-           PAGE BASE
-           ====================================== */
+        /* =========================
+           PAGE
+        ========================= */
 
-        .panchang-page {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 42px 20px 80px;
+        .page {
+          min-height: 100vh;
+          background: #f8f5ef;
+          color: #29251f;
+          padding-bottom: 90px;
         }
 
+
+        /* =========================
+           HERO
+        ========================= */
+
         .hero {
-          margin-bottom: 34px;
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 65px 24px 45px;
         }
 
         .eyebrow {
           color: #a87935;
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 700;
-          letter-spacing: 3px;
-          margin-bottom: 26px;
+          letter-spacing: 2.5px;
+          margin-bottom: 17px;
         }
 
         .hero h1 {
           margin: 0;
-          font-family: Georgia, serif;
-          font-size: clamp(58px, 8vw, 92px);
-          line-height: .88;
-          letter-spacing: -4px;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(42px, 6vw, 70px);
+          line-height: 1;
           font-weight: 600;
+          letter-spacing: -2px;
         }
 
         .hero p {
-          margin: 28px 0 0;
+          margin: 16px 0 0;
           color: #756f64;
-          font-size: 21px;
+          font-size: 16px;
         }
 
-        /* ======================================
-           INPUT — DO NOT CHANGE
-           ====================================== */
 
-        .controls {
-          background: #fffdf9;
-          border: 1px solid #e6ded1;
-          border-radius: 16px;
+        /* =========================
+           SEARCH
+           UNCHANGED
+        ========================= */
+
+        .search-section {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 24px 40px;
+        }
+
+        .search-card {
+          display: grid;
+          grid-template-columns: 210px 1fr 145px 175px;
+          gap: 12px;
+          align-items: end;
+
           padding: 18px;
 
-          display: grid;
-          grid-template-columns: 1fr 1.4fr auto;
-          gap: 14px;
+          background: #fffdf9;
+          border: 1px solid #dfd7ca;
+          border-radius: 18px;
 
-          margin-bottom: 30px;
+          box-shadow:
+            0 8px 30px rgba(70, 50, 30, .055);
+        }
+
+        .field {
+          min-width: 0;
         }
 
         .field label {
           display: block;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: .5px;
+          margin-bottom: 8px;
+
           color: #756f64;
-          margin-bottom: 7px;
+
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 1.3px;
         }
 
-        input {
+
+        /* DATE */
+
+        .date-input-wrap {
+          position: relative;
+        }
+
+        .date-input-wrap input {
+          appearance: none;
+          -webkit-appearance: none;
+
           width: 100%;
-          height: 44px;
-          border: 1px solid #e6ded1;
-          border-radius: 10px;
-          background: white;
-          padding: 0 12px;
-          font-size: 14px;
+          height: 50px;
+
+          padding: 0 42px 0 42px;
+
+          border: 1px solid #d8d0c3;
+          border-radius: 12px;
+
+          background: #fff;
+
           color: #29251f;
-          outline: none;
-        }
 
-        input:focus {
-          border-color: #a87935;
-        }
+          font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
 
-        .location-row {
-          display: flex;
-          gap: 8px;
-        }
-
-        .location-row input {
-          flex: 1;
-        }
-
-        button {
-          height: 44px;
-          border: 0;
-          border-radius: 10px;
-          background: #7b4b2a;
-          color: white;
-          padding: 0 20px;
           font-size: 14px;
-          font-weight: 600;
+
+          outline: none;
           cursor: pointer;
         }
 
-        button:hover {
-          opacity: .92;
+        .date-input-wrap input:hover {
+          border-color: #c5b9a8;
         }
 
-        .detect {
-          background: #f0e4d6;
-          color: #7b4b2a;
-          white-space: nowrap;
+        .date-input-wrap input:focus {
+          border-color: #a87935;
+          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
         }
 
-        .location-display {
-          margin-top: 7px;
-          font-size: 11px;
-          color: #756f64;
+        .date-input-wrap input::-webkit-calendar-picker-indicator {
+          position: absolute;
+          right: 13px;
+
+          width: 17px;
+          height: 17px;
+
+          opacity: .55;
+
+          cursor: pointer;
         }
 
-        /* ======================================
-           STATUS
-           ====================================== */
+        .calendar-icon {
+          position: absolute;
+          left: 15px;
+          top: 50%;
 
-        .loading,
-        .error {
-          padding: 15px 18px;
+          transform: translateY(-50%);
+
+          color: #a87935;
+          font-size: 17px;
+
+          pointer-events: none;
+          z-index: 1;
+        }
+
+
+        /* LOCATION */
+
+        .location-field input {
+          width: 100%;
+          height: 50px;
+
+          padding: 0 15px;
+
+          border: 1px solid #d8d0c3;
           border-radius: 12px;
-          margin-bottom: 22px;
-          text-align: center;
+
+          background: #fff;
+
+          color: #29251f;
+
           font-size: 14px;
+
+          outline: none;
         }
 
-        .loading {
-          background: #f0e4d6;
-          color: #7b4b2a;
+        .location-field input:focus {
+          border-color: #a87935;
+          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
         }
+
+        .location-field input::placeholder {
+          color: #aaa196;
+        }
+
+
+        /* BUTTONS */
+
+        .detect-button,
+        .view-button {
+          height: 50px;
+
+          border-radius: 12px;
+
+          font-size: 13px;
+          font-weight: 600;
+
+          cursor: pointer;
+
+          transition:
+            transform .15s ease,
+            opacity .15s ease;
+        }
+
+        .detect-button {
+          border: 1px solid #d8d0c3;
+
+          background: #f7f3eb;
+
+          color: #60482f;
+        }
+
+        .detect-button:hover {
+          background: #f0e9de;
+        }
+
+        .view-button {
+          border: 1px solid #29251f;
+
+          background: #29251f;
+
+          color: #fff;
+        }
+
+        .view-button:hover {
+          transform: translateY(-1px);
+        }
+
+        .view-button:disabled {
+          opacity: .6;
+          cursor: wait;
+        }
+
+
+        /* LOCATION STATUS */
+
+        .location-confirmed {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+
+          margin-top: 11px;
+
+          color: #756f64;
+
+          font-size: 12px;
+        }
+
+        .location-confirmed span {
+          color: #a87935;
+          font-size: 9px;
+        }
+
+
+        /* ERROR */
 
         .error {
-          background: #f5e3df;
-          color: #87372d;
-        }
+          margin-top: 13px;
 
-        /* ======================================
-           OUTPUT
-           ====================================== */
+          padding: 13px 15px;
 
-        .output {
-          animation: fadeIn .35s ease;
-        }
+          border: 1px solid #e3c9c0;
+          border-radius: 11px;
 
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
+          background: #f9eae6;
 
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+          color: #863c31;
 
-        .date-card {
-          background: #fffdf9;
-          border: 1px solid #e6ded1;
-          border-radius: 18px;
-          padding: 22px 24px;
-          margin-bottom: 34px;
-        }
-
-        .date-label,
-        .card-label,
-        .panchang-label {
-          color: #756f64;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 1.2px;
-          text-transform: uppercase;
-        }
-
-        .date-value {
-          margin-top: 8px;
-          font-family: Georgia, serif;
-          font-size: 27px;
-          font-weight: 600;
-        }
-
-        .date-location {
-          margin-top: 5px;
-          color: #756f64;
           font-size: 13px;
         }
 
-        /* ======================================
+
+        /* =====================================================
+           KAALDARPAN OUTPUT
+        ===================================================== */
+
+        .results {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 24px 70px;
+
+          color: #eee7d8;
+        }
+
+
+        /* =========================
+           DATE SUMMARY
+        ========================= */
+
+        .date-summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 20px;
+
+          padding: 28px 24px;
+
+          background:
+            radial-gradient(
+              circle at 85% 20%,
+              rgba(173, 126, 48, .13),
+              transparent 32%
+            ),
+            #171512;
+
+          border: 1px solid #5d4a2c;
+          border-radius: 18px;
+
+          box-shadow:
+            0 15px 45px rgba(20, 15, 8, .16);
+        }
+
+        .summary-label {
+          display: block;
+
+          margin-bottom: 8px;
+
+          color: #b9975b;
+
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 1.8px;
+        }
+
+        .date-summary h2 {
+          margin: 0;
+
+          color: #f2eadc;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 26px;
+          font-weight: 600;
+
+          letter-spacing: -.3px;
+        }
+
+        .summary-location {
+          color: #b9ae9d;
+          font-size: 13px;
+        }
+
+
+        /* =========================
            SECTIONS
-           ====================================== */
+        ========================= */
 
         .section {
-          margin-top: 42px;
+          margin-top: 48px;
         }
 
-        .section-heading {
+        .section-title {
           display: flex;
           align-items: center;
-          gap: 18px;
-          margin-bottom: 20px;
+          gap: 15px;
+
+          margin-bottom: 17px;
         }
 
-        .section-heading h2 {
+        .section-title h2 {
           margin: 0;
-          font-family: Georgia, serif;
-          font-size: 32px;
+
+          color: #f0e6d4;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 25px;
           font-weight: 600;
-          letter-spacing: -.8px;
-          white-space: nowrap;
+
+          letter-spacing: -.2px;
         }
 
-        .section-heading::after {
-          content: "";
-          height: 1px;
+        .section-title div {
           flex: 1;
-          background: #e6ded1;
+
+          height: 1px;
+
+          background:
+            linear-gradient(
+              to right,
+              #67502d,
+              rgba(103, 80, 45, .12)
+            );
         }
 
-        /* ======================================
+
+        /* =========================
            PANCHANG CARDS
-           ====================================== */
+        ========================= */
 
         .panchang-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 12px;
+
+          grid-template-columns:
+            repeat(5, 1fr);
+
+          gap: 11px;
         }
 
         .panchang-card {
-          background: #fffdf9;
-          border: 1px solid #e6ded1;
-          border-radius: 16px;
-          padding: 20px 14px;
-          min-height: 150px;
+          min-height: 158px;
+
+          display: flex;
+          flex-direction: column;
+
+          align-items: center;
+          justify-content: center;
+
+          position: relative;
+          overflow: hidden;
+
+          padding: 19px 10px;
+
+          text-align: center;
+
+          background:
+            radial-gradient(
+              circle at 50% -20%,
+              rgba(183, 139, 65, .13),
+              transparent 55%
+            ),
+            linear-gradient(
+              145deg,
+              #211d17,
+              #151310
+            );
+
+          border: 1px solid #5b482a;
+          border-radius: 15px;
+
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.025),
+            0 12px 30px rgba(10, 8, 5, .13);
+
+          transition:
+            transform .18s ease,
+            border-color .18s ease,
+            box-shadow .18s ease;
+        }
+
+        .panchang-card::after {
+          content: "";
+
+          position: absolute;
+
+          width: 70px;
+          height: 1px;
+
+          bottom: 13px;
+
+          background:
+            linear-gradient(
+              to right,
+              transparent,
+              #a87935,
+              transparent
+            );
+
+          opacity: .55;
+        }
+
+        .panchang-card:hover {
+          transform: translateY(-3px);
+
+          border-color: #9a7135;
+
+          box-shadow:
+            0 17px 35px rgba(10, 8, 5, .2),
+            inset 0 1px 0 rgba(205, 165, 91, .05);
         }
 
         .panchang-icon {
-          font-size: 22px;
-          margin-bottom: 15px;
+          margin-bottom: 11px;
+
+          color: #c29a56;
+
+          font-family: Georgia, serif;
+
+          font-size: 25px;
+
+          text-shadow:
+            0 0 15px rgba(194, 154, 86, .16);
         }
 
-        .panchang-label {
-          margin-bottom: 7px;
+        .panchang-card .label {
+          margin-bottom: 8px;
+
+          color: #a99d89;
+
+          font-size: 10px;
+          font-weight: 600;
+
+          letter-spacing: 1.1px;
+          text-transform: uppercase;
         }
 
-        .panchang-value {
-          font-size: 17px;
-          font-weight: 700;
-          line-height: 1.25;
-        }
+        .panchang-card strong {
+          max-width: 100%;
 
-        .panchang-end {
-          margin-top: 8px;
-          color: #756f64;
-          font-size: 11px;
+          color: #eee5d4;
+
+          font-size: 15px;
+          font-weight: 600;
+
           line-height: 1.35;
         }
 
-        /* ======================================
-           GENERAL CARDS
-           ====================================== */
+        .panchang-card small {
+          margin-top: 7px;
 
-        .grid {
+          color: #918575;
+
+          font-size: 10px;
+        }
+
+
+        /* =========================
+           SUN / MOON + LARGE CARDS
+        ========================= */
+
+        .two-columns {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
+
+          grid-template-columns:
+            1fr 1fr;
+
+          gap: 12px;
         }
 
-        .grid-three {
-          grid-template-columns: repeat(3, 1fr);
+        .info-card,
+        .large-card {
+          padding: 21px;
+
+          background:
+            linear-gradient(
+              145deg,
+              #211d17,
+              #161411
+            );
+
+          border: 1px solid #5b482a;
+          border-radius: 15px;
+
+          box-shadow:
+            0 12px 30px rgba(10, 8, 5, .11);
         }
 
-        .card {
-          background: #fffdf9;
-          border: 1px solid #e6ded1;
-          border-radius: 16px;
-          padding: 20px;
-        }
+        .info-card h3,
+        .large-card h3 {
+          margin: 0 0 13px;
 
-        .card-title {
-          font-family: Georgia, serif;
-          font-size: 23px;
+          color: #d4b06e;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 20px;
           font-weight: 600;
-          margin-bottom: 12px;
         }
 
-        .card-value {
-          font-size: 17px;
-          font-weight: 700;
-          line-height: 1.45;
-        }
-
-        /* ======================================
-           SUN / MOON
-           ====================================== */
-
-        .time-list {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .time-row {
+        .time-row,
+        .choghadiya-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
+
           gap: 20px;
+
           padding: 13px 0;
-          border-bottom: 1px solid #e6ded1;
-          font-size: 14px;
+
+          border-bottom: 1px solid #332c21;
         }
 
-        .time-row:last-child {
-          border-bottom: 0;
-        }
-
-        .time-row strong {
-          color: #7b4b2a;
-          font-size: 14px;
-          text-align: right;
-        }
-
-        /* ======================================
-           CHOGHADIYA
-           ====================================== */
-
-        .choghadiya-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 16px;
-        }
-
-        .choghadiya-card {
-          background: #fffdf9;
-          border: 1px solid #e6ded1;
-          border-radius: 18px;
-          padding: 22px;
-          overflow: hidden;
-        }
-
-        .choghadiya-title {
-          font-family: Georgia, serif;
-          font-size: 24px;
-          font-weight: 600;
-          margin-bottom: 12px;
-        }
-
-        .choghadiya-list {
-          width: 100%;
-        }
-
-        .choghadiya-row {
-          display: grid;
-          grid-template-columns: minmax(80px, .65fr) minmax(180px, 1.35fr);
-          align-items: center;
-          gap: 15px;
-          padding: 13px 0;
-          border-bottom: 1px solid #e6ded1;
-        }
-
+        .time-row:last-child,
         .choghadiya-row:last-child {
           border-bottom: 0;
         }
 
-        .choghadiya-name {
-          font-size: 14px;
-          font-weight: 600;
+        .time-row span,
+        .choghadiya-row span {
+          color: #b7ad9d;
+          font-size: 13px;
         }
 
-        .choghadiya-time {
-          color: #7b4b2a;
+        .time-row strong,
+        .choghadiya-row strong {
+          color: #c9a35e;
+
           font-size: 13px;
           font-weight: 600;
+
           text-align: right;
-          white-space: nowrap;
         }
 
-        .time-dash {
-          color: #756f64;
+
+        /* =========================
+           INFO GRID
+        ========================= */
+
+        .info-grid {
+          display: grid;
+
+          grid-template-columns:
+            repeat(3, 1fr);
+
+          gap: 10px;
         }
 
-        .empty-output {
-          color: #756f64;
-          font-size: 13px;
-          padding: 12px 0;
+        .simple-card {
+          position: relative;
+
+          padding: 18px 19px;
+
+          background:
+            linear-gradient(
+              145deg,
+              #211d17,
+              #171512
+            );
+
+          border: 1px solid #4d3c24;
+          border-radius: 13px;
+
+          box-shadow:
+            0 8px 22px rgba(10, 8, 5, .08);
         }
 
-        /* ======================================
-           MOBILE
-           ====================================== */
+        .simple-card::before {
+          content: "";
 
-        @media (max-width: 800px) {
+          position: absolute;
 
-          .panchang-page {
-            padding: 34px 20px 70px;
-          }
+          left: 0;
+          top: 14px;
+          bottom: 14px;
 
-          .hero h1 {
-            font-size: 64px;
-            letter-spacing: -3px;
-          }
+          width: 2px;
 
-          .hero p {
-            font-size: 18px;
-          }
+          background: #9b7338;
 
-          .controls {
-            grid-template-columns: 1fr;
+          opacity: .65;
+        }
+
+        .simple-card span {
+          display: block;
+
+          margin-bottom: 8px;
+
+          color: #9d9180;
+
+          font-size: 10px;
+          font-weight: 600;
+
+          letter-spacing: .7px;
+          text-transform: uppercase;
+        }
+
+        .simple-card strong {
+          color: #e5dac8;
+
+          font-size: 15px;
+          font-weight: 600;
+
+          line-height: 1.4;
+        }
+
+
+        /* =========================
+           CHOGHADIYA
+        ========================= */
+
+        .large-card {
+          background:
+            radial-gradient(
+              circle at 90% 0%,
+              rgba(168, 121, 53, .09),
+              transparent 38%
+            ),
+            linear-gradient(
+              145deg,
+              #211d17,
+              #151310
+            );
+        }
+
+        .large-card h3 {
+          padding-bottom: 12px;
+
+          border-bottom: 1px solid #514027;
+        }
+
+        .choghadiya-row {
+          min-height: 43px;
+        }
+
+        .choghadiya-row span {
+          color: #d0c5b3;
+        }
+
+        .choghadiya-row strong {
+          color: #c39a53;
+        }
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+          padding: 8px 0;
+
+          color: #877c6d;
+
+          font-size: 12px;
+        }
+
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 850px) {
+
+          .search-card {
+            grid-template-columns:
+              1fr 1fr;
           }
 
           .panchang-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns:
+              repeat(3, 1fr);
           }
 
-          .grid,
-          .grid-three {
-            grid-template-columns: 1fr;
+          .info-grid {
+            grid-template-columns:
+              repeat(2, 1fr);
           }
 
-          .choghadiya-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .section-heading h2 {
-            font-size: 28px;
-          }
         }
 
-        @media (max-width: 520px) {
 
-          .panchang-page {
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+          .hero {
+            padding: 48px 18px 34px;
+          }
+
+          .hero h1 {
+            font-size: 44px;
+            letter-spacing: -1.5px;
+          }
+
+          .hero p {
+            font-size: 14px;
+            line-height: 1.5;
+          }
+
+          .search-section,
+          .results {
             padding-left: 18px;
             padding-right: 18px;
           }
 
-          .hero h1 {
-            font-size: 56px;
+          .search-card {
+            grid-template-columns: 1fr;
+
+            padding: 16px;
+
+            border-radius: 16px;
+          }
+
+          .field input,
+          .date-input-wrap input,
+          .detect-button,
+          .view-button {
+            height: 50px;
           }
 
           .panchang-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns:
+              1fr 1fr;
           }
 
           .panchang-card {
             min-height: 145px;
-            padding: 17px 13px;
           }
 
-          .panchang-value {
-            font-size: 16px;
+          .two-columns {
+            grid-template-columns: 1fr;
           }
 
-          .choghadiya-card {
+          .info-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .date-summary {
+            display: block;
+
+            padding: 22px 19px;
+          }
+
+          .date-summary h2 {
+            font-size: 22px;
+            line-height: 1.3;
+          }
+
+          .summary-location {
+            margin-top: 9px;
+          }
+
+          .section {
+            margin-top: 40px;
+          }
+
+          .section-title h2 {
+            font-size: 22px;
+          }
+
+          .section-title {
+            gap: 11px;
+          }
+
+          .info-card,
+          .large-card {
             padding: 18px;
           }
 
-          .choghadiya-row {
-            grid-template-columns: 1fr;
-            gap: 4px;
-            padding: 12px 0;
+        }
+
+
+        @media (max-width: 380px) {
+
+          .hero h1 {
+            font-size: 40px;
           }
 
-          .choghadiya-time {
-            text-align: left;
-            white-space: normal;
+          .panchang-card {
+            padding-left: 7px;
+            padding-right: 7px;
           }
 
-          .section-heading h2 {
-            font-size: 25px;
+          .panchang-card strong {
+            font-size: 14px;
           }
+
         }
 
       `}</style>
     </>
+  );
+}
+
+
+/* =====================================
+   PANCHANG CARD
+===================================== */
+
+function PanchangCard({
+  icon,
+  label,
+  value,
+  end,
+}: {
+  icon: string;
+  label: string;
+  value: any;
+  end?: any;
+}) {
+  return (
+    <div className="panchang-card">
+
+      <div className="panchang-icon">
+        {icon}
+      </div>
+
+      <div className="label">
+        {label}
+      </div>
+
+      <strong>
+        {display(value)}
+      </strong>
+
+      {end && (
+        <small>
+          Ends {end}
+        </small>
+      )}
+
+    </div>
+  );
+}
+
+
+/* =====================================
+   INFO CARD
+===================================== */
+
+function InfoCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="info-card">
+
+      <h3>{title}</h3>
+
+      {children}
+
+    </div>
+  );
+}
+
+
+/* =====================================
+   TIME ROW
+===================================== */
+
+function TimeRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: any;
+}) {
+  return (
+    <div className="time-row">
+
+      <span>{label}</span>
+
+      <strong>
+        {display(value)}
+      </strong>
+
+    </div>
+  );
+}
+
+
+/* =====================================
+   SIMPLE CARD
+===================================== */
+
+function SimpleCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: any;
+}) {
+  return (
+    <div className="simple-card">
+
+      <span>{label}</span>
+
+      <strong>
+        {display(value)}
+      </strong>
+
+    </div>
   );
 }
