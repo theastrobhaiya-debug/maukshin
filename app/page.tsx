@@ -1,366 +1,746 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
-export default function Home() {
-  const [date, setDate] = useState("2026-09-01");
+const API_BASE =
+  "https://mauksh-kundali-engine.onrender.com";
+
+type LocationData = {
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+function today() {
+  const d = new Date();
+
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+}
+
+function formatDate(date: string) {
+  const d = new Date(date + "T00:00:00");
+
+  return d.toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function value(v: any) {
+  if (v !== undefined && v !== null && v !== "") {
+    return v;
+  }
+
+  return "—";
+}
+
+export default function HomePage() {
+  const [date, setDate] = useState(today());
   const [city, setCity] = useState("");
-  const [location, setLocation] = useState("");
 
-  const formattedDate = new Date(date + "T00:00:00").toLocaleDateString(
-    "en-IN",
-    {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
+  const [location, setLocation] = useState<LocationData>({
+    city: "",
+    latitude: null,
+    longitude: null,
+  });
+
+  const [locationMessage, setLocationMessage] = useState(
+    "Enter a city or detect your location."
   );
 
-  function detectLocation() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    setDate(today());
+  }, []);
+
+  async function detectLocation() {
+    setError("");
+    setLocationMessage("Detecting your location…");
+
     if (!navigator.geolocation) {
-      alert("Location detection is not supported on this device.");
+      setError(
+        "Location detection is not supported by your browser."
+      );
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
         try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
+          const url =
+            "https://nominatim.openstreetmap.org/reverse" +
+            "?format=json" +
+            "&lat=" +
+            latitude +
+            "&lon=" +
+            longitude;
 
-          const data = await response.json();
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error("Unable to detect city.");
+          }
+
+          const result = await response.json();
+
+          const address = result.address || {};
 
           const detectedCity =
-            data?.address?.city ||
-            data?.address?.town ||
-            data?.address?.village ||
-            data?.address?.municipality ||
-            "";
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "Current location";
+
+          setLocation({
+            city: detectedCity,
+            latitude,
+            longitude,
+          });
 
           setCity(detectedCity);
-          setLocation(detectedCity);
+
+          setLocationMessage(detectedCity);
         } catch {
-          setLocation("Location detected");
+          setLocationMessage(
+            "Location detected. You can view Panchang now."
+          );
+
+          setLocation({
+            city: "Current location",
+            latitude,
+            longitude,
+          });
         }
       },
       () => {
-        alert("Unable to detect your location.");
+        setLocationMessage(
+          "Unable to detect location. Enter your city."
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
       }
     );
   }
 
-  function viewPanchang() {
-    if (!city.trim()) {
-      alert("Please enter your city.");
+  async function findCity(cityName: string) {
+    const url =
+      "https://nominatim.openstreetmap.org/search" +
+      "?format=json" +
+      "&limit=1" +
+      "&q=" +
+      encodeURIComponent(cityName);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Unable to find this city.");
+    }
+
+    const results = await response.json();
+
+    if (!results.length) {
+      throw new Error(
+        "City not found. Please check the city name."
+      );
+    }
+
+    return {
+      city: results[0].display_name.split(",")[0],
+      latitude: parseFloat(results[0].lat),
+      longitude: parseFloat(results[0].lon),
+    };
+  }
+
+  async function loadPanchang() {
+    setError("");
+
+    if (!date) {
+      setError("Please select a date.");
       return;
     }
 
-    setLocation(city.trim());
+    if (
+      !city.trim() &&
+      location.latitude === null
+    ) {
+      setError(
+        "Please enter a city or use Detect."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setData(null);
+
+    try {
+      let selectedLocation = location;
+
+      if (city.trim()) {
+        selectedLocation = await findCity(city.trim());
+
+        setLocation(selectedLocation);
+        setLocationMessage(
+          selectedLocation.city
+        );
+      }
+
+      const timezone =
+        Intl.DateTimeFormat().resolvedOptions()
+          .timeZone || "Asia/Kolkata";
+
+      const params = new URLSearchParams({
+        date,
+        latitude: String(
+          selectedLocation.latitude
+        ),
+        longitude: String(
+          selectedLocation.longitude
+        ),
+        timezone,
+      });
+
+      const response = await fetch(
+        `${API_BASE}/api/panchang?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Panchang engine returned an error."
+        );
+      }
+
+      const result = await response.json();
+
+      setData(result);
+    } catch (err: any) {
+      console.error(err);
+
+      setError(
+        err?.message ||
+          "Unable to load Panchang."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderChoghadiya(items: any[]) {
+    if (
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
+      return (
+        <div className={styles.noData}>
+          No data available.
+        </div>
+      );
+    }
+
+    return items.map((item, index) => (
+      <div
+        className={styles.choghadiyaRow}
+        key={index}
+      >
+        <span className={styles.choghadiyaName}>
+          {value(item.name)}
+        </span>
+
+        <span className={styles.choghadiyaTime}>
+          {item.start || "—"} – {item.end || "—"}
+        </span>
+      </div>
+    ));
   }
 
   return (
-    <>
-      <main className="panchang-page">
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <div className={styles.eyebrow}>
+          DAILY VEDIC PANCHANG
+        </div>
 
-        {/* PAGE INTRO */}
+        <h1>Daily Panchang</h1>
 
-        <section className="panchang-hero">
-          <p className="eyebrow">
-            DAILY VEDIC PANCHANG
-          </p>
+        <p>{formatDate(date)}</p>
+      </section>
 
-          <h1>
-            Daily
-            <br />
-            Panchang
-          </h1>
+      {/* DATE & LOCATION */}
 
-          <p className="date-line">
-            {formattedDate}
-          </p>
-        </section>
+      <section className={styles.controlsSection}>
+        <div className={styles.sectionLabel}>
+          DATE & LOCATION
+        </div>
 
-        {/* DATE & LOCATION */}
+        <div className={styles.controls}>
+          <div className={styles.dateField}>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) =>
+                setDate(e.target.value)
+              }
+              className={styles.dateInput}
+            />
+          </div>
 
-        <section className="location-section">
-
-          <h2>DATE &amp; LOCATION</h2>
-
-          <div className="form">
-
-            <div className="date-field">
-              <label htmlFor="date">Date</label>
-
-              <input
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-
-            <div className="city-field">
-              <label htmlFor="city">Location</label>
-
-              <div className="city-row">
-                <input
-                  id="city"
-                  type="text"
-                  placeholder="Enter city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-
-                <button
-                  type="button"
-                  onClick={detectLocation}
-                  className="secondary-button"
-                >
-                  Detect
-                </button>
-              </div>
-            </div>
+          <div className={styles.locationField}>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) =>
+                setCity(e.target.value)
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  loadPanchang();
+                }
+              }}
+              placeholder="Enter city"
+              className={styles.cityInput}
+            />
 
             <button
               type="button"
-              onClick={viewPanchang}
-              className="primary-button"
+              onClick={detectLocation}
+              className={styles.detectButton}
             >
-              View Panchang
+              Detect
             </button>
-
           </div>
 
-          {location && (
-            <div className="selected-location">
-              Panchang location: <strong>{location}</strong>
+          <button
+            type="button"
+            onClick={loadPanchang}
+            className={styles.viewButton}
+          >
+            View Panchang
+          </button>
+        </div>
+
+        <div className={styles.locationMessage}>
+          {locationMessage}
+        </div>
+      </section>
+
+      {/* LOADING */}
+
+      {loading && (
+        <div className={styles.loading}>
+          Calculating Panchang…
+        </div>
+      )}
+
+      {/* ERROR */}
+
+      {error && (
+        <div className={styles.error}>
+          {error}
+        </div>
+      )}
+
+      {/* PANCHANG */}
+
+      {data && !loading && (
+        <div className={styles.content}>
+
+          {/* DATE CARD */}
+
+          <section className={styles.dateCard}>
+            <div className={styles.cardLabel}>
+              PANCHANG FOR
             </div>
-          )}
 
-        </section>
+            <div className={styles.dateValue}>
+              {formatDate(date)}
+            </div>
 
-      </main>
+            <div className={styles.dateLocation}>
+              {location.city}
+            </div>
+          </section>
 
-      <style jsx>{`
+          {/* PANCHANG */}
 
-        /* =========================
-           PANCHANG PAGE ONLY
-           ========================= */
+          <section className={styles.section}>
+            <div className={styles.sectionHeading}>
+              <h2>Panchang</h2>
+            </div>
 
-        .panchang-page {
-          min-height: calc(100vh - 118px);
-          background: #f7f2e8;
-        }
+            <div className={styles.panchangGrid}>
 
-        .panchang-hero {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 70px 42px 55px;
-        }
+              <div className={styles.panchangCard}>
+                <div className={styles.panchangIcon}>
+                  ☀️
+                </div>
 
-        .eyebrow {
-          margin: 0 0 55px;
-          color: #a47735;
-          font-size: 17px;
-          font-weight: 600;
-          letter-spacing: 5px;
-        }
+                <div className={styles.panchangLabel}>
+                  Vara
+                </div>
 
-        h1 {
-          margin: 0;
-          font-family: "Playfair Display", serif;
-          font-size: clamp(76px, 11vw, 150px);
-          line-height: 0.88;
-          letter-spacing: -5px;
-          font-weight: 600;
-        }
+                <div className={styles.panchangValue}>
+                  {value(data.vara?.name)}
+                </div>
+              </div>
 
-        .date-line {
-          margin: 50px 0 0;
-          color: #766e64;
-          font-size: 27px;
-          line-height: 1.4;
-        }
+              <div className={styles.panchangCard}>
+                <div className={styles.panchangIcon}>
+                  🌙
+                </div>
 
-        .location-section {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px 42px 100px;
-        }
+                <div className={styles.panchangLabel}>
+                  Tithi
+                </div>
 
-        .location-section h2 {
-          margin: 0 0 28px;
-          font-size: 19px;
-          font-weight: 600;
-          letter-spacing: 3px;
-        }
+                <div className={styles.panchangValue}>
+                  {value(data.tithi?.name)}
+                </div>
 
-        .form {
-          max-width: 850px;
-        }
+                {data.tithi?.ends && (
+                  <div className={styles.panchangEnd}>
+                    Ends {data.tithi.ends}
+                  </div>
+                )}
+              </div>
 
-        .date-field,
-        .city-field {
-          margin-bottom: 24px;
-        }
+              <div className={styles.panchangCard}>
+                <div className={styles.panchangIcon}>
+                  ⭐
+                </div>
 
-        label {
-          display: block;
-          margin-bottom: 9px;
-          color: #766e64;
-          font-size: 14px;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-        }
+                <div className={styles.panchangLabel}>
+                  Nakshatra
+                </div>
 
-        input {
-          width: 100%;
-          height: 68px;
-          padding: 0 22px;
-          border: 1px solid #d8cebd;
-          border-radius: 34px;
-          background: #fcfaf5;
-          color: #211d19;
-          font-family: inherit;
-          font-size: 20px;
-          outline: none;
-          transition: border-color 0.2s ease;
-        }
+                <div className={styles.panchangValue}>
+                  {value(data.nakshatra?.name)}
+                </div>
 
-        input:focus {
-          border-color: #a47735;
-        }
+                {data.nakshatra?.ends && (
+                  <div className={styles.panchangEnd}>
+                    Ends {data.nakshatra.ends}
+                  </div>
+                )}
+              </div>
 
-        input::placeholder {
-          color: #a79f94;
-        }
+              <div className={styles.panchangCard}>
+                <div className={styles.panchangIcon}>
+                  ✨
+                </div>
 
-        /* Clean native date input */
+                <div className={styles.panchangLabel}>
+                  Yoga
+                </div>
 
-        input[type="date"] {
-          appearance: none;
-          -webkit-appearance: none;
-          min-height: 68px;
-        }
+                <div className={styles.panchangValue}>
+                  {value(data.yoga?.name)}
+                </div>
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          width: 20px;
-          height: 20px;
-          cursor: pointer;
-          opacity: 0.65;
-        }
+                {data.yoga?.ends && (
+                  <div className={styles.panchangEnd}>
+                    Ends {data.yoga.ends}
+                  </div>
+                )}
+              </div>
 
-        .city-row {
-          display: grid;
-          grid-template-columns: 1fr 150px;
-          gap: 14px;
-        }
+              <div className={styles.panchangCard}>
+                <div className={styles.panchangIcon}>
+                  ◐
+                </div>
 
-        button {
-          font-family: inherit;
-          cursor: pointer;
-        }
+                <div className={styles.panchangLabel}>
+                  Karana
+                </div>
 
-        .secondary-button {
-          height: 68px;
-          border: 1px solid #d8cebd;
-          border-radius: 34px;
-          background: #fcfaf5;
-          color: #211d19;
-          font-size: 18px;
-          font-weight: 600;
-        }
+                <div className={styles.panchangValue}>
+                  {value(data.karana?.name)}
+                </div>
 
-        .secondary-button:hover {
-          background: #f0e9dc;
-        }
+                {data.karana?.ends && (
+                  <div className={styles.panchangEnd}>
+                    Ends {data.karana.ends}
+                  </div>
+                )}
+              </div>
 
-        .primary-button {
-          width: 100%;
-          height: 70px;
-          margin-top: 10px;
-          border: 0;
-          border-radius: 35px;
-          background: #211d19;
-          color: #f7f2e8;
-          font-size: 19px;
-          font-weight: 600;
-          letter-spacing: 0.2px;
-          transition: transform 0.2s ease, opacity 0.2s ease;
-        }
+            </div>
+          </section>
 
-        .primary-button:hover {
-          opacity: 0.9;
-          transform: translateY(-1px);
-        }
+          {/* SUN & MOON */}
 
-        .selected-location {
-          margin-top: 28px;
-          color: #766e64;
-          font-size: 16px;
-        }
+          <section className={styles.section}>
+            <div className={styles.sectionHeading}>
+              <h2>Sun & Moon</h2>
+            </div>
 
-        .selected-location strong {
-          color: #211d19;
-        }
+            <div className={styles.twoColumnGrid}>
 
-        @media (max-width: 700px) {
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  SUN
+                </div>
 
-          .panchang-page {
-            min-height: calc(100vh - 105px);
-          }
+                <div className={styles.timeList}>
 
-          .panchang-hero {
-            padding: 58px 28px 45px;
-          }
+                  <div className={styles.timeRow}>
+                    <span>Sunrise</span>
+                    <strong>
+                      {value(data.sun?.rise)}
+                    </strong>
+                  </div>
 
-          .eyebrow {
-            margin-bottom: 48px;
-            font-size: 13px;
-            letter-spacing: 3.5px;
-          }
+                  <div className={styles.timeRow}>
+                    <span>Sunset</span>
+                    <strong>
+                      {value(data.sun?.set)}
+                    </strong>
+                  </div>
 
-          h1 {
-            font-size: clamp(68px, 20vw, 105px);
-            line-height: 0.9;
-            letter-spacing: -3px;
-          }
+                </div>
+              </div>
 
-          .date-line {
-            margin-top: 35px;
-            font-size: 21px;
-          }
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  MOON
+                </div>
 
-          .location-section {
-            padding: 10px 28px 80px;
-          }
+                <div className={styles.timeList}>
 
-          .location-section h2 {
-            margin-bottom: 24px;
-            font-size: 17px;
-            letter-spacing: 2px;
-          }
+                  <div className={styles.timeRow}>
+                    <span>Moonrise</span>
+                    <strong>
+                      {value(data.moon?.rise)}
+                    </strong>
+                  </div>
 
-          .city-row {
-            grid-template-columns: 1fr;
-            gap: 12px;
-          }
+                  <div className={styles.timeRow}>
+                    <span>Moonset</span>
+                    <strong>
+                      {value(data.moon?.set)}
+                    </strong>
+                  </div>
 
-          input,
-          .secondary-button {
-            height: 64px;
-          }
+                </div>
+              </div>
 
-          .primary-button {
-            height: 66px;
-          }
-        }
+            </div>
+          </section>
 
-      `}</style>
-    </>
+          {/* SHUBH ASHUBH */}
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeading}>
+              <h2>Shubh & Ashubh Kaal</h2>
+            </div>
+
+            <div className={styles.threeColumnGrid}>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Rahu Kaal
+                </div>
+                <div className={styles.cardValue}>
+                  {value(
+                    data.timings?.rahuKaal
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Yamaganda
+                </div>
+                <div className={styles.cardValue}>
+                  {value(
+                    data.timings?.yamaganda
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Gulika Kaal
+                </div>
+                <div className={styles.cardValue}>
+                  {value(
+                    data.timings?.gulika
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Abhijit Muhurat
+                </div>
+                <div className={styles.cardValue}>
+                  {value(
+                    data.timings?.abhijit
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Brahma Muhurat
+                </div>
+                <div className={styles.cardValue}>
+                  {value(
+                    data.timings?.brahma
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* CHOGHADIYA */}
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeading}>
+              <h2>Choghadiya</h2>
+            </div>
+
+            <div className={styles.twoColumnGrid}>
+
+              <div className={styles.card}>
+                <div className={styles.cardTitle}>
+                  Day Choghadiya
+                </div>
+
+                {renderChoghadiya(
+                  data.choghadiya?.day
+                )}
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardTitle}>
+                  Night Choghadiya
+                </div>
+
+                {renderChoghadiya(
+                  data.choghadiya?.night
+                )}
+              </div>
+
+            </div>
+          </section>
+
+          {/* ADDITIONAL */}
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeading}>
+              <h2>Additional Panchang</h2>
+            </div>
+
+            <div className={styles.threeColumnGrid}>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Ayana
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.ayana)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Ritu
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.ritu)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Paksha
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.paksha)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Masa
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.masa)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Vikram Samvat
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.vikramSamvat)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Shaka Samvat
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.shakaSamvat)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Sun Rashi
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.sun?.rashi?.name)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Moon Rashi
+                </div>
+                <div className={styles.cardValue}>
+                  {value(data.moon?.rashi?.name)}
+                </div>
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>
+                  Moon Nakshatra Pada
+                </div>
+                <div className={styles.cardValue}>
+                  {data.moon?.nakshatra?.pada
+                    ? `Pada ${data.moon.nakshatra.pada}`
+                    : "—"}
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+        </div>
+      )}
+    </main>
   );
 }
