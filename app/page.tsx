@@ -899,411 +899,486 @@ export default function Home() {
         /* =========================
            RESULTS
         ========================= */
+/* =========================
+   RESULTS
+========================= */
 
-        .results {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
+.results {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
 
-        /* DATE SUMMARY */
+/* =========================
+   DATE SUMMARY
+========================= */
 
-        .date-summary {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          gap: 20px;
+.date-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
 
-          padding: 25px 0;
+  padding: 24px 26px;
 
-          border-top: 1px solid #ded6ca;
-          border-bottom: 1px solid #ded6ca;
-        }
+  background: #fffdf9;
 
-        .summary-label {
-          display: block;
+  border: 1px solid #dfd7ca;
+  border-radius: 16px;
 
-          margin-bottom: 7px;
+  box-shadow: 0 5px 22px rgba(70, 50, 30, .045);
+}
 
-          color: #756f64;
+.summary-label {
+  display: block;
 
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1.4px;
-        }
+  margin-bottom: 6px;
 
-        .date-summary h2 {
-          margin: 0;
+  color: #a87935;
 
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
 
-          font-size: 24px;
-          font-weight: 600;
-        }
+.date-summary h2 {
+  margin: 0;
 
-        .summary-location {
-          color: #756f64;
-          font-size: 13px;
-        }
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
+  font-size: 25px;
+  line-height: 1.25;
 
-        /* =========================
-           SECTIONS
-        ========================= */
+  font-weight: 600;
+}
 
-        .section {
-          margin-top: 48px;
-        }
+.summary-location {
+  padding: 8px 13px;
 
-        .section-title {
-          display: flex;
-          align-items: center;
-          gap: 15px;
+  background: #f5efe6;
 
-          margin-bottom: 15px;
-        }
+  border-radius: 20px;
 
-        .section-title h2 {
-          margin: 0;
+  color: #6f6253;
 
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+  font-size: 12px;
+  white-space: nowrap;
+}
 
-          font-size: 24px;
-          font-weight: 600;
-        }
 
-        .section-title div {
-          flex: 1;
+/* =========================
+   SECTIONS
+========================= */
 
-          height: 1px;
+.section {
+  margin-top: 42px;
+}
 
-          background: #ded6ca;
-        }
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 
+  margin-bottom: 16px;
+}
 
-        /* =========================
-           PANCHANG
-        ========================= */
+.section-title h2 {
+  margin: 0;
 
-        .panchang-grid {
-          display: grid;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-          grid-template-columns:
-            repeat(5, 1fr);
+  font-size: 23px;
+  line-height: 1.2;
 
-          gap: 10px;
-        }
+  font-weight: 600;
+}
 
-        .panchang-card {
-          min-height: 150px;
+.section-title div {
+  flex: 1;
 
-          display: flex;
-          flex-direction: column;
+  height: 1px;
 
-          align-items: center;
-          justify-content: center;
+  background: #ded6ca;
+}
 
-          padding: 18px 10px;
 
-          text-align: center;
+/* =========================
+   PANCHANG CARDS
+========================= */
 
-          background: #fffdf9;
+.panchang-grid {
+  display: grid;
 
-          border: 1px solid #dfd7ca;
-          border-radius: 14px;
+  grid-template-columns:
+    repeat(5, 1fr);
 
-          transition:
-            transform .15s ease,
-            box-shadow .15s ease;
-        }
+  gap: 12px;
+}
 
-        .panchang-card:hover {
-          transform: translateY(-2px);
+.panchang-card {
+  position: relative;
 
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .06);
-        }
+  min-height: 158px;
 
-        .panchang-icon {
-          margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 
-          color: #a87935;
+  align-items: center;
+  justify-content: center;
 
-          font-family: Georgia, serif;
+  padding: 20px 12px;
 
-          font-size: 24px;
-        }
+  text-align: center;
 
-        .panchang-card .label {
-          margin-bottom: 7px;
+  background: #fffdf9;
 
-          color: #756f64;
+  border: 1px solid #dfd7ca;
+  border-radius: 15px;
 
-          font-size: 11px;
-        }
+  box-shadow:
+    0 4px 18px rgba(70, 50, 30, .035);
 
-        .panchang-card strong {
-          font-size: 15px;
-          font-weight: 600;
-        }
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease;
+}
 
-        .panchang-card small {
-          margin-top: 6px;
+.panchang-card:hover {
+  transform: translateY(-2px);
 
-          color: #8b8378;
+  border-color: #d3c5b3;
 
-          font-size: 10px;
-        }
+  box-shadow:
+    0 9px 25px rgba(70, 50, 30, .07);
+}
 
+.panchang-icon {
+  width: 42px;
+  height: 42px;
 
-        /* =========================
-           GENERAL CARDS
-        ========================= */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        .two-columns {
-          display: grid;
+  margin-bottom: 11px;
 
-          grid-template-columns:
-            1fr 1fr;
+  border-radius: 50%;
 
-          gap: 12px;
-        }
+  background: #f5ede2;
 
-        .info-card,
-        .large-card {
-          padding: 20px;
+  color: #a87935;
 
-          background: #fffdf9;
+  font-family: Georgia, serif;
 
-          border: 1px solid #dfd7ca;
-          border-radius: 14px;
-        }
+  font-size: 21px;
+}
 
-        .info-card h3,
-        .large-card h3 {
-          margin: 0 0 12px;
+.panchang-card .label {
+  margin-bottom: 7px;
 
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+  color: #81786d;
 
-          font-size: 19px;
-          font-weight: 600;
-        }
+  font-size: 11px;
+  font-weight: 500;
+}
 
-        .time-row,
-        .choghadiya-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+.panchang-card strong {
+  max-width: 100%;
 
-          gap: 20px;
+  color: #29251f;
 
-          padding: 12px 0;
+  font-size: 15px;
+  line-height: 1.35;
 
-          border-bottom: 1px solid #ebe4da;
-        }
+  font-weight: 600;
+}
 
-        .time-row:last-child,
-        .choghadiya-row:last-child {
-          border-bottom: 0;
-        }
+.panchang-card small {
+  margin-top: 7px;
 
-        .time-row span,
-        .choghadiya-row span {
-          color: #4b453e;
-          font-size: 13px;
-        }
+  color: #92897e;
 
-        .time-row strong,
-        .choghadiya-row strong {
-          color: #7b4b2a;
+  font-size: 10px;
+}
 
-          font-size: 13px;
-          font-weight: 600;
 
-          text-align: right;
-        }
+/* =========================
+   SUN & MOON
+========================= */
 
+.two-columns {
+  display: grid;
 
-        /* =========================
-           INFO GRID
-        ========================= */
+  grid-template-columns:
+    1fr 1fr;
 
-        .info-grid {
-          display: grid;
+  gap: 14px;
+}
 
-          grid-template-columns:
-            repeat(3, 1fr);
+.info-card,
+.large-card {
+  background: #fffdf9;
 
-          gap: 10px;
-        }
+  border: 1px solid #dfd7ca;
+  border-radius: 15px;
 
-        .simple-card {
-          padding: 18px;
+  padding: 21px 22px;
 
-          background: #fffdf9;
+  box-shadow:
+    0 4px 18px rgba(70, 50, 30, .035);
+}
 
-          border: 1px solid #dfd7ca;
-          border-radius: 13px;
-        }
+.info-card h3,
+.large-card h3 {
+  margin: 0 0 14px;
 
-        .simple-card span {
-          display: block;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-          margin-bottom: 7px;
+  font-size: 18px;
 
-          color: #756f64;
+  font-weight: 600;
+}
 
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: .2px;
-        }
+.time-row,
+.choghadiya-row {
+  display: flex;
 
-        .simple-card strong {
-          font-size: 15px;
-          font-weight: 600;
-        }
+  justify-content: space-between;
+  align-items: center;
 
+  gap: 20px;
 
-        /* =========================
-           EMPTY
-        ========================= */
+  padding: 13px 0;
 
-        .empty {
-          padding: 8px 0;
+  border-bottom: 1px solid #ebe4da;
+}
 
-          color: #8b8378;
+.time-row:last-child,
+.choghadiya-row:last-child {
+  border-bottom: 0;
+}
 
-          font-size: 12px;
-        }
+.time-row span,
+.choghadiya-row span {
+  color: #655e55;
 
+  font-size: 13px;
+}
 
-        /* =========================
-           TABLET
-        ========================= */
+.time-row strong,
+.choghadiya-row strong {
+  color: #7b4b2a;
 
-        @media (max-width: 850px) {
+  font-size: 13px;
+  font-weight: 600;
 
-          .search-card {
-            grid-template-columns:
-              1fr 1fr;
-          }
+  text-align: right;
+}
 
-          .panchang-grid {
-            grid-template-columns:
-              repeat(3, 1fr);
-          }
 
-          .info-grid {
-            grid-template-columns:
-              repeat(2, 1fr);
-          }
+/* =========================
+   SHUBH / ASHUBH
+========================= */
 
-        }
+.info-grid {
+  display: grid;
 
+  grid-template-columns:
+    repeat(3, 1fr);
 
-        /* =========================
-           MOBILE
-        ========================= */
+  gap: 12px;
+}
 
-        @media (max-width: 600px) {
+.simple-card {
+  min-height: 92px;
 
-          .hero {
-            padding: 48px 18px 34px;
-          }
+  display: flex;
+  flex-direction: column;
 
-          .hero h1 {
-            font-size: 44px;
-            letter-spacing: -1.5px;
-          }
+  justify-content: center;
 
-          .hero p {
-            font-size: 14px;
-            line-height: 1.5;
-          }
+  padding: 17px 18px;
 
-          .search-section,
-          .results {
-            padding-left: 18px;
-            padding-right: 18px;
-          }
+  background: #fffdf9;
 
-          .search-card {
-            grid-template-columns: 1fr;
+  border: 1px solid #dfd7ca;
+  border-radius: 14px;
 
-            padding: 16px;
+  box-shadow:
+    0 4px 18px rgba(70, 50, 30, .03);
 
-            border-radius: 16px;
-          }
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
 
-          .field input,
-          .date-input-wrap input,
-          .detect-button,
-          .view-button {
-            height: 50px;
-          }
+.simple-card:hover {
+  transform: translateY(-1px);
 
-          .panchang-grid {
-            grid-template-columns:
-              1fr 1fr;
-          }
+  box-shadow:
+    0 7px 22px rgba(70, 50, 30, .055);
+}
 
-          .panchang-card {
-            min-height: 140px;
-          }
+.simple-card span {
+  display: block;
 
-          .two-columns {
-            grid-template-columns: 1fr;
-          }
+  margin-bottom: 8px;
 
-          .info-grid {
-            grid-template-columns: 1fr;
-          }
+  color: #81786d;
 
-          .date-summary {
-            display: block;
-          }
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .4px;
+}
 
-          .summary-location {
-            margin-top: 8px;
-          }
+.simple-card strong {
+  color: #302b25;
 
-          .section {
-            margin-top: 40px;
-          }
+  font-size: 15px;
+  line-height: 1.35;
 
-          .section-title h2 {
-            font-size: 22px;
-          }
+  font-weight: 600;
+}
 
-        }
 
+/* =========================
+   CHOGHADIYA
+========================= */
 
-        @media (max-width: 380px) {
+.large-card {
+  padding: 22px;
+}
 
-          .hero h1 {
-            font-size: 40px;
-          }
+.large-card h3 {
+  padding-bottom: 13px;
 
-          .panchang-card {
-            padding-left: 7px;
-            padding-right: 7px;
-          }
+  border-bottom: 1px solid #ebe4da;
+}
 
-          .panchang-card strong {
-            font-size: 14px;
-          }
+.choghadiya-row {
+  padding: 12px 2px;
+}
 
-        }
+.choghadiya-row span {
+  font-weight: 500;
+}
+
+.choghadiya-row strong {
+  color: #7b4b2a;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty {
+  padding: 15px 2px;
+
+  color: #958c80;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   MOBILE RESULTS
+========================= */
+
+@media (max-width: 850px) {
+
+  .panchang-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .info-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .results {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .date-summary {
+    display: block;
+
+    padding: 20px;
+  }
+
+  .date-summary h2 {
+    font-size: 21px;
+  }
+
+  .summary-location {
+    display: inline-block;
+
+    margin-top: 12px;
+  }
+
+  .section {
+    margin-top: 36px;
+  }
+
+  .section-title h2 {
+    font-size: 21px;
+  }
+
+  .panchang-grid {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 10px;
+  }
+
+  .panchang-card {
+    min-height: 145px;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .panchang-card {
+    min-height: 135px;
+
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .panchang-card strong {
+    font-size: 14px;
+  }
+
+}
+       
 
       `}</style>
     </>
