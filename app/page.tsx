@@ -898,14 +898,14 @@ export default function Home() {
 
 
         /* =====================================================
-           KAALDARPAN OUTPUT
-           CLEAR BLACK TEXT
+           RESULTS
+           KAALDARPAN CLEAN OUTPUT
         ===================================================== */
 
         .results {
           max-width: 1080px;
           margin: 0 auto;
-          padding: 0 24px 70px;
+          padding: 0 24px 80px;
 
           color: #111111;
         }
@@ -919,7 +919,8 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          gap: 20px;
+
+          gap: 30px;
 
           padding: 25px 24px;
 
@@ -927,16 +928,14 @@ export default function Home() {
 
           border-top: 1px solid #c9b894;
           border-bottom: 1px solid #c9b894;
-
-          border-radius: 0;
         }
 
         .summary-label {
           display: block;
 
-          margin-bottom: 7px;
+          margin-bottom: 8px;
 
-          color: #6a5a42;
+          color: #5f503b;
 
           font-size: 10px;
           font-weight: 700;
@@ -954,12 +953,14 @@ export default function Home() {
             serif;
 
           font-size: 24px;
+          line-height: 1.35;
           font-weight: 600;
         }
 
         .summary-location {
-          color: #333333;
+          color: #222222;
           font-size: 13px;
+          line-height: 1.4;
         }
 
 
@@ -968,18 +969,21 @@ export default function Home() {
         ========================= */
 
         .section {
-          margin-top: 48px;
+          margin-top: 52px;
         }
 
         .section-title {
           display: flex;
           align-items: center;
-          gap: 15px;
 
-          margin-bottom: 15px;
+          gap: 18px;
+
+          margin-bottom: 22px;
         }
 
         .section-title h2 {
+          flex-shrink: 0;
+
           margin: 0;
 
           color: #111111;
@@ -990,6 +994,7 @@ export default function Home() {
             serif;
 
           font-size: 24px;
+          line-height: 1.25;
           font-weight: 600;
         }
 
@@ -1003,7 +1008,7 @@ export default function Home() {
 
 
         /* =========================
-           PANCHANG
+           PANCHANG CARDS
         ========================= */
 
         .panchang-grid {
@@ -1012,11 +1017,11 @@ export default function Home() {
           grid-template-columns:
             repeat(5, 1fr);
 
-          gap: 10px;
+          gap: 12px;
         }
 
         .panchang-card {
-          min-height: 150px;
+          min-height: 160px;
 
           display: flex;
           flex-direction: column;
@@ -1024,7 +1029,9 @@ export default function Home() {
           align-items: center;
           justify-content: center;
 
-          padding: 18px 10px;
+          padding: 22px 14px;
+
+          box-sizing: border-box;
 
           text-align: center;
 
@@ -1032,53 +1039,55 @@ export default function Home() {
 
           border: 1px solid #d9cdbb;
           border-radius: 14px;
-
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .045);
-
-          transition:
-            transform .15s ease,
-            box-shadow .15s ease;
-        }
-
-        .panchang-card:hover {
-          transform: translateY(-2px);
-
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .08);
         }
 
         .panchang-icon {
-          margin-bottom: 10px;
+          display: block;
+
+          margin-bottom: 13px;
 
           color: #a87935;
 
           font-family: Georgia, serif;
 
           font-size: 24px;
+          line-height: 1;
         }
 
         .panchang-card .label {
-          margin-bottom: 7px;
+          display: block;
 
-          color: #625847;
+          margin-bottom: 9px;
 
-          font-size: 11px;
+          color: #333333;
+
+          font-size: 12px;
+          line-height: 1.35;
         }
 
         .panchang-card strong {
+          display: block;
+
           color: #111111;
 
-          font-size: 15px;
-          font-weight: 600;
+          font-size: 16px;
+          line-height: 1.4;
+          font-weight: 700;
+
+          white-space: normal;
         }
 
         .panchang-card small {
-          margin-top: 6px;
+          display: block;
 
-          color: #55504a;
+          margin-top: 9px;
 
-          font-size: 10px;
+          color: #333333;
+
+          font-size: 11px;
+          line-height: 1.4;
+
+          white-space: normal;
         }
 
 
@@ -1092,25 +1101,24 @@ export default function Home() {
           grid-template-columns:
             1fr 1fr;
 
-          gap: 12px;
+          gap: 14px;
         }
 
         .info-card,
         .large-card {
-          padding: 20px;
+          padding: 22px;
+
+          box-sizing: border-box;
 
           background: #fffdf9;
 
           border: 1px solid #d9cdbb;
           border-radius: 14px;
-
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .045);
         }
 
         .info-card h3,
         .large-card h3 {
-          margin: 0 0 12px;
+          margin: 0 0 18px;
 
           color: #111111;
 
@@ -1120,41 +1128,100 @@ export default function Home() {
             serif;
 
           font-size: 19px;
+          line-height: 1.35;
           font-weight: 600;
         }
 
-        .time-row,
-        .choghadiya-row {
-          display: flex;
-          justify-content: space-between;
+
+        /* =========================
+           SUN / MOON TIME ROWS
+        ========================= */
+
+        .time-row {
+          display: grid;
+
+          grid-template-columns: 1fr auto;
+
           align-items: center;
 
-          gap: 20px;
+          column-gap: 28px;
 
-          padding: 12px 0;
+          padding: 14px 0;
 
           border-bottom: 1px solid #ebe4da;
         }
 
-        .time-row:last-child,
+        .time-row:last-child {
+          border-bottom: 0;
+        }
+
+        .time-row span {
+          display: block;
+
+          color: #222222;
+
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .time-row strong {
+          display: block;
+
+          color: #111111;
+
+          font-size: 14px;
+          line-height: 1.5;
+          font-weight: 700;
+
+          text-align: right;
+
+          white-space: nowrap;
+        }
+
+
+        /* =========================
+           CHOGHADIYA ROWS
+        ========================= */
+
+        .choghadiya-row {
+          display: grid;
+
+          grid-template-columns: 1fr auto;
+
+          align-items: center;
+
+          column-gap: 28px;
+
+          padding: 13px 0;
+
+          border-bottom: 1px solid #ebe4da;
+        }
+
         .choghadiya-row:last-child {
           border-bottom: 0;
         }
 
-        .time-row span,
         .choghadiya-row span {
-          color: #333333;
+          display: block;
+
+          color: #222222;
+
           font-size: 13px;
+          line-height: 1.5;
         }
 
-        .time-row strong,
         .choghadiya-row strong {
+          display: block;
+
           color: #111111;
 
           font-size: 13px;
+          line-height: 1.5;
           font-weight: 600;
 
           text-align: right;
+
+          white-space: nowrap;
         }
 
 
@@ -1168,37 +1235,46 @@ export default function Home() {
           grid-template-columns:
             repeat(3, 1fr);
 
-          gap: 10px;
+          gap: 12px;
         }
 
         .simple-card {
+          min-height: 88px;
+
+          display: flex;
+          flex-direction: column;
+
+          justify-content: center;
+
           padding: 18px;
+
+          box-sizing: border-box;
 
           background: #fffdf9;
 
           border: 1px solid #d9cdbb;
           border-radius: 13px;
-
-          box-shadow:
-            0 6px 18px rgba(70, 50, 30, .035);
         }
 
         .simple-card span {
           display: block;
 
-          margin-bottom: 7px;
+          margin-bottom: 8px;
 
-          color: #625847;
+          color: #444444;
 
-          font-size: 10px;
+          font-size: 11px;
+          line-height: 1.4;
           font-weight: 600;
-          letter-spacing: .2px;
         }
 
         .simple-card strong {
+          display: block;
+
           color: #111111;
 
           font-size: 15px;
+          line-height: 1.45;
           font-weight: 600;
         }
 
@@ -1208,9 +1284,9 @@ export default function Home() {
         ========================= */
 
         .empty {
-          padding: 8px 0;
+          padding: 10px 0;
 
-          color: #55504a;
+          color: #444444;
 
           font-size: 12px;
         }
@@ -1281,41 +1357,158 @@ export default function Home() {
             height: 50px;
           }
 
+
+          /* =========================
+             MOBILE OUTPUT
+          ========================= */
+
+          .results {
+            padding-bottom: 60px;
+
+            color: #111111;
+          }
+
+          .date-summary {
+            display: block;
+
+            padding: 24px 18px;
+          }
+
+          .date-summary h2 {
+            font-size: 24px;
+            line-height: 1.4;
+          }
+
+          .summary-location {
+            margin-top: 12px;
+
+            color: #222222;
+          }
+
+
+          /* SECTIONS */
+
+          .section {
+            margin-top: 44px;
+          }
+
+          .section-title {
+            gap: 14px;
+
+            margin-bottom: 22px;
+          }
+
+          .section-title h2 {
+            font-size: 22px;
+            line-height: 1.3;
+          }
+
+
+          /* PANCHANG */
+
           .panchang-grid {
             grid-template-columns:
               1fr 1fr;
+
+            gap: 14px;
           }
 
           .panchang-card {
-            min-height: 140px;
+            min-height: 150px;
+
+            padding: 20px 12px;
           }
+
+          .panchang-icon {
+            margin-bottom: 13px;
+          }
+
+          .panchang-card .label {
+            margin-bottom: 9px;
+
+            font-size: 12px;
+          }
+
+          .panchang-card strong {
+            font-size: 15px;
+            line-height: 1.4;
+          }
+
+          .panchang-card small {
+            margin-top: 9px;
+
+            font-size: 10px;
+            line-height: 1.4;
+          }
+
+
+          /* SUN / MOON */
 
           .two-columns {
             grid-template-columns: 1fr;
+
+            gap: 14px;
           }
+
+          .info-card,
+          .large-card {
+            padding: 20px;
+          }
+
+          .info-card h3,
+          .large-card h3 {
+            margin-bottom: 16px;
+          }
+
+
+          /* TIME */
+
+          .time-row {
+            grid-template-columns:
+              1fr auto;
+
+            column-gap: 20px;
+
+            padding: 15px 0;
+          }
+
+          .time-row span,
+          .time-row strong {
+            font-size: 13px;
+            line-height: 1.5;
+          }
+
+
+          /* CHOGHADIYA */
+
+          .choghadiya-row {
+            grid-template-columns:
+              1fr auto;
+
+            column-gap: 16px;
+
+            padding: 14px 0;
+          }
+
+          .choghadiya-row span,
+          .choghadiya-row strong {
+            font-size: 12px;
+            line-height: 1.5;
+          }
+
+
+          /* INFO */
 
           .info-grid {
             grid-template-columns: 1fr;
           }
 
-          .date-summary {
-            display: block;
-          }
-
-          .summary-location {
-            margin-top: 8px;
-          }
-
-          .section {
-            margin-top: 40px;
-          }
-
-          .section-title h2 {
-            font-size: 22px;
-          }
-
         }
 
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
 
         @media (max-width: 380px) {
 
@@ -1324,12 +1517,16 @@ export default function Home() {
           }
 
           .panchang-card {
-            padding-left: 7px;
-            padding-right: 7px;
+            padding-left: 8px;
+            padding-right: 8px;
           }
 
           .panchang-card strong {
             font-size: 14px;
+          }
+
+          .panchang-card small {
+            font-size: 9px;
           }
 
         }
@@ -1451,4 +1648,4 @@ function SimpleCard({
 
     </div>
   );
-} 
+}
