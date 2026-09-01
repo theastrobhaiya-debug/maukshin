@@ -899,7 +899,6 @@ export default function Home() {
 
         /* =====================================================
            KAALDARPAN OUTPUT
-           ONLY TEXT COLORS CHANGED
         ===================================================== */
 
         .results {
@@ -907,7 +906,7 @@ export default function Home() {
           margin: 0 auto;
           padding: 0 24px 70px;
 
-          color: #171717;
+          color: #eee7d8;
         }
 
 
@@ -943,7 +942,7 @@ export default function Home() {
 
           margin-bottom: 8px;
 
-          color: #6b6256;
+          color: #b9975b;
 
           font-size: 10px;
           font-weight: 700;
@@ -953,7 +952,7 @@ export default function Home() {
         .date-summary h2 {
           margin: 0;
 
-          color: #171717;
+          color: #f2eadc;
 
           font-family:
             Georgia,
@@ -967,7 +966,7 @@ export default function Home() {
         }
 
         .summary-location {
-          color: #6b6256;
+          color: #b9ae9d;
           font-size: 13px;
         }
 
@@ -991,7 +990,7 @@ export default function Home() {
         .section-title h2 {
           margin: 0;
 
-          color: #171717;
+          color: #f0e6d4;
 
           font-family:
             Georgia,
@@ -1119,7 +1118,7 @@ export default function Home() {
         .panchang-card .label {
           margin-bottom: 8px;
 
-          color: #6b6256;
+          color: #a99d89;
 
           font-size: 10px;
           font-weight: 600;
@@ -1131,7 +1130,7 @@ export default function Home() {
         .panchang-card strong {
           max-width: 100%;
 
-          color: #171717;
+          color: #eee5d4;
 
           font-size: 15px;
           font-weight: 600;
@@ -1142,7 +1141,7 @@ export default function Home() {
         .panchang-card small {
           margin-top: 7px;
 
-          color: #756e65;
+          color: #918575;
 
           font-size: 10px;
         }
@@ -1183,7 +1182,7 @@ export default function Home() {
         .large-card h3 {
           margin: 0 0 13px;
 
-          color: #171717;
+          color: #d4b06e;
 
           font-family:
             Georgia,
@@ -1214,13 +1213,13 @@ export default function Home() {
 
         .time-row span,
         .choghadiya-row span {
-          color: #403c37;
+          color: #b7ad9d;
           font-size: 13px;
         }
 
         .time-row strong,
         .choghadiya-row strong {
-          color: #171717;
+          color: #c9a35e;
 
           font-size: 13px;
           font-weight: 600;
@@ -1282,7 +1281,7 @@ export default function Home() {
 
           margin-bottom: 8px;
 
-          color: #6b6256;
+          color: #9d9180;
 
           font-size: 10px;
           font-weight: 600;
@@ -1292,7 +1291,7 @@ export default function Home() {
         }
 
         .simple-card strong {
-          color: #171717;
+          color: #e5dac8;
 
           font-size: 15px;
           font-weight: 600;
@@ -1330,11 +1329,11 @@ export default function Home() {
         }
 
         .choghadiya-row span {
-          color: #403c37;
+          color: #d0c5b3;
         }
 
         .choghadiya-row strong {
-          color: #171717;
+          color: #c39a53;
         }
 
 
@@ -1345,7 +1344,7 @@ export default function Home() {
         .empty {
           padding: 8px 0;
 
-          color: #756e65;
+          color: #877c6d;
 
           font-size: 12px;
         }
