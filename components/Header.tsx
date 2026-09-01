@@ -25,85 +25,48 @@ export default function Header() {
       </head>
 
       <header className="site-header">
-
         <div className="header-inner">
 
-          <div className="brand-area">
-
-            <Link
-              href="/"
-              className="brand"
-              onClick={closeMenu}
-            >
-              <img
-                src="/assets/mauksh-logo.jpg"
-                alt="Mauksh"
-                className="brand-logo"
-              />
-            </Link>
-
-            <a
-              href="https://mauksh.com"
-              className="shop-link"
-              onClick={closeMenu}
-            >
-              <svg
-                className="shop-icon"
-                width="19"
-                height="19"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M6 8h12l1 13H5L6 8Z" />
-                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-              </svg>
-
-              <span>Shop</span>
-            </a>
-
-          </div>
-
-          <nav
-            className={`main-nav ${
-              menuOpen ? "nav-open" : ""
-            }`}
+          {/* Logo */}
+          <Link
+            href="/"
+            className="brand"
+            onClick={closeMenu}
           >
+            <img
+              src="/assets/mauksh-logo.jpg"
+              alt="Mauksh"
+              className="brand-logo"
+            />
+          </Link>
 
-            <Link
-              href="/"
-              onClick={closeMenu}
+          {/* Shop - Center */}
+          <a
+            href="https://mauksh.com"
+            className="shop-link"
+            onClick={closeMenu}
+            aria-label="Shop Mauksh products"
+          >
+            <svg
+              className="shop-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              Home
-            </Link>
+              <path d="M6 8h12l1 13H5L6 8Z" />
+              <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+            </svg>
 
-            <Link
-              href="/horoscope"
-              onClick={closeMenu}
-            >
-              Horoscope
-            </Link>
+            <span>Shop</span>
+          </a>
 
-            <Link
-              href="/name-checker"
-              onClick={closeMenu}
-            >
-              Name Checker
-            </Link>
-
-            <Link
-              href="/founder"
-              onClick={closeMenu}
-            >
-              Founder
-            </Link>
-
-          </nav>
-
+          {/* Menu */}
           <button
             type="button"
             className="menu-button"
@@ -117,6 +80,29 @@ export default function Header() {
           </button>
 
         </div>
+
+        {/* Navigation Menu */}
+        <nav
+          className={`main-nav ${
+            menuOpen ? "nav-open" : ""
+          }`}
+        >
+          <Link href="/" onClick={closeMenu}>
+            Home
+          </Link>
+
+          <Link href="/horoscope" onClick={closeMenu}>
+            Horoscope
+          </Link>
+
+          <Link href="/name-checker" onClick={closeMenu}>
+            Name Checker
+          </Link>
+
+          <Link href="/founder" onClick={closeMenu}>
+            Founder
+          </Link>
+        </nav>
 
       </header>
     </>
