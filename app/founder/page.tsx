@@ -15,7 +15,7 @@ export default function FounderPage() {
           <div className="founder-intro">
 
             <div className="eyebrow">
-              FOUNDER • MAUKSH & GRAHGANIT
+              FOUNDER • MAUKSH
             </div>
 
             <h1>
@@ -25,7 +25,7 @@ export default function FounderPage() {
             </h1>
 
             <p className="founder-role">
-              Founder of Mauksh & GRAHGANIT
+              Founder of Mauksh
             </p>
 
             <p className="hero-description">
@@ -42,7 +42,7 @@ export default function FounderPage() {
 
             <img
               src="/assets/Founder.JPG"
-              alt="Shivam Bansal - Founder of Mauksh and GrahGanit"
+              alt="Shivam Bansal - Founder of Mauksh"
             />
 
           </div>
@@ -88,7 +88,7 @@ export default function FounderPage() {
 
             <p className="lead">
               Shivam Bansal is an entrepreneur and the founder
-              behind Mauksh and GrahGanit.
+              behind Mauksh.
             </p>
 
             <p>
@@ -105,7 +105,7 @@ export default function FounderPage() {
 
             <p>
               That philosophy became the foundation for Mauksh
-              and eventually led to the creation of GrahGanit —
+              and eventually led to the creation of Mauksh —
               a technology-driven approach to making Vedic
               astrology easier to access and understand.
             </p>
@@ -174,7 +174,7 @@ export default function FounderPage() {
         <div className="section-line">
 
           <span>
-            GRAHGANIT
+            Mauksh
           </span>
 
           <div />
@@ -198,7 +198,7 @@ export default function FounderPage() {
           <div className="intro-content">
 
             <p className="lead">
-              GrahGanit is the next step in that journey.
+              Mauksh is the next step in that journey.
             </p>
 
             <p>
@@ -220,7 +220,7 @@ export default function FounderPage() {
             </p>
 
             <p>
-                GrahGanit is being built with that distinction
+                Mauksh is being built with that distinction
               in mind.
             </p>
 
@@ -321,7 +321,7 @@ export default function FounderPage() {
             </span>
 
             <h3>
-              GRAHGANIT
+              Mauksh
             </h3>
 
             <p>
@@ -346,7 +346,7 @@ export default function FounderPage() {
         <div className="closing-inner">
 
           <div className="eyebrow">
-            WHY GrahGanit
+            WHY Mauksh 
           </div>
 
           <h2>
@@ -356,7 +356,7 @@ export default function FounderPage() {
           </h2>
 
           <p>
-            GrahGanit is Shivam Bansal's attempt to build a
+            Mauksh is Shivam Bansal's attempt to build a
             bridge between the depth of Vedic astrology and the
             simplicity people expect from modern technology.
           </p>
