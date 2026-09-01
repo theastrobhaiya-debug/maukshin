@@ -13,10 +13,7 @@ export const metadata: Metadata = {
   description:
     "KaalDarpan brings Vedic astrology and planetary wisdom into a simple modern experience.",
 
-  icons: {
-    icon: "/assets/kaaldarpan-logo.png",
-    apple: "/assets/kaaldarpan-logo.png",
-  },
+  
 };
 
 export default function RootLayout({
