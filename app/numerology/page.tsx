@@ -31,7 +31,6 @@ export default function Page() {
 
   // ============================================================
   // BUILD GRID
-  // EXACT ORIGINAL COLOR PRIORITY
   // ============================================================
 
   function buildGrid(
@@ -76,7 +75,6 @@ export default function Page() {
       for (let i = 0; i < count[n]; i++) {
         let cls = "";
 
-        // EXACT ORIGINAL PRIORITY
         if (n === mulankValue && !usedMul) {
           cls = "mulank";
           usedMul = true;
@@ -182,15 +180,7 @@ export default function Page() {
     const from = parseInt(fromYear);
     const to = parseInt(toYear);
 
-    // ------------------------------------------------------------
-    // MULANK
-    // ------------------------------------------------------------
-
     const currentMulank = reduce(day);
-
-    // ------------------------------------------------------------
-    // BHAGYANK
-    // ------------------------------------------------------------
 
     const currentBhagyank = reduce(
       day
@@ -204,9 +194,9 @@ export default function Page() {
           .reduce((a, b) => a + Number(b), 0)
     );
 
-    // ------------------------------------------------------------
+    // ============================================================
     // NATAL DIGITS
-    // ------------------------------------------------------------
+    // ============================================================
 
     const natalDigits: number[] = [];
 
@@ -232,13 +222,10 @@ export default function Page() {
 
     natalDigits.push(currentBhagyank);
 
-    // ------------------------------------------------------------
+    // ============================================================
     // NATAL GRID
-    //
-    // IMPORTANT:
-    // Only Mulank + Bhagyank are active here.
-    // No Mahadasha / Antardasha / Pratyantar.
-    // ------------------------------------------------------------
+    // ONLY MULANK + BHAGYANK
+    // ============================================================
 
     let output = `<div class="title">Natal Grid</div>`;
 
@@ -251,9 +238,9 @@ export default function Page() {
       null
     );
 
-    // ------------------------------------------------------------
+    // ============================================================
     // YEAR GRIDS
-    // ------------------------------------------------------------
+    // ============================================================
 
     for (let y = from; y <= to; y++) {
       const currentMahadasha = calculateMahadasha(
@@ -270,7 +257,6 @@ export default function Page() {
 
       const digits = [...natalDigits];
 
-      // ONLY ADD MAHADASHA + ANTARDASHA
       digits.push(currentMahadasha as number);
       digits.push(currentAntardasha);
 
@@ -293,11 +279,11 @@ export default function Page() {
     setMulank(currentMulank);
     setBhagyank(currentBhagyank);
 
-    setReport(output);
-
     setMahadasha(null);
     setAntardasha(null);
     setPratyantarNum(null);
+
+    setReport(output);
   }
 
   // ============================================================
@@ -347,7 +333,11 @@ export default function Page() {
 
     const index = seq.indexOf(currentAntardasha);
 
-    let current = new Date(year, month - 1, day);
+    let current = new Date(
+      year,
+      month - 1,
+      day
+    );
 
     let output = `
       <div
@@ -358,9 +348,9 @@ export default function Page() {
       </div>
     `;
 
-    // ------------------------------------------------------------
+    // ============================================================
     // PRATYANTAR PERIODS
-    // ------------------------------------------------------------
+    // ============================================================
 
     for (let i = 0; i < 9; i++) {
       const num = seq[(index + i) % 9];
@@ -391,9 +381,14 @@ export default function Page() {
 
       const start = new Date(current);
 
-      const days = num <= 4 ? num * 8 : num * 8 + 1;
+      const days =
+        num <= 4
+          ? num * 8
+          : num * 8 + 1;
 
-      current.setDate(current.getDate() + days);
+      current.setDate(
+        current.getDate() + days
+      );
 
       const end = new Date(current);
 
@@ -418,10 +413,6 @@ export default function Page() {
 
     setReport(output);
 
-    // ------------------------------------------------------------
-    // BACK BUTTON
-    // ------------------------------------------------------------
-
     setTimeout(() => {
       const backButton =
         document.getElementById("backButton");
@@ -435,7 +426,7 @@ export default function Page() {
   }
 
   // ============================================================
-  // EVENT DELEGATION
+  // REPORT CLICK
   // ============================================================
 
   function handleReportClick(
@@ -458,7 +449,7 @@ export default function Page() {
   }
 
   // ============================================================
-  // JSX
+  // PAGE
   // ============================================================
 
   return (
@@ -507,11 +498,12 @@ export default function Page() {
           box-sizing:border-box;
         }
 
+        /* CLEAN DATE FIELD */
         input[type="date"]{
           display:block;
           width:100%;
           height:48px;
-          padding:10px 12px;
+          padding:0 12px;
           margin:5px 0;
           font-size:16px;
           font-family:inherit;
@@ -520,6 +512,7 @@ export default function Page() {
           border:1px solid #ccc;
           border-radius:6px;
           box-sizing:border-box;
+          -webkit-text-size-adjust:100%;
         }
 
         input[type="number"]{
@@ -624,6 +617,7 @@ export default function Page() {
       `}</style>
 
       <div className="container">
+
         <h2>Vedic Numerology Software</h2>
 
         <label>Date of Birth</label>
@@ -631,7 +625,9 @@ export default function Page() {
         <input
           type="date"
           value={dob}
-          onChange={(e) => setDob(e.target.value)}
+          onChange={(e) =>
+            setDob(e.target.value)
+          }
         />
 
         <label>From Year</label>
@@ -659,13 +655,21 @@ export default function Page() {
         </button>
 
         <div className="legend">
-          <span className="mulank">Mulank</span>{" "}
+          <span className="mulank">
+            Mulank
+          </span>{" "}
           |{" "}
-          <span className="bhagyank">Bhagyank</span>{" "}
+          <span className="bhagyank">
+            Bhagyank
+          </span>{" "}
           |{" "}
-          <span className="mahadasha">Mahadasha</span>{" "}
+          <span className="mahadasha">
+            Mahadasha
+          </span>{" "}
           |{" "}
-          <span className="antardasha">Antardasha</span>{" "}
+          <span className="antardasha">
+            Antardasha
+          </span>{" "}
           |{" "}
           <span className="pratyantar">
             Pratyantar
@@ -679,12 +683,14 @@ export default function Page() {
             __html: report,
           }}
         />
+
       </div>
 
       <br />
       <br />
 
       <div className="container">
+
         Generate your Vedic Numerology Grid on Mauksh
         using advanced calculation methods based on
         your date of birth. This tool helps you
@@ -710,6 +716,7 @@ export default function Page() {
         help you align your actions with your natural
         strengths and improve different aspects of your
         life.
+
       </div>
     </>
   );
