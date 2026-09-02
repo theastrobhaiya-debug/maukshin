@@ -2,146 +2,14 @@
 
 import { useState } from "react";
 
-type GridNumber = {
-  number: number;
-  className: string;
-};
-
-const order = [3, 1, 9, 6, 7, 5, 2, 8, 4];
-
-function reduce(n: number): number {
-  while (n > 9) {
-    n = n
-      .toString()
-      .split("")
-      .reduce((a, b) => a + Number(b), 0);
-  }
-
-  return n;
-}
-
-function calculateMahadasha(
-  year: number,
-  birthYear: number,
-  mulank: number
-): number {
-  const seq = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-  const index = seq.indexOf(mulank);
-
-  const age = year - birthYear;
-
-  let passed = 0;
-
-  for (let i = 0; i < 50; i++) {
-    const num = seq[(index + i) % 9];
-
-    if (age >= passed && age < passed + num) {
-      return num;
-    }
-
-    passed += num;
-  }
-
-  return 1;
-}
-
-function calculateAntardasha(
-  day: number,
-  month: number,
-  year: number
-): number {
-  const dayDigits = day
-    .toString()
-    .split("")
-    .reduce((a, b) => a + Number(b), 0);
-
-  const yearDigits = year
-    .toString()
-    .slice(2)
-    .split("")
-    .reduce((a, b) => a + Number(b), 0);
-
-  const birthday = new Date(year, month - 1, day);
-
-  const weekdayMap = [1, 2, 9, 5, 3, 6, 8];
-
-  const weekday = weekdayMap[birthday.getDay()];
-
-  return reduce(dayDigits + month + yearDigits + weekday);
-}
-
-function getGridNumbers(
-  nums: number[],
-  mulank: number | null,
-  bhagyank: number | null,
-  mahadasha: number | null,
-  antardasha: number | null,
-  pratyantarNum: number | null
-): GridNumber[][] {
-  const count: Record<number, number> = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-  };
-
-  nums.forEach((n) => {
-    if (n >= 1 && n <= 9) {
-      count[n]++;
-    }
-  });
-
-  const used = {
-    mulank: false,
-    bhagyank: false,
-    mahadasha: false,
-    antardasha: false,
-    pratyantar: false,
-  };
-
-  return order.map((n) => {
-    const cell: GridNumber[] = [];
-
-    for (let i = 0; i < count[n]; i++) {
-      let className = "";
-
-      if (n === mulank && !used.mulank) {
-        className = "mulank";
-        used.mulank = true;
-      } else if (n === bhagyank && !used.bhagyank) {
-        className = "bhagyank";
-        used.bhagyank = true;
-      } else if (n === mahadasha && !used.mahadasha) {
-        className = "mahadasha";
-        used.mahadasha = true;
-      } else if (n === antardasha && !used.antardasha) {
-        className = "antardasha";
-        used.antardasha = true;
-      } else if (n === pratyantarNum && !used.pratyantar) {
-        className = "pratyantar";
-        used.pratyantar = true;
-      }
-
-      cell.push({
-        number: n,
-        className,
-      });
-    }
-
-    return cell;
-  });
-}
-
 export default function VedicNumerologySoftware() {
   const [dob, setDob] = useState("");
   const [fromYear, setFromYear] = useState("");
   const [toYear, setToYear] = useState("");
+  const [report, setReport] = useState("");
+  const [view, setView] = useState<"main" | "year">("main");
+
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   const [mulank, setMulank] = useState<number | null>(null);
   const [bhagyank, setBhagyank] = useState<number | null>(null);
@@ -149,16 +17,136 @@ export default function VedicNumerologySoftware() {
   const [antardasha, setAntardasha] = useState<number | null>(null);
   const [pratyantarNum, setPratyantarNum] = useState<number | null>(null);
 
-  const [natalDigits, setNatalDigits] = useState<number[]>([]);
-  const [years, setYears] = useState<number[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  function reduce(n: number) {
+    while (n > 9) {
+      n = n
+        .toString()
+        .split("")
+        .reduce((a, b) => a + Number(b), 0);
+    }
 
-  const generate = () => {
+    return n;
+  }
+
+  function buildGrid(nums: number[]) {
+    const count: {
+      [key: number]: number;
+    } = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+      7: 0,
+      8: 0,
+      9: 0,
+    };
+
+    nums.forEach((n) => {
+      if (n >= 1 && n <= 9) {
+        count[n]++;
+      }
+    });
+
+    const order = [3, 1, 9, 6, 7, 5, 2, 8, 4];
+
+    let html = '<div class="mgrid">';
+
+    order.forEach((n) => {
+      let cell = "";
+
+      let usedMul = false;
+      let usedBhag = false;
+      let usedMaha = false;
+      let usedAnt = false;
+      let usedPraty = false;
+
+      for (let i = 0; i < count[n]; i++) {
+        let cls = "";
+
+        if (n === mulank && !usedMul) {
+          cls = "mulank";
+          usedMul = true;
+        } else if (n === bhagyank && !usedBhag) {
+          cls = "bhagyank";
+          usedBhag = true;
+        } else if (n === mahadasha && !usedMaha) {
+          cls = "mahadasha";
+          usedMaha = true;
+        } else if (n === antardasha && !usedAnt) {
+          cls = "antardasha";
+          usedAnt = true;
+        } else if (n === pratyantarNum && !usedPraty) {
+          cls = "pratyantar";
+          usedPraty = true;
+        }
+
+        cell += `<span class="${cls}">${n}</span>`;
+      }
+
+      html += `<div class="mcell">${cell}</div>`;
+    });
+
+    html += "</div>";
+
+    return html;
+  }
+
+  function calculateMahadasha(year: number, birthYear: number) {
+    const seq = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    const index = seq.indexOf(mulank as number);
+
+    const age = year - birthYear;
+
+    let passed = 0;
+
+    for (let i = 0; i < 50; i++) {
+      const num = seq[(index + i) % 9];
+
+      if (age >= passed && age < passed + num) {
+        return num;
+      }
+
+      passed += num;
+    }
+
+    return 1;
+  }
+
+  function calculateAntardasha(
+    day: number,
+    month: number,
+    year: number
+  ) {
+    const dayDigits = day
+      .toString()
+      .split("")
+      .reduce((a, b) => a + Number(b), 0);
+
+    const yearDigits = year
+      .toString()
+      .slice(2)
+      .split("")
+      .reduce((a, b) => a + Number(b), 0);
+
+    const birthday = new Date(year, month - 1, day);
+
+    const weekdayMap = [1, 2, 9, 5, 3, 6, 8];
+
+    const weekday = weekdayMap[birthday.getDay()];
+
+    return reduce(dayDigits + month + yearDigits + weekday);
+  }
+
+  function generate() {
     if (!dob || !fromYear || !toYear) {
+      alert("Please enter Date of Birth, From Year and To Year.");
       return;
     }
 
-    const date = new Date(dob);
+    const date = new Date(dob + "T00:00:00");
 
     const day = date.getDate();
     const month = date.getMonth() + 1;
@@ -178,191 +166,121 @@ export default function VedicNumerologySoftware() {
           .reduce((a, b) => a + Number(b), 0)
     );
 
-    const digits: number[] = [];
+    setMulank(newMulank);
+    setBhagyank(newBhagyank);
+
+    let natalDigits: number[] = [];
 
     day
       .toString()
       .split("")
-      .forEach((n) => digits.push(Number(n)));
+      .forEach((n) => natalDigits.push(Number(n)));
 
     month
       .toString()
       .split("")
-      .forEach((n) => digits.push(Number(n)));
+      .forEach((n) => natalDigits.push(Number(n)));
 
     birthYear
       .toString()
       .slice(2)
       .split("")
-      .forEach((n) => digits.push(Number(n)));
+      .forEach((n) => natalDigits.push(Number(n)));
 
     if (day > 9) {
-      digits.push(newMulank);
+      natalDigits.push(newMulank);
     }
 
-    digits.push(newBhagyank);
+    natalDigits.push(newBhagyank);
 
-    const start = parseInt(fromYear);
-    const end = parseInt(toYear);
+    let output = `<div class="title">Natal Grid</div>`;
 
-    const yearList: number[] = [];
-
-    for (let y = start; y <= end; y++) {
-      yearList.push(y);
-    }
-
-    setMulank(newMulank);
-    setBhagyank(newBhagyank);
     setMahadasha(null);
     setAntardasha(null);
     setPratyantarNum(null);
-    setNatalDigits(digits);
-    setYears(yearList);
+
+    output += buildGrid(natalDigits);
+
+    const from = parseInt(fromYear);
+    const to = parseInt(toYear);
+
+    for (let y = from; y <= to; y++) {
+      const maha = calculateMahadasha(y, birthYear);
+
+      const antar = calculateAntardasha(
+        day,
+        month,
+        y
+      );
+
+      let digits = [...natalDigits];
+
+      digits.push(maha);
+      digits.push(antar);
+
+      output += `
+        <div class="yearBlock" data-year="${y}">
+          <div class="title">${y} - ${y + 1}</div>
+          ${buildGrid(digits)}
+        </div>
+      `;
+    }
+
+    setReport(output);
+    setView("main");
     setSelectedYear(null);
-  };
+  }
 
-  const openYear = (year: number) => {
-    if (!dob) {
-      return;
-    }
+  function openYear(year: number) {
+    if (!dob) return;
 
-    const date = new Date(dob);
+    const date = new Date(dob + "T00:00:00");
 
     const day = date.getDate();
     const month = date.getMonth() + 1;
     const birthYear = date.getFullYear();
 
-    const newMahadasha = calculateMahadasha(
+    const maha = calculateMahadasha(
       year,
-      birthYear,
-      mulank as number
+      birthYear
     );
 
-    const newAntardasha = calculateAntardasha(day, month, year);
-
-    setMahadasha(newMahadasha);
-    setAntardasha(newAntardasha);
-    setSelectedYear(year);
-  };
-
-  const renderGrid = (
-    numbers: number[],
-    currentMahadasha: number | null,
-    currentAntardasha: number | null,
-    currentPratyantar: number | null
-  ) => {
-    const grid = getGridNumbers(
-      numbers,
-      mulank,
-      bhagyank,
-      currentMahadasha,
-      currentAntardasha,
-      currentPratyantar
-    );
-
-    return (
-      <div className="mgrid">
-        {grid.map((cell, index) => (
-          <div className="mcell" key={index}>
-            {cell.map((item, itemIndex) => (
-              <span
-                className={item.className}
-                key={`${item.number}-${itemIndex}`}
-              >
-                {item.number}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderYearGrids = () => {
-    return (
-      <>
-        {years.map((year) => {
-          const yearMahadasha = calculateMahadasha(
-            year,
-            new Date(dob).getFullYear(),
-            mulank as number
-          );
-
-          const yearAntardasha = calculateAntardasha(
-            new Date(dob).getDate(),
-            new Date(dob).getMonth() + 1,
-            year
-          );
-
-          const digits = [...natalDigits];
-
-          digits.push(yearMahadasha);
-          digits.push(yearAntardasha);
-
-          return (
-            <div
-              className="yearBlock"
-              key={year}
-              onClick={() => openYear(year)}
-            >
-              <div className="title">{year} - {year + 1}</div>
-
-              {renderGrid(
-                digits,
-                yearMahadasha,
-                yearAntardasha,
-                null
-              )}
-            </div>
-          );
-        })}
-      </>
-    );
-  };
-
-  const renderSelectedYear = () => {
-    if (selectedYear === null || !dob) {
-      return null;
-    }
-
-    const date = new Date(dob);
-
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const birthYear = date.getFullYear();
-
-    const currentMahadasha = calculateMahadasha(
-      selectedYear,
-      birthYear,
-      mulank as number
-    );
-
-    const currentAntardasha = calculateAntardasha(
+    const antar = calculateAntardasha(
       day,
       month,
-      selectedYear
+      year
     );
+
+    setMahadasha(maha);
+    setAntardasha(antar);
+
+    setSelectedYear(year);
 
     const seq = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    const index = seq.indexOf(currentAntardasha);
+    const index = seq.indexOf(antar);
 
-    let current = new Date(selectedYear, month - 1, day);
+    let current = new Date(
+      year,
+      month - 1,
+      day
+    );
 
-    const periods = [];
+    let output = `
+      <div
+        class="backButton"
+        id="backButton"
+      >
+        ⬅ Back to Year Grids
+      </div>
+    `;
 
     for (let i = 0; i < 9; i++) {
       const num = seq[(index + i) % 9];
 
-      const start = new Date(current);
+      setPratyantarNum(num);
 
-      const days = num <= 4 ? num * 8 : num * 8 + 1;
-
-      current.setDate(current.getDate() + days);
-
-      const end = new Date(current);
-
-      const digits: number[] = [];
+      let digits: number[] = [];
 
       day
         .toString()
@@ -382,54 +300,84 @@ export default function VedicNumerologySoftware() {
 
       digits.push(mulank as number);
       digits.push(bhagyank as number);
-      digits.push(currentMahadasha);
-      digits.push(currentAntardasha);
+      digits.push(maha);
+      digits.push(antar);
       digits.push(num);
 
-      periods.push({
-        num,
-        start,
-        end,
-        digits,
-      });
+      const start = new Date(current);
+
+      const days =
+        num <= 4 ? num * 8 : num * 8 + 1;
+
+      current.setDate(
+        current.getDate() + days
+      );
+
+      const end = new Date(current);
+
+      output += `
+        <div class="title">
+          ${start.toDateString()} - ${end.toDateString()}
+        </div>
+
+        ${buildGrid(digits)}
+      `;
     }
 
-    return (
-      <div>
-        <button
-          className="backButton"
-          onClick={() => {
-            setSelectedYear(null);
-            setMahadasha(null);
-            setAntardasha(null);
-            setPratyantarNum(null);
-          }}
-        >
-          ⬅ Back to Year Grids
-        </button>
+    setReport(output);
+    setView("year");
+  }
 
-        {periods.map((period, index) => (
-          <div key={index}>
-            <div className="title">
-              {period.start.toDateString()} -{" "}
-              {period.end.toDateString()}
-            </div>
+  function handleReportClick(
+    e: React.MouseEvent<HTMLDivElement>
+  ) {
+    const target = e.target as HTMLElement;
 
-            {renderGrid(
-              period.digits,
-              currentMahadasha,
-              currentAntardasha,
-              period.num
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
+    const yearBlock =
+      target.closest(".yearBlock");
+
+    if (yearBlock) {
+      const year = Number(
+        yearBlock.getAttribute("data-year")
+      );
+
+      if (year) {
+        openYear(year);
+      }
+
+      return;
+    }
+
+    if (
+      target.id === "backButton" ||
+      target.closest("#backButton")
+    ) {
+      generate();
+    }
+  }
 
   return (
     <>
-      <style jsx>{`
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+        }
+
+        .numerology-page {
+          width: 100%;
+          background: white;
+          color: black;
+          min-height: 100vh;
+        }
+
+        .container {
+          max-width: 100%;
+          margin: auto;
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+        }
+
         .title {
           background: #ff8c00;
           color: white;
@@ -449,14 +397,6 @@ export default function VedicNumerologySoftware() {
           font-size: 12px;
           color: rgba(255, 255, 255, 0.5);
           font-weight: normal;
-        }
-
-        .container {
-          max-width: 100%;
-          margin: auto;
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
         }
 
         label {
@@ -511,33 +451,35 @@ export default function VedicNumerologySoftware() {
         }
 
         .mgrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2px;
-          background: #999;
-          width: 100%;
+          display: grid !important;
+          grid-template-columns: repeat(3, 1fr) !important;
+          gap: 2px !important;
+          background: #999 !important;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
         .mgrid > div {
-          min-width: 0;
+          min-width: 0 !important;
         }
 
         .mcell {
-          background: white;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
-          font-weight: bold;
-          min-width: 0;
-          overflow: hidden;
+          background: white !important;
+          height: 60px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 18px !important;
+          font-weight: bold !important;
+          min-width: 0 !important;
+          overflow: hidden !important;
         }
 
         .mcell span {
-          display: inline-block;
-          white-space: nowrap;
-          margin: 0 2px;
+          display: inline-block !important;
+          white-space: nowrap !important;
+          margin: 0 2px !important;
         }
 
         .yearBlock {
@@ -552,6 +494,13 @@ export default function VedicNumerologySoftware() {
           margin-top: 20px;
           cursor: pointer;
           border: none;
+          display: block;
+          width: 100%;
+        }
+
+        .numerology-description {
+          margin-top: 25px;
+          line-height: 1.6;
         }
 
         @media (max-width: 600px) {
@@ -560,98 +509,125 @@ export default function VedicNumerologySoftware() {
           }
 
           .mcell {
-            height: 60px;
-            font-size: 18px;
+            height: 60px !important;
+            font-size: 18px !important;
           }
         }
       `}</style>
 
-      <div className="container">
-        <h2>Vedic Numerology Software</h2>
+      <div className="numerology-page">
 
-        <label>Date of Birth</label>
+        <div className="container">
 
-        <input
-          type="date"
-          value={dob}
-          onChange={(e) => setDob(e.target.value)}
-        />
+          <h2>
+            Vedic Numerology Software
+          </h2>
 
-        <label>From Year</label>
+          <label>
+            Date of Birth
+          </label>
 
-        <input
-          type="number"
-          value={fromYear}
-          onChange={(e) => setFromYear(e.target.value)}
-        />
+          <input
+            type="date"
+            value={dob}
+            onChange={(e) =>
+              setDob(e.target.value)
+            }
+          />
 
-        <label>To Year</label>
+          <label>
+            From Year
+          </label>
 
-        <input
-          type="number"
-          value={toYear}
-          onChange={(e) => setToYear(e.target.value)}
-        />
+          <input
+            type="number"
+            value={fromYear}
+            onChange={(e) =>
+              setFromYear(e.target.value)
+            }
+          />
 
-        <button onClick={generate}>
-          Generate Report
-        </button>
+          <label>
+            To Year
+          </label>
 
-        <div className="legend">
-          <span className="mulank">Mulank</span> |{" "}
-          <span className="bhagyank">Bhagyank</span> |{" "}
-          <span className="mahadasha">Mahadasha</span> |{" "}
-          <span className="antardasha">Antardasha</span> |{" "}
-          <span className="pratyantar">Pratyantar</span>
+          <input
+            type="number"
+            value={toYear}
+            onChange={(e) =>
+              setToYear(e.target.value)
+            }
+          />
+
+          <button onClick={generate}>
+            Generate Report
+          </button>
+
+          <div className="legend">
+            <span className="mulank">
+              Mulank
+            </span>{" "}
+            |{" "}
+            <span className="bhagyank">
+              Bhagyank
+            </span>{" "}
+            |{" "}
+            <span className="mahadasha">
+              Mahadasha
+            </span>{" "}
+            |{" "}
+            <span className="antardasha">
+              Antardasha
+            </span>{" "}
+            |{" "}
+            <span className="pratyantar">
+              Pratyantar
+            </span>
+          </div>
+
+          <div
+            id="report"
+            onClick={handleReportClick}
+            dangerouslySetInnerHTML={{
+              __html: report,
+            }}
+          />
+
+          <div className="numerology-description">
+
+            <p>
+              Generate your Vedic Numerology Grid on
+              Mauksh using advanced calculation
+              methods based on your date of birth.
+              This tool helps you understand your
+              number pattern, strengths, missing
+              numbers, and overall life tendencies
+              through a structured numerology grid.
+            </p>
+
+            <p>
+              The Vedic numerology grid reveals
+              important insights about personality,
+              behavior, decision-making style, and
+              life direction. By analyzing number
+              placement and combinations, you can
+              identify opportunities for growth and
+              areas that need balance.
+            </p>
+
+            <p>
+              Designed for accuracy and ease of use,
+              this software gives clear and practical
+              guidance to help you align your actions
+              with your natural strengths and improve
+              different aspects of your life.
+            </p>
+
+          </div>
+
         </div>
 
-        <div id="report">
-          {natalDigits.length > 0 && selectedYear === null && (
-            <>
-              <div className="title">
-                Natal Grid
-              </div>
-
-              {renderGrid(
-                natalDigits,
-                null,
-                null,
-                null
-              )}
-
-              {renderYearGrids()}
-            </>
-          )}
-
-          {selectedYear !== null && renderSelectedYear()}
-        </div>
       </div>
-
-      <br />
-      <br />
-
-      <p>
-        Generate your Vedic Numerology Grid on Mauksh using
-        advanced calculation methods based on your date of birth.
-        This tool helps you understand your number pattern,
-        strengths, missing numbers, and overall life tendencies
-        through a structured numerology grid.
-      </p>
-
-      <p>
-        The Vedic numerology grid reveals important insights about
-        personality, behavior, decision-making style, and life
-        direction. By analyzing number placement and combinations,
-        you can identify opportunities for growth and areas that
-        need balance.
-      </p>
-
-      <p>
-        Designed for accuracy and ease of use, this software gives
-        clear and practical guidance to help you align your actions
-        with your natural strengths and improve different aspects
-        of your life.
-      </p>
     </>
   );
 }
