@@ -14,10 +14,6 @@ export default function Page() {
   const [antardasha, setAntardasha] = useState<number | null>(null);
   const [pratyantarNum, setPratyantarNum] = useState<number | null>(null);
 
-  // ============================================================
-  // REDUCE NUMBER
-  // ============================================================
-
   function reduce(n: number): number {
     while (n > 9) {
       n = n
@@ -28,10 +24,6 @@ export default function Page() {
 
     return n;
   }
-
-  // ============================================================
-  // BUILD GRID
-  // ============================================================
 
   function buildGrid(
     nums: number[],
@@ -103,10 +95,6 @@ export default function Page() {
     return html;
   }
 
-  // ============================================================
-  // MAHADASHA
-  // ============================================================
-
   function calculateMahadasha(
     year: number,
     birthYear: number,
@@ -133,10 +121,6 @@ export default function Page() {
     return null;
   }
 
-  // ============================================================
-  // ANTARDASHA
-  // ============================================================
-
   function calculateAntardasha(
     day: number,
     month: number,
@@ -161,10 +145,6 @@ export default function Page() {
 
     return reduce(dayDigits + month + yearDigits + weekday);
   }
-
-  // ============================================================
-  // GENERATE REPORT
-  // ============================================================
 
   function generate() {
     if (!dob || !fromYear || !toYear) {
@@ -194,10 +174,6 @@ export default function Page() {
           .reduce((a, b) => a + Number(b), 0)
     );
 
-    // ============================================================
-    // NATAL DIGITS
-    // ============================================================
-
     const natalDigits: number[] = [];
 
     day
@@ -222,11 +198,6 @@ export default function Page() {
 
     natalDigits.push(currentBhagyank);
 
-    // ============================================================
-    // NATAL GRID
-    // ONLY MULANK + BHAGYANK
-    // ============================================================
-
     let output = `<div class="title">Natal Grid</div>`;
 
     output += buildGrid(
@@ -237,10 +208,6 @@ export default function Page() {
       null,
       null
     );
-
-    // ============================================================
-    // YEAR GRIDS
-    // ============================================================
 
     for (let y = from; y <= to; y++) {
       const currentMahadasha = calculateMahadasha(
@@ -285,10 +252,6 @@ export default function Page() {
 
     setReport(output);
   }
-
-  // ============================================================
-  // OPEN YEAR
-  // ============================================================
 
   function openYear(year: number) {
     if (!dob) return;
@@ -347,10 +310,6 @@ export default function Page() {
         ⬅ Back to Year Grids
       </div>
     `;
-
-    // ============================================================
-    // PRATYANTAR PERIODS
-    // ============================================================
 
     for (let i = 0; i < 9; i++) {
       const num = seq[(index + i) % 9];
@@ -425,10 +384,6 @@ export default function Page() {
     }, 0);
   }
 
-  // ============================================================
-  // REPORT CLICK
-  // ============================================================
-
   function handleReportClick(
     e: React.MouseEvent<HTMLDivElement>
   ) {
@@ -447,10 +402,6 @@ export default function Page() {
       }
     }
   }
-
-  // ============================================================
-  // PAGE
-  // ============================================================
 
   return (
     <>
@@ -498,13 +449,20 @@ export default function Page() {
           box-sizing:border-box;
         }
 
-        /* CLEAN DATE FIELD */
-        input[type="date"]{
-          display:block;
+        /* DATE FIELD ONLY */
+
+        .dobField{
+          position:relative;
           width:100%;
           height:48px;
-          padding:0 12px;
           margin:5px 0;
+        }
+
+        .dobDisplay{
+          width:100%;
+          height:48px;
+          padding:0 44px 0 12px;
+          margin:0;
           font-size:16px;
           font-family:inherit;
           color:#222;
@@ -512,10 +470,36 @@ export default function Page() {
           border:1px solid #ccc;
           border-radius:6px;
           box-sizing:border-box;
-          -webkit-text-size-adjust:100%;
+          display:flex;
+          align-items:center;
         }
 
-        input[type="number"]{
+        .dobDisplay.placeholder{
+          color:#777;
+        }
+
+        .dobCalendar{
+          position:absolute;
+          right:0;
+          top:0;
+          width:48px;
+          height:48px;
+          opacity:0;
+          cursor:pointer;
+          z-index:2;
+        }
+
+        .calendarIcon{
+          position:absolute;
+          right:14px;
+          top:50%;
+          transform:translateY(-50%);
+          font-size:20px;
+          pointer-events:none;
+          z-index:1;
+        }
+
+        .yearInput{
           display:block;
           width:100%;
           height:48px;
@@ -566,8 +550,6 @@ export default function Page() {
           color:blue;
           font-weight:bold;
         }
-
-        /* ===== ISOLATED GRID ===== */
 
         .mgrid{
           display:grid;
@@ -622,17 +604,43 @@ export default function Page() {
 
         <label>Date of Birth</label>
 
-        <input
-          type="date"
-          value={dob}
-          onChange={(e) =>
-            setDob(e.target.value)
-          }
-        />
+        <div className="dobField">
+
+          <div
+            className={
+              dob
+                ? "dobDisplay"
+                : "dobDisplay placeholder"
+            }
+          >
+            {dob
+              ? new Date(
+                  dob + "T00:00:00"
+                ).toLocaleDateString(
+                  "en-GB"
+                )
+              : "DD/MM/YYYY"}
+          </div>
+
+          <span className="calendarIcon">
+            📅
+          </span>
+
+          <input
+            className="dobCalendar"
+            type="date"
+            value={dob}
+            onChange={(e) =>
+              setDob(e.target.value)
+            }
+          />
+
+        </div>
 
         <label>From Year</label>
 
         <input
+          className="yearInput"
           type="number"
           value={fromYear}
           onChange={(e) =>
@@ -643,6 +651,7 @@ export default function Page() {
         <label>To Year</label>
 
         <input
+          className="yearInput"
           type="number"
           value={toYear}
           onChange={(e) =>
@@ -714,8 +723,8 @@ export default function Page() {
         Designed for accuracy and ease of use, this
         software gives clear and practical guidance to
         help you align your actions with your natural
-        strengths and improve different aspects of your
-        life.
+        strengths and improve different aspects of
+        your life.
 
       </div>
     </>
