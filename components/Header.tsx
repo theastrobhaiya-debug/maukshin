@@ -79,6 +79,10 @@ export default function Header() {
             Horoscope
           </Link>
 
+<Link href="/numerology">
+  Vedic Numerology Software
+</Link>
+
           <Link href="/name-checker" onClick={closeMenu}>
             Name Checker
           </Link>
