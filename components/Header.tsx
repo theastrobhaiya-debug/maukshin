@@ -87,6 +87,10 @@ export default function Header() {
   Vedic Numerology Software
 </Link>
 
+   <Link href="/numerologyreport" onClick={closeMenu}>
+          Full Numeorlogy Report
+          </Link>
+
           <Link href="/name-checker" onClick={closeMenu}>
             Name Checker
           </Link>
