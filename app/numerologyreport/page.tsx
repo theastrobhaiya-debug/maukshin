@@ -677,22 +677,7 @@ export default function NumerologyPage() {
           box-shadow: 0 18px 55px rgba(92, 69, 26, 0.10);
         }
 
-        .mauksh-brand-mark {
-          width: 58px;
-          height: 58px;
-          border-radius: 50%;
-          margin: 0 auto 18px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 2px solid #c79a3b;
-          color: #a97920;
-          background: linear-gradient(145deg, #fff9e9, #f4dfaa);
-          font-family: Georgia, serif;
-          font-size: 30px;
-          font-weight: 700;
-        }
-
+        
         .mauksh-form-title {
           margin: 0;
           text-align: center;
@@ -1250,7 +1235,7 @@ export default function NumerologyPage() {
       <div className="mauksh-container">
         {!report && (
           <section className="mauksh-form-card">
-            <div className="mauksh-brand-mark">M</div>
+        
 
             <h1 className="mauksh-form-title">
               Numerology Report
