@@ -1,79 +1,150 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-type Step =
-  | "intro"
-  | "profile"
-  | "numbers"
-  | "chat"
-  | "paywall";
-
-type Profile = {
-  name: string;
-  dob: string;
+type Result = {
   mulank: number;
   bhagyank: number;
   nameNumber: number;
+  favourableNumber: string;
+  days: string;
+  colour: string;
+  alphabets: string;
+  planet: string;
+  direction: string;
+  deity: string;
+  dates: string;
 };
 
-
-/* =========================================================
-   NUMEROLOGY
-   ========================================================= */
+const NUMBER_DATA: Record<
+  number,
+  {
+    planet: string;
+    colour: string;
+    days: string;
+    alphabets: string;
+    direction: string;
+    deity: string;
+    dates: string;
+  }
+> = {
+  1: {
+    planet: "Sun",
+    colour: "Gold, Orange",
+    days: "Sunday",
+    alphabets: "A, I, J, Q, Y",
+    direction: "East",
+    deity: "Surya",
+    dates: "1, 10, 19, 28",
+  },
+  2: {
+    planet: "Moon",
+    colour: "White, Cream",
+    days: "Monday",
+    alphabets: "B, K, R",
+    direction: "North-West",
+    deity: "Chandra",
+    dates: "2, 11, 20, 29",
+  },
+  3: {
+    planet: "Jupiter",
+    colour: "Yellow, Gold",
+    days: "Thursday",
+    alphabets: "C, G, L, S",
+    direction: "North-East",
+    deity: "Guru",
+    dates: "3, 12, 21, 30",
+  },
+  4: {
+    planet: "Rahu",
+    colour: "Grey, Electric Blue",
+    days: "Saturday",
+    alphabets: "D, M, T",
+    direction: "South-West",
+    deity: "Ganesha",
+    dates: "4, 13, 22, 31",
+  },
+  5: {
+    planet: "Mercury",
+    colour: "Green",
+    days: "Wednesday",
+    alphabets: "E, H, N, X",
+    direction: "North",
+    deity: "Vishnu",
+    dates: "5, 14, 23",
+  },
+  6: {
+    planet: "Venus",
+    colour: "White, Pink",
+    days: "Friday",
+    alphabets: "U, V, W",
+    direction: "South-East",
+    deity: "Lakshmi",
+    dates: "6, 15, 24",
+  },
+  7: {
+    planet: "Ketu",
+    colour: "White, Silver",
+    days: "Monday",
+    alphabets: "O, Z",
+    direction: "South-West",
+    deity: "Ganesha",
+    dates: "7, 16, 25",
+  },
+  8: {
+    planet: "Saturn",
+    colour: "Black, Navy Blue",
+    days: "Saturday",
+    alphabets: "F, P",
+    direction: "West",
+    deity: "Shani",
+    dates: "8, 17, 26",
+  },
+  9: {
+    planet: "Mars",
+    colour: "Red, Maroon",
+    days: "Tuesday",
+    alphabets: "—",
+    direction: "South",
+    deity: "Hanuman",
+    dates: "9, 18, 27",
+  },
+};
 
 function reduceNumber(value: number): number {
-  while (value > 9) {
-    value = String(value)
+  let number = Math.abs(value);
+
+  while (number > 9) {
+    number = String(number)
       .split("")
-      .reduce(
-        (sum, digit) => sum + Number(digit),
-        0
-      );
+      .reduce((sum, digit) => sum + Number(digit), 0);
   }
 
-  return value;
+  return number;
 }
 
-
-function getMulank(dob: string): number {
-  if (!dob) return 0;
-
-  const parts = dob.split("-");
-
-  if (parts.length !== 3) return 0;
-
-  const day = Number(parts[2]);
-
-  if (!day) return 0;
-
+function calculateMulank(day: number): number {
   return reduceNumber(day);
 }
 
-
-function getBhagyank(dob: string): number {
-  if (!dob) return 0;
-
-  const digits = dob
-    .replaceAll("-", "")
-    .split("")
-    .map(Number);
-
-  if (!digits.length) return 0;
-
-  const total = digits.reduce(
-    (sum, digit) => sum + digit,
-    0
-  );
-
+function calculateBhagyank(day: number, month: number, year: number): number {
+  const total = day + month + year;
   return reduceNumber(total);
 }
 
+/*
+  Vedic / Chaldean style name-number mapping used by Mauksh.
 
-/* =========================================================
-   CHALDEAN / VEDIC NAME NUMBER
-   ========================================================= */
-
+  1: A I J Q Y
+  2: B K R
+  3: C G L S
+  4: D M T
+  5: E H N X
+  6: U V W
+  7: O Z
+  8: F P
+  9: No letters
+*/
 const NAME_VALUES: Record<string, number> = {
   A: 1,
   I: 1,
@@ -110,3301 +181,1008 @@ const NAME_VALUES: Record<string, number> = {
   P: 8,
 };
 
-
-function getNameNumber(name: string): number {
-  const cleanName = name
-    .toUpperCase()
-    .replace(/[^A-Z]/g, "");
-
-  if (!cleanName) return 0;
+function calculateNameNumber(name: string): number {
+  const cleanName = name.toUpperCase().replace(/[^A-Z]/g, "");
 
   const total = cleanName
     .split("")
-    .reduce(
-      (sum, letter) =>
-        sum + (NAME_VALUES[letter] || 0),
-      0
-    );
+    .reduce((sum, letter) => sum + (NAME_VALUES[letter] || 0), 0);
 
   return reduceNumber(total);
 }
 
+function getVedicGrid(
+  day: number,
+  month: number,
+  year: number
+): Record<number, number> {
+  /*
+    Internal Mauksh Vedic grid:
 
-/* =========================================================
-   INTERNAL VEDIC GRID
-   =========================================================
+    3 1 9
+    6 7 5
+    2 8 4
 
-   3 1 9
-   6 7 5
-   2 8 4
+    Century digits are excluded.
+    Zero is ignored.
 
-   Century digits excluded.
-   Zero ignored.
+    The grid is calculated internally and intentionally
+    not displayed to the visitor.
+  */
 
-   NOT SHOWN TO USER.
-   ========================================================= */
+  const dobDigits = `${String(day).padStart(2, "0")}${String(
+    month
+  ).padStart(2, "0")}${String(year).slice(-2)}`;
 
-function getVedicGrid(dob: string): number[] {
-  if (!dob) return [];
+  const counts: Record<number, number> = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+  };
 
-  const parts = dob.split("-");
+  for (const digit of dobDigits) {
+    const number = Number(digit);
 
-  if (parts.length !== 3) return [];
+    if (number >= 1 && number <= 9) {
+      counts[number] += 1;
+    }
+  }
 
-  const day = parts[2];
-  const month = parts[1];
-  const year = parts[0];
-
-  const yearWithoutCentury =
-    year.length === 4
-      ? year.substring(2)
-      : year;
-
-  return (
-    day +
-    month +
-    yearWithoutCentury
-  )
-    .split("")
-    .map(Number)
-    .filter(
-      (digit) => digit !== 0
-    );
+  return counts;
 }
 
+function parseDOB(value: string) {
+  const match = value.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
 
-/* =========================================================
-   MARKDOWN ANSWER RENDERER
-   ========================================================= */
-
-function renderBoldText(text: string) {
-  const parts =
-    text.split(/(\*\*.*?\*\*)/g);
-
-  return parts.map(
-    (part, index) => {
-
-      if (
-        part.startsWith("**") &&
-        part.endsWith("**")
-      ) {
-        return (
-          <strong key={index}>
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-
-      return (
-        <span key={index}>
-          {part}
-        </span>
-      );
-    }
-  );
-}
-
-
-function renderAIAnswer(text: string) {
-  const lines = text.split("\n");
-
-  return (
-    <div className="formattedAIAnswer">
-
-      {lines.map(
-        (line, index) => {
-
-          const trimmed =
-            line.trim();
-
-
-          if (!trimmed) {
-            return (
-              <div
-                key={index}
-                className="answerSpacer"
-              />
-            );
-          }
-
-
-          if (
-            trimmed.startsWith("### ")
-          ) {
-            return (
-              <h4
-                key={index}
-                className="answerHeading"
-              >
-                {renderBoldText(
-                  trimmed.replace(
-                    /^###\s*/,
-                    ""
-                  )
-                )}
-              </h4>
-            );
-          }
-
-
-          if (
-            trimmed.startsWith("## ")
-          ) {
-            return (
-              <h4
-                key={index}
-                className="answerHeading"
-              >
-                {renderBoldText(
-                  trimmed.replace(
-                    /^##\s*/,
-                    ""
-                  )
-                )}
-              </h4>
-            );
-          }
-
-
-          if (
-            trimmed.startsWith("- ") ||
-            trimmed.startsWith("• ")
-          ) {
-            const bulletText =
-              trimmed.replace(
-                /^[-•]\s*/,
-                ""
-              );
-
-            return (
-              <div
-                key={index}
-                className="answerBullet"
-              >
-
-                <span>
-                  •
-                </span>
-
-                <div>
-                  {renderBoldText(
-                    bulletText
-                  )}
-                </div>
-
-              </div>
-            );
-          }
-
-
-          if (
-            /^\d+\.\s/.test(trimmed)
-          ) {
-            const match =
-              trimmed.match(
-                /^(\d+)\.\s(.*)$/
-              );
-
-            if (match) {
-              return (
-                <div
-                  key={index}
-                  className="answerBullet"
-                >
-
-                  <span className="numberBullet">
-                    {match[1]}.
-                  </span>
-
-                  <div>
-                    {renderBoldText(
-                      match[2]
-                    )}
-                  </div>
-
-                </div>
-              );
-            }
-          }
-
-
-          return (
-            <p
-              key={index}
-              className="answerParagraph"
-            >
-              {renderBoldText(
-                trimmed
-              )}
-            </p>
-          );
-        }
-      )}
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   MAIN PAGE
-   ========================================================= */
-
-export default function NumerologyAIPage() {
-
-  const [step, setStep] =
-    useState<Step>("intro");
-
-  const [name, setName] =
-    useState("");
-
-  const [dob, setDob] =
-    useState("");
-
-  const [profile, setProfile] =
-    useState<Profile | null>(null);
-
-  const [question, setQuestion] =
-    useState("");
-
-  const [answer, setAnswer] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-
-  /* =======================================================
-     CREATE PROFILE
-     ======================================================= */
-
-  function createProfile() {
-
-    if (
-      !name.trim() ||
-      !dob
-    ) {
-      return;
-    }
-
-
-    const cleanName =
-      name
-        .trim()
-        .replace(/\s+/g, " ");
-
-
-    const newProfile: Profile = {
-
-      name: cleanName,
-
-      dob,
-
-      mulank:
-        getMulank(dob),
-
-      bhagyank:
-        getBhagyank(dob),
-
-      nameNumber:
-        getNameNumber(
-          cleanName
-        ),
-    };
-
-
-    /*
-     * Calculate internally.
-     * The grid is never rendered.
-     */
-
-    getVedicGrid(dob);
-
-
-    setProfile(
-      newProfile
-    );
-
-    setStep("numbers");
+  if (!match) {
+    return null;
   }
 
-
-  /* =======================================================
-     ASK MAUKSH AI
-     ======================================================= */
-
-  async function askQuestion() {
-
-    if (
-      !question.trim() ||
-      !profile
-    ) {
-      return;
-    }
-
-
-    setLoading(true);
-
-    setAnswer("");
-
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/numerology-ai",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-
-            body:
-              JSON.stringify({
-                name:
-                  profile.name,
-
-                dob:
-                  profile.dob,
-
-                mulank:
-                  profile.mulank,
-
-                bhagyank:
-                  profile.bhagyank,
-
-                nameNumber:
-                  profile.nameNumber,
-
-                question:
-                  question.trim(),
-              }),
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "Unable to generate answer"
-        );
-      }
-
-
-      setAnswer(
-        data.answer
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Mauksh AI request failed:",
-        error
-      );
-
-
-      setAnswer(
-        "I couldn't generate your reading right now. Please try again."
-      );
-
-
-    } finally {
-
-      setLoading(false);
-
-    }
-  }
-
-
-  /* =======================================================
-     START DODO CHECKOUT
-     ======================================================= */
-
-  async function startCheckout() {
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/checkout",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-
-            body:
-              JSON.stringify({
-                product_cart: [
-                  {
-                    product_id:
-                      "pdt_0NPhQ9ymsZTOP17n8ujXk",
-                    quantity: 1,
-                  },
-                ],
-              }),
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-        throw new Error(
-          data?.error ||
-          "Unable to start checkout"
-        );
-      }
-
-
-      if (data.checkout_url) {
-
-        window.location.href =
-          data.checkout_url;
-
-        return;
-      }
-
-
-      throw new Error(
-        "Checkout URL was not returned"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Dodo checkout error:",
-        error
-      );
-
-      alert(
-        "Unable to start checkout. Please try again."
-      );
-
-    }
-  }
-
-
-  /* =======================================================
-     INTRO
-     ======================================================= */
-
-  if (step === "intro") {
-
-    return (
-      <>
-        <PageStyles />
-
-        <main className="app">
-
-          <Background />
-
-          <section className="introPage">
-
-            <div className="topBadge">
-
-              <span>
-                ✦
-              </span>
-
-              PERSONAL NUMEROLOGY
-
-            </div>
-
-
-            <h1 className="heroTitle">
-
-              Your numbers.
-
-              <br />
-
-              <span>
-                Your patterns.
-              </span>
-
-              <br />
-
-              Your move.
-
-            </h1>
-
-
-            <p className="heroDescription">
-
-              Meet your personal numerology
-              companion. Understand your numbers
-              and get personalized guidance for
-              the questions that matter to you.
-
-            </p>
-
-
-            <button
-              className="heroButton"
-              onClick={() =>
-                setStep("profile")
-              }
-            >
-
-              <span className="heroButtonText">
-                Start free
-              </span>
-
-              <span className="heroArrow">
-                →
-              </span>
-
-            </button>
-
-
-            <div className="freePill">
-
-              <span>
-                ✦
-              </span>
-
-              Your first AI question is free
-
-            </div>
-
-
-            <div className="floatingPreview">
-
-              <div className="previewTop">
-
-                <div className="miniAvatar">
-
-                  <img
-                    src="/assets/mauksh-logo.jpg"
-                    alt="Mauksh"
-                    className="maukshLogo"
-                  />
-
-                </div>
-
-
-                <div className="previewIdentity">
-
-                  <strong>
-                    Mauksh AI
-                  </strong>
-
-                  <small>
-                    Personal numerology companion
-                  </small>
-
-                </div>
-
-
-                <span className="previewOnline">
-                  ●
-                </span>
-
-              </div>
-
-
-              <div className="previewMessage">
-
-                What should I focus on
-                in my career right now?
-
-              </div>
-
-
-              <div className="previewAI">
-
-                <span>
-                  ✦
-                </span>
-
-                Your numbers suggest
-                it's a good time to...
-
-              </div>
-
-            </div>
-
-          </section>
-
-        </main>
-      </>
-    );
-  }
-
-
-  /* =======================================================
-     PROFILE
-     ======================================================= */
-
-  if (step === "profile") {
-
-    return (
-      <>
-        <PageStyles />
-
-        <main className="app">
-
-          <Background />
-
-          <section className="profilePage">
-
-            <Progress active={1} />
-
-
-            <div className="sectionBadge">
-              01 · YOUR PROFILE
-            </div>
-
-
-            <h2 className="sectionTitle">
-
-              Let's get to
-
-              <br />
-
-              <span>
-                know you.
-              </span>
-
-            </h2>
-
-
-            <p className="sectionDescription">
-
-              Just two things.
-              We'll handle everything else.
-
-            </p>
-
-
-            <div className="form">
-
-              <div className="inputGroup">
-
-                <label>
-                  YOUR NAME
-                </label>
-
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) =>
-                    setName(
-                      e.target.value
-                    )
-                  }
-                  placeholder="e.g. Shivam Bansal"
-                  autoComplete="name"
-                />
-
-              </div>
-
-
-              <div className="inputGroup">
-
-                <label>
-                  DATE OF BIRTH
-                </label>
-
-                <input
-                  type="date"
-                  value={dob}
-                  onChange={(e) =>
-                    setDob(
-                      e.target.value
-                    )
-                  }
-                />
-
-              </div>
-
-
-              <button
-                className="continueButton"
-                disabled={
-                  !name.trim() ||
-                  !dob
-                }
-                onClick={
-                  createProfile
-                }
-              >
-
-                <span>
-                  Reveal my numbers
-                </span>
-
-                <strong>
-                  →
-                </strong>
-
-              </button>
-
-            </div>
-
-
-            <div className="privacyNote">
-
-              <span>
-                ✦
-              </span>
-
-              Your information stays private.
-
-            </div>
-
-          </section>
-
-        </main>
-      </>
-    );
-  }
-
-
-  /* =======================================================
-     NUMBERS
-     ======================================================= */
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+
+  const date = new Date(year, month - 1, day);
 
   if (
-    step === "numbers" &&
-    profile
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
   ) {
-
-    return (
-      <>
-        <PageStyles />
-
-        <main className="app">
-
-          <Background />
-
-          <section className="numbersPage">
-
-            <Progress active={2} />
-
-
-            <div className="sectionBadge">
-              02 · YOUR NUMBERS
-            </div>
-
-
-            <div className="numbersHeader">
-
-              <h2 className="sectionTitle small">
-
-                Hey{" "}
-
-                {
-                  profile.name
-                    .split(" ")[0]
-                }.
-
-                <br />
-
-                <span>
-                  Here you are.
-                </span>
-
-              </h2>
-
-
-              <div className="sparkle">
-                ✦
-              </div>
-
-            </div>
-
-
-            <div className="numberCards">
-
-              <NumberCard
-                label="MULANK"
-                value={
-                  profile.mulank
-                }
-                description="Your core energy"
-              />
-
-
-              <NumberCard
-                label="BHAGYANK"
-                value={
-                  profile.bhagyank
-                }
-                description="Your life path"
-                featured
-              />
-
-
-              <NumberCard
-                label="NAME NUMBER"
-                value={
-                  profile.nameNumber
-                }
-                description="Your expression"
-              />
-
-            </div>
-
-
-            <button
-              className="askCard"
-              onClick={() =>
-                setStep("chat")
-              }
-            >
-
-              <div className="askIcon">
-                ✦
-              </div>
-
-
-              <div className="askText">
-
-                <strong>
-                  Your numbers are ready.
-                </strong>
-
-                <p>
-                  Now ask Mauksh AI anything.
-                </p>
-
-              </div>
-
-
-              <span className="askArrow">
-                →
-              </span>
-
-            </button>
-
-
-            <div className="freeLabel">
-
-              ✦ Your first AI question is free
-
-            </div>
-
-          </section>
-
-        </main>
-      </>
-    );
+    return null;
   }
 
-
-  /* =======================================================
-     CHAT
-     ======================================================= */
-
-  if (
-    step === "chat" &&
-    profile
-  ) {
-
-    return (
-      <>
-        <PageStyles />
-
-        <main className="app">
-
-          <Background />
-
-          <section className="chatPage">
-
-            <Progress active={3} />
-
-
-            <div className="sectionBadge">
-              03 · ASK ANYTHING
-            </div>
-
-
-            <h2 className="chatTitle">
-
-              Your numbers.
-
-              <br />
-
-              <span>
-                Your questions.
-              </span>
-
-            </h2>
-
-
-            <div className="chatBox">
-
-              <div className="chatTop">
-
-                <div className="chatAvatar">
-
-                  <img
-                    src="/assets/mauksh-logo.jpg"
-                    alt="Mauksh"
-                    className="maukshLogo"
-                  />
-
-                </div>
-
-
-                <div className="chatIdentity">
-
-                  <strong>
-                    Mauksh AI
-                  </strong>
-
-                  <span>
-                    Personal numerology companion
-                  </span>
-
-                </div>
-
-
-                <div className="chatStatus">
-
-                  <i />
-
-                  Online
-
-                </div>
-
-              </div>
-
-
-              <div className="chatMessages">
-
-                <div className="aiGreeting">
-
-                  <span>
-                    ✦
-                  </span>
-
-                  Hey{" "}
-
-                  {
-                    profile.name
-                      .split(" ")[0]
-                  }.
-
-                  <br />
-
-                  Ask me anything about your
-                  career, relationships, money
-                  or life.
-
-                </div>
-
-
-                {!question &&
-                  !answer && (
-                    <div className="suggestions">
-
-                      <button
-                        onClick={() =>
-                          setQuestion(
-                            "Should I change my career this year?"
-                          )
-                        }
-                      >
-                        Should I change my career?
-                      </button>
-
-
-                      <button
-                        onClick={() =>
-                          setQuestion(
-                            "What should I focus on financially?"
-                          )
-                        }
-                      >
-                        What about money?
-                      </button>
-
-
-                      <button
-                        onClick={() =>
-                          setQuestion(
-                            "What does my numerology say about love?"
-                          )
-                        }
-                      >
-                        What about my love life?
-                      </button>
-
-                    </div>
-                  )}
-
-
-                {question && (
-                  <div className="userMessage">
-
-                    {question}
-
-                  </div>
-                )}
-
-
-                {loading && (
-                  <div className="aiMessage">
-
-                    <div className="aiLabel">
-                      ✦ MAUKSH AI
-                    </div>
-
-                    <p>
-                      Reading your numbers...
-                    </p>
-
-                  </div>
-                )}
-
-
-                {answer &&
-                  !loading && (
-                    <div className="aiMessage">
-
-                      <div className="aiLabel">
-                        ✦ MAUKSH AI
-                      </div>
-
-                      {renderAIAnswer(
-                        answer
-                      )}
-
-                    </div>
-                  )}
-
-              </div>
-
-
-              {!answer && (
-                <div className="chatInput">
-
-                  <textarea
-                    value={question}
-                    onChange={(e) =>
-                      setQuestion(
-                        e.target.value
-                      )
-                    }
-                    placeholder="Ask something..."
-                    rows={2}
-                  />
-
-
-                  <button
-                    disabled={
-                      !question.trim() ||
-                      loading
-                    }
-                    onClick={
-                      askQuestion
-                    }
-                  >
-
-                    {loading ? (
-                      <span className="loader" />
-                    ) : (
-                      "↑"
-                    )}
-
-                  </button>
-
-                </div>
-              )}
-
-
-              {answer &&
-                !loading && (
-                  <div className="answerActions">
-
-                    <button
-                      className="continueToPlan"
-                      onClick={() =>
-                        setStep(
-                          "paywall"
-                        )
-                      }
-                    >
-
-                      Continue with Mauksh AI
-
-                      <span>
-                        →
-                      </span>
-
-                    </button>
-
-
-                    <p>
-                      Your free preview is complete.
-                    </p>
-
-                  </div>
-                )}
-
-            </div>
-
-
-            {!answer && (
-              <div className="questionCounter">
-
-                <strong>
-                  1
-                </strong>
-
-                free question · no card required
-
-              </div>
-            )}
-
-          </section>
-
-        </main>
-      </>
-    );
+  return {
+    day,
+    month,
+    year,
+  };
+}
+
+function getResult(name: string, dob: string): Result | null {
+  const parsed = parseDOB(dob);
+
+  if (!parsed || !name.trim()) {
+    return null;
   }
 
+  const { day, month, year } = parsed;
 
-  /* =======================================================
-     PAYWALL
-     ======================================================= */
+  const mulank = calculateMulank(day);
+  const bhagyank = calculateBhagyank(day, month, year);
+  const nameNumber = calculateNameNumber(name);
 
-  if (
-    step === "paywall" &&
-    profile
-  ) {
+  // Calculate internally so the Vedic grid logic remains part of the engine.
+  getVedicGrid(day, month, year);
 
-    return (
-      <>
-        <PageStyles />
+  const data = NUMBER_DATA[mulank];
 
-        <main className="app">
-
-          <Background />
-
-          <section className="paywallPage">
-
-            <div className="successIcon">
-              ✓
-            </div>
-
-
-            <div className="sectionBadge">
-              YOUR FREE PREVIEW
-            </div>
-
-
-            <h2 className="sectionTitle">
-
-              That was just
-
-              <br />
-
-              <span>
-                the beginning.
-              </span>
-
-            </h2>
-
-
-            <p className="sectionDescription">
-
-              Your numerology profile is ready.
-              Get personalized guidance whenever
-              you need another perspective, powered
-              by your numbers.
-
-            </p>
-
-
-            <div className="plan">
-
-              <div className="planTop">
-
-                <div>
-
-                  <div className="planPill">
-                    MAUKSH AI
-                  </div>
-
-
-                  <h3>
-
-                    Your personal
-                    <br />
-
-                    numerology companion
-
-                  </h3>
-
-                </div>
-
-
-                <div className="planPrice">
-
-                  <strong>
-                    $9
-                  </strong>
-
-                  <span>
-                    / month
-                  </span>
-
-                </div>
-
-              </div>
-
-
-              <div className="planFeatures">
-
-                <Feature>
-                  60 AI credits every month
-                </Feature>
-
-                <Feature>
-                  Personalized AI numerology guidance
-                </Feature>
-
-                <Feature>
-                  Career, love, money & life
-                </Feature>
-
-                <Feature>
-                  Your numerology profile remembered
-                </Feature>
-
-                <Feature>
-                  Saved conversations
-                </Feature>
-
-                <Feature>
-                  Cancel anytime
-                </Feature>
-
-              </div>
-
-
-              <button
-                className="subscribeButton"
-                onClick={
-                  startCheckout
-                }
-              >
-
-                Unlock Mauksh AI
-
-                <span>
-                  →
-                </span>
-
-              </button>
-
-
-              <p className="secureText">
-                Secure payment · Cancel anytime
-              </p>
-
-            </div>
-
-
-            <div className="savedProfile">
-
-              <span>
-                ✓
-              </span>
-
-              Your numerology profile is ready.
-
-            </div>
-
-          </section>
-
-        </main>
-      </>
-    );
-  }
-
-
-  return null;
+  return {
+    mulank,
+    bhagyank,
+    nameNumber,
+    favourableNumber: `${mulank}, ${bhagyank}, ${nameNumber}`,
+    days: data.days,
+    colour: data.colour,
+    alphabets: data.alphabets,
+    planet: data.planet,
+    direction: data.direction,
+    deity: data.deity,
+    dates: data.dates,
+  };
 }
-
-
-/* =========================================================
-   BACKGROUND
-   ========================================================= */
-
-function Background() {
-  return (
-    <>
-      <div className="orb orbOne" />
-      <div className="orb orbTwo" />
-      <div className="orb orbThree" />
-    </>
-  );
-}
-
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-function Progress({
-  active,
-}: {
-  active: number;
-}) {
-
-  return (
-    <div className="progress">
-
-      {[1, 2, 3].map(
-        (number) => (
-
-          <span
-            key={number}
-            className={
-              number <= active
-                ? "active"
-                : ""
-            }
-          />
-
-        )
-      )}
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   NUMBER CARD
-   ========================================================= */
 
 function NumberCard({
   label,
-  value,
+  number,
   description,
-  featured = false,
 }: {
   label: string;
-  value: number;
+  number: number;
   description: string;
-  featured?: boolean;
 }) {
+  return (
+    <div className="numberCard">
+      <div className="numberLabel">{label}</div>
+      <div className="bigNumber">{number}</div>
+      <div className="numberDescription">{description}</div>
+    </div>
+  );
+}
+
+export default function Home() {
+  const [name, setName] = useState("");
+  const [dob, setDob] = useState("");
+  const [result, setResult] = useState<Result | null>(null);
+  const [error, setError] = useState("");
+
+  const isValid = useMemo(() => {
+    return name.trim().length > 1 && !!parseDOB(dob);
+  }, [name, dob]);
+
+  function calculate() {
+    setError("");
+
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!parseDOB(dob)) {
+      setError("Please enter your date of birth in DD/MM/YYYY format.");
+      return;
+    }
+
+    const calculated = getResult(name, dob);
+
+    if (!calculated) {
+      setError("Please check your details and try again.");
+      return;
+    }
+
+    setResult(calculated);
+
+    setTimeout(() => {
+      document
+        .getElementById("results")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }
+
+  function reset() {
+    setResult(null);
+    setError("");
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
 
   return (
-    <div
-      className={
-        featured
-          ? "numberCard featured"
-          : "numberCard"
-      }
-    >
+    <main className="page">
+      <section className="hero">
+        <nav className="nav">
+          <div className="brand">
+            <img
+              src="/assets/mauksh-logo.jpg"
+              alt="Mauksh"
+              className="maukshLogo"
+            />
 
-      <div className="numberLabel">
-        {label}
-      </div>
+            <div className="brandText">
+              <strong>MAUKSH AI</strong>
+              <span>Numerology</span>
+            </div>
+          </div>
 
+          <div className="navBadge">FREE</div>
+        </nav>
 
-      <div className="numberValue">
-        {value}
-      </div>
+        <div className="heroContent">
+          <div className="eyebrow">
+            <span>✦</span> YOUR NUMBERS. YOUR PATTERN.
+          </div>
 
+          <h1>
+            Discover what your
+            <br />
+            <span>numbers say</span> about you.
+          </h1>
 
-      <div className="numberDescription">
-        {description}
-      </div>
+          <p className="heroText">
+            Enter your name and date of birth to calculate your core
+            numerology numbers using the Mauksh numerology system.
+          </p>
 
+          <div className="calculatorCard">
+            <div className="cardHeader">
+              <div>
+                <span className="smallEyebrow">PERSONAL CALCULATION</span>
+                <h2>Enter your details</h2>
+              </div>
 
-      {featured && (
-        <div className="featuredBadge">
-          MAIN
+              <div className="spark">✦</div>
+            </div>
+
+            <div className="field">
+              <label htmlFor="name">FULL NAME</label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Enter your full birth name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="dob">DATE OF BIRTH</label>
+              <input
+                id="dob"
+                type="text"
+                inputMode="numeric"
+                placeholder="DD/MM/YYYY"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                maxLength={10}
+              />
+              <span className="fieldHint">
+                Example: 08/10/1995
+              </span>
+            </div>
+
+            {error && <div className="error">{error}</div>}
+
+            <button
+              className="calculateButton"
+              onClick={calculate}
+              disabled={!isValid}
+            >
+              <span>Calculate My Numbers</span>
+              <span className="arrow">→</span>
+            </button>
+
+            <p className="privacy">
+              Your calculation is performed instantly on this page.
+            </p>
+          </div>
         </div>
+      </section>
+
+      <section className="howSection">
+        <div className="sectionEyebrow">HOW IT WORKS</div>
+
+        <h2>
+          Three numbers can reveal
+          <br />
+          <span>your core pattern.</span>
+        </h2>
+
+        <div className="steps">
+          <div className="step">
+            <div className="stepNumber">01</div>
+            <h3>Enter your details</h3>
+            <p>Your full birth name and date of birth.</p>
+          </div>
+
+          <div className="step">
+            <div className="stepNumber">02</div>
+            <h3>Calculate your numbers</h3>
+            <p>Mauksh calculates your core numerology profile.</p>
+          </div>
+
+          <div className="step">
+            <div className="stepNumber">03</div>
+            <h3>Understand yourself</h3>
+            <p>Explore your numbers and favourable energies.</p>
+          </div>
+        </div>
+      </section>
+
+      {result && (
+        <section id="results" className="resultsSection">
+          <div className="resultsTop">
+            <div>
+              <div className="sectionEyebrow">YOUR MAUKSH PROFILE</div>
+
+              <h2>
+                Hello, <span>{name.trim()}</span>
+              </h2>
+
+              <p>
+                Here are your core numerology numbers based on your
+                birth details.
+              </p>
+            </div>
+
+            <button className="newCalculation" onClick={reset}>
+              New calculation
+            </button>
+          </div>
+
+          <div className="numbersGrid">
+            <NumberCard
+              label="MULANK"
+              number={result.mulank}
+              description="Your birth number"
+            />
+
+            <NumberCard
+              label="BHAGYANK"
+              number={result.bhagyank}
+              description="Your destiny number"
+            />
+
+            <NumberCard
+              label="NAME NUMBER"
+              number={result.nameNumber}
+              description="Your name vibration"
+            />
+          </div>
+
+          <div className="profileDetails">
+            <div className="detailHeader">
+              <div>
+                <div className="sectionEyebrow">YOUR NUMEROLOGY</div>
+                <h3>Favourable energies</h3>
+              </div>
+
+              <div className="goldCircle">✦</div>
+            </div>
+
+            <div className="detailsGrid">
+              <div className="detail">
+                <span>FAVOURABLE NUMBERS</span>
+                <strong>{result.favourableNumber}</strong>
+              </div>
+
+              <div className="detail">
+                <span>FAVOURABLE DAYS</span>
+                <strong>{result.days}</strong>
+              </div>
+
+              <div className="detail">
+                <span>FAVOURABLE COLOURS</span>
+                <strong>{result.colour}</strong>
+              </div>
+
+              <div className="detail">
+                <span>FAVOURABLE ALPHABETS</span>
+                <strong>{result.alphabets}</strong>
+              </div>
+
+              <div className="detail">
+                <span>PLANET</span>
+                <strong>{result.planet}</strong>
+              </div>
+
+              <div className="detail">
+                <span>DIRECTION</span>
+                <strong>{result.direction}</strong>
+              </div>
+
+              <div className="detail">
+                <span>DEITY</span>
+                <strong>{result.deity}</strong>
+              </div>
+
+              <div className="detail">
+                <span>FAVOURABLE DATES</span>
+                <strong>{result.dates}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="resultNote">
+            <span>✦</span>
+            <p>
+              Numerology is a system of interpretation and self-reflection.
+              Use these numbers as guidance rather than absolute predictions.
+            </p>
+          </div>
+        </section>
       )}
 
-    </div>
-  );
-}
-
-
-/* =========================================================
-   FEATURE
-   ========================================================= */
-
-function Feature({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
-  return (
-    <div className="feature">
-
-      <span>
-        ✓
-      </span>
-
-      {children}
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   STYLES
-   ========================================================= */
-
-function PageStyles() {
-
-  return (
-    <style jsx global>{`
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        background: #f7f5ef;
-      }
-
-      button,
-      input,
-      textarea {
-        font: inherit;
-      }
-
-      button {
-        -webkit-tap-highlight-color:
-          transparent;
-      }
-
-
-      /* =====================================================
-         APP
-         ===================================================== */
-
-      .app {
-        min-height: 100vh;
-
-        overflow: hidden;
-
-        position: relative;
-
-        background:
-          radial-gradient(
-            circle at 85% 5%,
-            rgba(215,170,84,.16),
-            transparent 28%
-          ),
-          radial-gradient(
-            circle at 5% 75%,
-            rgba(234,216,177,.2),
-            transparent 30%
-          ),
-          #f7f5ef;
-
-        color: #191714;
-
-        font-family:
-          Inter,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-      }
-
-
-      /* =====================================================
-         BACKGROUND
-         ===================================================== */
-
-      .orb {
-        position: fixed;
-
-        border-radius: 50%;
-
-        filter: blur(80px);
-
-        pointer-events: none;
-      }
-
-      .orbOne {
-        width: 220px;
-        height: 220px;
-
-        top: 15%;
-        right: -80px;
-
-        background:
-          rgba(205,160,75,.12);
-      }
-
-      .orbTwo {
-        width: 180px;
-        height: 180px;
-
-        bottom: 5%;
-        left: -70px;
-
-        background:
-          rgba(233,212,172,.15);
-      }
-
-      .orbThree {
-        width: 120px;
-        height: 120px;
-
-        top: 48%;
-        left: 45%;
-
-        background:
-          rgba(255,255,255,.55);
-      }
-
-
-      /* =====================================================
-         COMMON
-         ===================================================== */
-
-      .introPage,
-      .profilePage,
-      .numbersPage,
-      .chatPage,
-      .paywallPage {
-        width:
-          min(100%, 860px);
-
-        min-height: 100vh;
-
-        margin: auto;
-
-        position: relative;
-
-        z-index: 2;
-      }
-
-      .sectionBadge,
-      .topBadge {
-        color: #a97830;
-
-        font-size: 9px;
-
-        font-weight: 750;
-
-        letter-spacing: 2px;
-      }
-
-      .sectionTitle {
-        margin:
-          18px 0 0;
-
-        font-size:
-          clamp(50px, 8vw, 82px);
-
-        line-height: .94;
-
-        letter-spacing: -5px;
-
-        font-weight: 650;
-      }
-
-      .sectionTitle span,
-      .heroTitle span,
-      .chatTitle span {
-        color: #a97830;
-      }
-
-
-      /* =====================================================
-         INTRO
-         ===================================================== */
-
-      .introPage {
-        padding:
-          95px 30px 100px;
-      }
-
-      .topBadge {
-        display: inline-flex;
-
-        align-items: center;
-
-        gap: 8px;
-
-        padding:
-          9px 13px;
-
-        border:
-          1px solid
-          rgba(167,126,55,.18);
-
-        border-radius:
-          100px;
-
-        background:
-          rgba(255,250,239,.65);
-      }
-
-      .heroTitle {
-        margin:
-          28px 0 0;
-
-        max-width:
-          800px;
-
-        font-size:
-          clamp(58px, 10vw, 105px);
-
-        line-height: .88;
-
-        letter-spacing: -7px;
-
-        font-weight: 700;
-      }
-
-      .heroDescription {
-        max-width:
-          510px;
-
-        margin:
-          30px 0 25px;
-
-        color: #777067;
-
-        font-size: 15px;
-
-        line-height: 1.65;
-      }
-
-      .heroButton {
-        height: 56px;
-
-        padding:
-          0 8px 0 21px;
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 28px;
-
-        border: 0;
-
-        border-radius:
-          100px;
-
-        background: #1c1916;
-
-        color: white;
-
-        cursor: pointer;
-
-        transition:
-          transform .25s ease;
-      }
-
-      .heroButton:hover {
-        transform:
-          translateY(-2px);
-      }
-
-      .heroButtonText {
-        font-size: 12px;
-
-        font-weight: 700;
-      }
-
-      .heroArrow {
-        width: 40px;
-        height: 40px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius: 50%;
-
-        background: #c99b4d;
-
-        font-size: 18px;
-      }
-
-      .freePill {
-        margin-top: 13px;
-
-        color: #898178;
-
-        font-size: 9px;
-      }
-
-      .freePill span {
-        color: #b18035;
-      }
-
-
-      /* =====================================================
-         LOGO
-         ===================================================== */
-
-      .maukshLogo {
-        width: 100%;
-        height: 100%;
-
-        display: block;
-
-        object-fit: contain;
-      }
-
-
-      /* =====================================================
-         AI PREVIEW
-         ===================================================== */
-
-      .floatingPreview {
-        position: absolute;
-
-        right: 30px;
-
-        top: 190px;
-
-        width: 275px;
-
-        padding: 16px;
-
-        border:
-          1px solid
-          rgba(255,255,255,.7);
-
-        border-radius: 22px;
-
-        background:
-          rgba(255,255,255,.55);
-
-        box-shadow:
-          0 30px 80px
-          rgba(50,40,25,.10);
-
-        backdrop-filter:
-          blur(25px);
-
-        transform:
-          rotate(3deg);
-      }
-
-      .previewTop {
-        display: flex;
-
-        align-items: center;
-
-        gap: 9px;
-      }
-
-      .miniAvatar {
-        width: 42px;
-        height: 42px;
-
-        flex-shrink: 0;
-
-        overflow: hidden;
-
-        border-radius: 12px;
-
-        background: white;
-
-        border:
-          1px solid
-          rgba(40,35,28,.08);
-      }
-
-      .previewIdentity {
-        min-width: 0;
-      }
-
-      .previewTop strong,
-      .previewTop small {
-        display: block;
-      }
-
-      .previewTop strong {
-        font-size: 10px;
-      }
-
-      .previewTop small {
-        margin-top: 2px;
-
-        color: #8b847a;
-
-        font-size: 7px;
-      }
-
-      .previewOnline {
-        margin-left: auto;
-
-        color: #82935c;
-
-        font-size: 7px;
-      }
-
-      .previewMessage {
-        margin-top: 20px;
-
-        padding: 12px;
-
-        border-radius:
-          12px 12px 3px 12px;
-
-        background: #1e1b17;
-
-        color: white;
-
-        font-size: 9px;
-
-        line-height: 1.5;
-      }
-
-      .previewAI {
-        margin-top: 8px;
-
-        padding: 12px;
-
-        border-radius:
-          12px 12px 12px 3px;
-
-        background: #f4ecdd;
-
-        color: #62594f;
-
-        font-size: 9px;
-
-        line-height: 1.5;
-      }
-
-      .previewAI span {
-        margin-right: 5px;
-
-        color: #b17d2e;
-      }
-
-
-      /* =====================================================
-         PROGRESS
-         ===================================================== */
-
-      .progress {
-        display: flex;
-
-        gap: 5px;
-
-        margin-bottom: 48px;
-      }
-
-      .progress span {
-        width: 35px;
-        height: 3px;
-
-        border-radius: 10px;
-
-        background: #dfd9ce;
-      }
-
-      .progress span.active {
-        background: #ae8038;
-      }
-
-
-      /* =====================================================
-         PROFILE
-         ===================================================== */
-
-      .profilePage {
-        padding:
-          75px 30px 100px;
-      }
-
-      .sectionDescription {
-        max-width:
-          450px;
-
-        margin:
-          22px 0 0;
-
-        color: #80786e;
-
-        font-size: 14px;
-
-        line-height: 1.7;
-      }
-
-      .form {
-        max-width:
-          620px;
-
-        margin-top:
-          38px;
-      }
-
-      .inputGroup {
-        margin-bottom:
-          24px;
-      }
-
-      .inputGroup label {
-        display: block;
-
-        margin:
-          0 0
-          9px
-          2px;
-
-        color: #625b53;
-
-        font-size: 9px;
-
-        font-weight: 700;
-
-        letter-spacing: 1.4px;
-
-        text-transform:
-          uppercase;
-      }
-
-      .inputGroup input {
-        width: 100%;
-
-        height: 60px;
-
-        padding:
-          0 18px;
-
-        border:
-          1px solid
-          #ddd6cb;
-
-        border-radius:
-          16px;
-
-        outline: none;
-
-        background:
-          rgba(255,255,255,.72);
-
-        color: #1d1a17;
-
-        font-size: 14px;
-
-        font-weight: 500;
-
-        appearance: none;
-
-        transition:
-          border-color .2s ease,
-          box-shadow .2s ease,
-          background .2s ease;
-      }
-
-      .inputGroup input:hover {
-        border-color:
-          #cfc5b7;
-
-        background:
-          rgba(255,255,255,.9);
-      }
-
-      .inputGroup input:focus {
-        border-color:
-          #b8883d;
-
-        background: #fff;
-
-        box-shadow:
-          0 0 0 4px
-          rgba(184,136,61,.08);
-      }
-
-      .inputGroup input::placeholder {
-        color: #aaa39b;
-
-        font-weight: 400;
-      }
-
-      .inputGroup input[type="date"] {
-        color: #1d1a17;
-      }
-
-
-      /* =====================================================
-         PROFILE BUTTON
-         ===================================================== */
-
-      .continueButton {
-        width: 100%;
-
-        height: 58px;
-
-        margin-top: 8px;
-
-        padding:
-          0 7px 0 20px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content:
-          space-between;
-
-        border: 0;
-
-        border-radius:
-          17px;
-
-        background: #1d1a17;
-
-        color: white;
-
-        cursor: pointer;
-      }
-
-      .continueButton span {
-        font-size: 12px;
-
-        font-weight: 700;
-      }
-
-      .continueButton strong {
-        width: 44px;
-        height: 44px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius:
-          13px;
-
-        background: #c89a4d;
-
-        font-size: 20px;
-      }
-
-      .continueButton:disabled {
-        background: #b9b6b2;
-
-        cursor: not-allowed;
-      }
-
-      .continueButton:disabled strong {
-        background:
-          #ead9b8;
-      }
-
-      .privacyNote {
-        margin-top: 15px;
-
-        color: #989087;
-
-        font-size: 9px;
-      }
-
-      .privacyNote span {
-        margin-right: 5px;
-
-        color: #ae7c32;
-      }
-
-
-      /* =====================================================
-         NUMBERS
-         ===================================================== */
-
-      .numbersPage {
-        padding:
-          70px 30px 100px;
-      }
-
-      .numbersHeader {
-        display: flex;
-
-        align-items:
-          flex-start;
-
-        justify-content:
-          space-between;
-      }
-
-      .sectionTitle.small {
-        font-size:
-          clamp(47px, 7vw, 70px);
-      }
-
-      .sparkle {
-        width: 48px;
-        height: 48px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius:
-          15px;
-
-        background:
-          #eadabd;
-
-        color:
-          #a7782f;
-
-        font-size: 22px;
-      }
-
-      .numberCards {
-        display: grid;
-
-        grid-template-columns:
-          repeat(3, 1fr);
-
-        gap: 10px;
-
-        margin-top:
-          35px;
-      }
-
-      .numberCard {
-        position: relative;
-
-        min-height:
-          175px;
-
-        padding: 20px;
-
-        border:
-          1px solid
-          rgba(50,42,32,.08);
-
-        border-radius:
-          23px;
-
-        background:
-          rgba(255,255,255,.62);
-
-        overflow: hidden;
-      }
-
-      .numberCard.featured {
-        background: #1e1b17;
-
-        color: white;
-      }
-
-      .numberLabel {
-        font-size: 8px;
-
-        font-weight: 750;
-
-        letter-spacing:
-          1.6px;
-
-        color: #8c8379;
-      }
-
-      .featured .numberLabel {
-        color: #a99d8c;
-      }
-
-      .numberValue {
-        margin-top: 18px;
-
-        font-family:
-          Georgia,
-          serif;
-
-        font-size: 64px;
-
-        line-height: 1;
-
-        color: #b27f30;
-      }
-
-      .featured .numberValue {
-        color: #d6ad62;
-      }
-
-      .numberDescription {
-        margin-top: 13px;
-
-        color: #8c8379;
-
-        font-size: 9px;
-      }
-
-      .featured .numberDescription {
-        color: #8f877c;
-      }
-
-      .featuredBadge {
-        position: absolute;
-
-        top: 18px;
-        right: 17px;
-
-        padding:
-          5px 7px;
-
-        border-radius:
-          100px;
-
-        background:
-          #c39a53;
-
-        color:
-          #211d17;
-
-        font-size: 6px;
-
-        font-weight: 800;
-
-        letter-spacing: 1px;
-      }
-
-
-      /* =====================================================
-         ASK CARD
-         ===================================================== */
-
-      .askCard {
-        width: 100%;
-
-        margin-top: 10px;
-
-        padding: 15px;
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 13px;
-
-        border: 0;
-
-        border-radius:
-          21px;
-
-        background:
-          #1d1a16;
-
-        color: white;
-
-        cursor: pointer;
-
-        text-align: left;
-      }
-
-      .askIcon {
-        width: 43px;
-        height: 43px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius:
-          13px;
-
-        background:
-          #c69b52;
-
-        color:
-          #211c16;
-      }
-
-      .askText {
-        flex: 1;
-      }
-
-      .askText strong {
-        display: block;
-
-        font-size: 11px;
-      }
-
-      .askText p {
-        margin:
-          4px 0 0;
-
-        color: #938b80;
-
-        font-size: 8px;
-      }
-
-      .askArrow {
-        width: 40px;
-        height: 40px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius:
-          11px;
-
-        background:
-          #29251f;
-
-        font-size: 20px;
-      }
-
-      .freeLabel {
-        margin-top: 14px;
-
-        text-align: center;
-
-        color: #a47a38;
-
-        font-size: 9px;
-      }
-
-
-      /* =====================================================
-         CHAT
-         ===================================================== */
-
-      .chatPage {
-        padding:
-          70px 30px 100px;
-      }
-
-      .chatTitle {
-        margin:
-          18px 0 30px;
-
-        font-size:
-          clamp(48px, 8vw, 75px);
-
-        line-height: .94;
-
-        letter-spacing: -4px;
-      }
-
-      .chatBox {
-        overflow: hidden;
-
-        border:
-          1px solid
-          rgba(40,35,28,.08);
-
-        border-radius:
-          25px;
-
-        background:
-          rgba(255,255,255,.72);
-
-        box-shadow:
-          0 25px 70px
-          rgba(30,25,20,.06);
-      }
-
-      .chatTop {
-        padding: 16px;
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 11px;
-
-        border-bottom:
-          1px solid
-          rgba(40,35,28,.07);
-      }
-
-      .chatAvatar {
-        width: 42px;
-        height: 42px;
-
-        flex-shrink: 0;
-
-        overflow: hidden;
-
-        border-radius:
-          12px;
-
-        background: white;
-      }
-
-      .chatIdentity {
-        flex: 1;
-      }
-
-      .chatIdentity strong,
-      .chatIdentity span {
-        display: block;
-      }
-
-      .chatIdentity strong {
-        font-size: 11px;
-      }
-
-      .chatIdentity span {
-        margin-top: 3px;
-
-        color: #999087;
-
-        font-size: 8px;
-      }
-
-      .chatStatus {
-        color: #8b847c;
-
-        font-size: 8px;
-      }
-
-      .chatStatus i {
-        width: 6px;
-        height: 6px;
-
-        display: inline-block;
-
-        margin-right: 4px;
-
-        border-radius: 50%;
-
-        background: #82935c;
-      }
-
-      .chatMessages {
-        min-height:
-          320px;
-
-        padding: 20px;
-      }
-
-      .aiGreeting {
-        max-width:
-          430px;
-
-        color: #625b52;
-
-        font-size: 13px;
-
-        line-height: 1.7;
-      }
-
-      .aiGreeting span {
-        color: #b07d30;
-      }
-
-      .suggestions {
-        display: flex;
-
-        flex-wrap: wrap;
-
-        gap: 7px;
-
-        margin-top: 20px;
-      }
-
-      .suggestions button {
-        padding:
-          9px 12px;
-
-        border:
-          1px solid
-          #ded7cb;
-
-        border-radius:
-          100px;
-
-        background:
-          #f9f6f0;
-
-        color: #625b52;
-
-        font-size: 8px;
-
-        cursor: pointer;
-      }
-
-      .userMessage {
-        max-width: 80%;
-
-        margin:
-          20px 0
-          12px
-          auto;
-
-        padding:
-          12px 15px;
-
-        border-radius:
-          16px 16px 4px 16px;
-
-        background:
-          #1d1a17;
-
-        color: white;
-
-        font-size: 11px;
-
-        line-height: 1.5;
-      }
-
-      .aiMessage {
-        max-width: 92%;
-
-        padding: 16px;
-
-        border-radius:
-          16px 16px 16px 4px;
-
-        background:
-          #f2e9d9;
-
-        color:
-          #554d44;
-
-        font-size: 11px;
-
-        line-height: 1.75;
-
-        overflow-wrap:
-          break-word;
-      }
-
-      .aiLabel {
-        margin-bottom: 10px;
-
-        color:
-          #a97830;
-
-        font-size: 7px;
-
-        font-weight: 800;
-
-        letter-spacing:
-          1.4px;
-      }
-
-
-      /* =====================================================
-         FORMATTED AI ANSWER
-         ===================================================== */
-
-      .formattedAIAnswer {
-        width: 100%;
-      }
-
-      .answerHeading {
-        margin:
-          18px 0 9px;
-
-        color:
-          #2b261f;
-
-        font-size:
-          13px;
-
-        line-height:
-          1.35;
-
-        font-weight:
-          750;
-
-        letter-spacing:
-          -.15px;
-      }
-
-      .answerHeading:first-child {
-        margin-top: 0;
-      }
-
-      .answerParagraph {
-        margin:
-          0 0 13px;
-
-        color:
-          #554d44;
-
-        font-size:
-          11px;
-
-        line-height:
-          1.8;
-      }
-
-      .answerParagraph strong {
-        color:
-          #29241e;
-
-        font-weight:
-          750;
-      }
-
-      .answerBullet {
-        display: flex;
-
-        gap: 9px;
-
-        margin:
-          0 0 8px;
-
-        color:
-          #554d44;
-
-        font-size:
-          11px;
-
-        line-height:
-          1.7;
-      }
-
-      .answerBullet > span {
-        flex-shrink: 0;
-
-        color:
-          #b27d30;
-
-        font-weight:
-          900;
-      }
-
-      .answerBullet strong {
-        color:
-          #29241e;
-
-        font-weight:
-          750;
-      }
-
-      .numberBullet {
-        min-width:
-          18px;
-
-        color:
-          #b27d30;
-      }
-
-      .answerSpacer {
-        height: 3px;
-      }
-
-
-      /* =====================================================
-         CHAT INPUT
-         ===================================================== */
-
-      .chatInput {
-        padding: 12px;
-
-        display: flex;
-
-        gap: 8px;
-
-        border-top:
-          1px solid
-          rgba(40,35,28,.07);
-      }
-
-      .chatInput textarea {
-        flex: 1;
-
-        resize: none;
-
-        padding: 12px;
-
-        border:
-          1px solid
-          #ddd6cb;
-
-        border-radius:
-          14px;
-
-        outline: none;
-
-        background: #fff;
-
-        color: #222;
-
-        font-size: 11px;
-      }
-
-      .chatInput textarea:focus {
-        border-color:
-          #b8883d;
-      }
-
-      .chatInput button {
-        width: 45px;
-        height: 45px;
-
-        align-self:
-          flex-end;
-
-        border: 0;
-
-        border-radius:
-          13px;
-
-        background:
-          #1d1a17;
-
-        color: white;
-
-        cursor: pointer;
-      }
-
-      .chatInput button:disabled {
-        opacity: .35;
-
-        cursor:
-          not-allowed;
-      }
-
-      .loader {
-        width: 14px;
-        height: 14px;
-
-        display:
-          inline-block;
-
-        border:
-          2px solid
-          rgba(255,255,255,.35);
-
-        border-top-color:
-          white;
-
-        border-radius: 50%;
-
-        animation:
-          spin .7s linear infinite;
-      }
-
-      @keyframes spin {
-
-        to {
-          transform:
-            rotate(360deg);
+      <footer>
+        <div className="footerBrand">
+          <img
+            src="/assets/mauksh-logo.jpg"
+            alt="Mauksh"
+            className="footerLogo"
+          />
+
+          <div>
+            <strong>MAUKSH AI</strong>
+            <span>Spirituality is Personal.</span>
+          </div>
+        </div>
+
+        <p>© {new Date().getFullYear()} Mauksh. All rights reserved.</p>
+      </footer>
+
+      <style jsx>{`
+        * {
+          box-sizing: border-box;
         }
 
-      }
-
-
-      /* =====================================================
-         ANSWER ACTION
-         ===================================================== */
-
-      .answerActions {
-        padding:
-          0 14px
-          18px;
-      }
-
-      .continueToPlan {
-        width: 100%;
-
-        height: 53px;
-
-        padding:
-          0 7px 0 18px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content:
-          space-between;
-
-        border: 0;
-
-        border-radius:
-          14px;
-
-        background:
-          #1d1a17;
-
-        color: white;
-
-        font-size: 10px;
-
-        font-weight: 700;
-
-        cursor: pointer;
-      }
-
-      .continueToPlan span {
-        width: 39px;
-        height: 39px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius:
-          11px;
-
-        background:
-          #c89a4d;
-
-        color:
-          #1d1a17;
-
-        font-size: 18px;
-      }
-
-      .answerActions p {
-        margin:
-          10px 0 0;
-
-        text-align:
-          center;
-
-        color:
-          #9c948b;
-
-        font-size: 8px;
-      }
-
-      .questionCounter {
-        margin-top:
-          14px;
-
-        text-align:
-          center;
-
-        color:
-          #969087;
-
-        font-size:
-          9px;
-      }
-
-      .questionCounter strong {
-        color:
-          #a97830;
-      }
-
-
-      /* =====================================================
-         PAYWALL
-         ===================================================== */
-
-      .paywallPage {
-        padding:
-          70px 30px 100px;
-      }
-
-      .successIcon {
-        width: 48px;
-        height: 48px;
-
-        display: flex;
-
-        align-items:
-          center;
-
-        justify-content:
-          center;
-
-        margin-bottom:
-          28px;
-
-        border-radius: 50%;
-
-        background:
-          #1d1a17;
-
-        color:
-          #d1a35b;
-
-        font-size: 18px;
-      }
-
-      .plan {
-        max-width:
-          600px;
-
-        margin-top:
-          35px;
-
-        padding: 24px;
-
-        border-radius:
-          27px;
-
-        background:
-          #1d1a17;
-
-        color: white;
-
-        box-shadow:
-          0 30px 80px
-          rgba(25,22,18,.15);
-      }
-
-      .planTop {
-        display: flex;
-
-        justify-content:
-          space-between;
-
-        gap: 20px;
-      }
-
-      .planPill {
-        display:
-          inline-block;
-
-        padding:
-          6px 9px;
-
-        border-radius:
-          100px;
-
-        background:
-          #c89a4d;
-
-        color:
-          #1d1a17;
-
-        font-size: 7px;
-
-        font-weight: 800;
-
-        letter-spacing: 1px;
-      }
-
-      .plan h3 {
-        margin:
-          15px 0 0;
-
-        font-size:
-          22px;
-
-        line-height:
-          1.05;
-
-        letter-spacing:
-          -.7px;
-      }
-
-      .planPrice {
-        text-align:
-          right;
-      }
-
-      .planPrice strong {
-        display: block;
-
-        color:
-          #d3a75d;
-
-        font-family:
-          Georgia,
-          serif;
-
-        font-size:
-          38px;
-      }
-
-      .planPrice span {
-        color:
-          #938b80;
-
-        font-size:
-          8px;
-      }
-
-      .planFeatures {
-        margin-top:
-          28px;
-
-        display:
-          grid;
-
-        grid-template-columns:
-          repeat(2, 1fr);
-
-        gap: 11px;
-      }
-
-      .feature {
-        color:
-          #c0b9af;
-
-        font-size:
-          9px;
-      }
-
-      .feature span {
-        margin-right:
-          6px;
-
-        color:
-          #c89a4d;
-      }
-
-      .subscribeButton {
-        width: 100%;
-
-        height: 55px;
-
-        margin-top:
-          28px;
-
-        padding:
-          0 8px 0 17px;
-
-        display:
-          flex;
-
-        align-items:
-          center;
-
-        justify-content:
-          space-between;
-
-        border: 0;
-
-        border-radius:
-          15px;
-
-        background:
-          #c89a4d;
-
-        color:
-          #1d1a17;
-
-        font-size:
-          11px;
-
-        font-weight:
-          800;
-
-        cursor: pointer;
-      }
-
-      .subscribeButton span {
-        width: 40px;
-        height: 40px;
-
-        display:
-          flex;
-
-        align-items:
-          center;
-
-        justify-content:
-          center;
-
-        border-radius:
-          11px;
-
-        background:
-          #1d1a17;
-
-        color: white;
-
-        font-size:
-          18px;
-      }
-
-      .secureText {
-        margin:
-          12px 0 0;
-
-        text-align:
-          center;
-
-        color:
-          #797269;
-
-        font-size:
-          8px;
-      }
-
-      .savedProfile {
-        margin-top:
-          18px;
-
-        color:
-          #91897f;
-
-        font-size:
-          9px;
-      }
-
-      .savedProfile span {
-        margin-right:
-          5px;
-
-        color:
-          #8c9b63;
-      }
-
-
-      /* =====================================================
-         MOBILE
-         ===================================================== */
-
-      @media (max-width: 700px) {
-
-        .introPage,
-        .profilePage,
-        .numbersPage,
-        .chatPage,
-        .paywallPage {
+        .page {
+          min-height: 100vh;
+          background: #f7f2e9;
+          color: #171512;
+          font-family:
+            Inter,
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+        }
+
+        .hero {
+          min-height: 100vh;
+          background:
+            radial-gradient(
+              circle at 80% 20%,
+              rgba(211, 166, 66, 0.14),
+              transparent 30%
+            ),
+            #f7f2e9;
+          padding: 0 20px 80px;
+        }
+
+        .nav {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 22px 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .maukshLogo {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .brandText {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+        }
+
+        .brandText strong {
+          font-size: 14px;
+          letter-spacing: 0.12em;
+        }
+
+        .brandText span {
+          margin-top: 5px;
+          font-size: 10px;
+          color: #857b6b;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .navBadge {
+          border: 1px solid #d7cdbb;
+          padding: 8px 13px;
+          border-radius: 100px;
+          font-size: 10px;
+          letter-spacing: 0.15em;
+          font-weight: 700;
+        }
+
+        .heroContent {
+          max-width: 760px;
+          margin: 0 auto;
+          padding-top: 70px;
+          text-align: center;
+        }
+
+        .eyebrow,
+        .sectionEyebrow,
+        .smallEyebrow {
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          font-weight: 800;
+          color: #a17618;
+        }
+
+        .eyebrow span {
+          margin-right: 7px;
+        }
+
+        h1 {
+          font-size: clamp(42px, 8vw, 78px);
+          line-height: 0.98;
+          letter-spacing: -0.055em;
+          margin: 22px 0;
+          font-weight: 800;
+        }
+
+        h1 span,
+        .resultsTop h2 span {
+          color: #bd8a24;
+        }
+
+        .heroText {
+          max-width: 580px;
+          margin: 0 auto;
+          color: #71695c;
+          font-size: 16px;
+          line-height: 1.7;
+        }
+
+        .calculatorCard {
+          max-width: 570px;
+          margin: 45px auto 0;
+          padding: 28px;
+          background: rgba(255, 253, 248, 0.9);
+          border: 1px solid #e4dbcc;
+          border-radius: 24px;
+          box-shadow: 0 20px 60px rgba(60, 45, 20, 0.08);
+          text-align: left;
+        }
+
+        .cardHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 30px;
+        }
+
+        .cardHeader h2 {
+          margin: 8px 0 0;
+          font-size: 25px;
+          letter-spacing: -0.03em;
+        }
+
+        .spark,
+        .goldCircle {
+          width: 42px;
+          height: 42px;
+          display: grid;
+          place-items: center;
+          border-radius: 50%;
+          background: #e6bd63;
+          color: #171512;
+          font-size: 18px;
+        }
+
+        .field {
+          margin-bottom: 20px;
+        }
+
+        .field label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.15em;
+          color: #736a5b;
+        }
+
+        .field input {
           width: 100%;
+          height: 55px;
+          border: 1px solid #dcd2c1;
+          border-radius: 13px;
+          background: #fffefa;
+          padding: 0 16px;
+          font-size: 15px;
+          outline: none;
+          color: #171512;
+          transition: 0.2s ease;
         }
 
-        .introPage {
-          padding:
-            75px
-            30px
-            80px;
+        .field input:focus {
+          border-color: #c3912c;
+          box-shadow: 0 0 0 3px rgba(195, 145, 44, 0.1);
         }
 
-        .heroTitle {
-          font-size:
-            58px;
-
-          letter-spacing:
-            -4px;
+        .fieldHint {
+          display: block;
+          margin-top: 7px;
+          font-size: 11px;
+          color: #9a9080;
         }
 
-        .heroDescription {
-          font-size:
-            14px;
+        .calculateButton {
+          width: 100%;
+          height: 58px;
+          border: 0;
+          border-radius: 14px;
+          background: #171512;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 19px;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: 0.2s ease;
         }
 
-        .floatingPreview {
-          position:
-            relative;
-
-          top: auto;
-          right: auto;
-
-          width:
-            82%;
-
-          margin:
-            90px auto
-            0;
-
-          transform:
-            rotate(2deg);
+        .calculateButton:hover:not(:disabled) {
+          transform: translateY(-2px);
+          background: #28251f;
         }
 
-        .profilePage,
-        .numbersPage,
-        .chatPage,
-        .paywallPage {
-          padding:
-            55px
-            30px
-            80px;
+        .calculateButton:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
         }
 
-        .sectionTitle {
-          font-size:
-            52px;
-
-          letter-spacing:
-            -4px;
+        .arrow {
+          font-size: 21px;
         }
 
-        .numberCards {
-          grid-template-columns:
-            1fr;
+        .privacy {
+          text-align: center;
+          margin: 14px 0 0;
+          color: #968d7e;
+          font-size: 10px;
+        }
+
+        .error {
+          padding: 12px 14px;
+          margin-bottom: 16px;
+          border-radius: 10px;
+          background: #fff0ed;
+          color: #a43e2c;
+          font-size: 12px;
+        }
+
+        .howSection {
+          background: #171512;
+          color: white;
+          padding: 100px 20px;
+          text-align: center;
+        }
+
+        .howSection .sectionEyebrow {
+          color: #d7ad52;
+        }
+
+        .howSection h2 {
+          margin: 18px 0 55px;
+          font-size: clamp(34px, 6vw, 55px);
+          line-height: 1;
+          letter-spacing: -0.05em;
+        }
+
+        .howSection h2 span {
+          color: #d7ad52;
+        }
+
+        .steps {
+          max-width: 1050px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1px;
+          background: #3a3731;
+        }
+
+        .step {
+          padding: 35px 25px;
+          background: #171512;
+          text-align: left;
+        }
+
+        .stepNumber {
+          color: #d7ad52;
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          font-weight: 800;
+          margin-bottom: 35px;
+        }
+
+        .step h3 {
+          font-size: 18px;
+          margin: 0 0 10px;
+        }
+
+        .step p {
+          margin: 0;
+          color: #aaa399;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .resultsSection {
+          max-width: 1050px;
+          margin: 0 auto;
+          padding: 100px 20px;
+        }
+
+        .resultsTop {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 30px;
+          margin-bottom: 35px;
+        }
+
+        .resultsTop h2 {
+          font-size: clamp(34px, 6vw, 55px);
+          line-height: 1;
+          letter-spacing: -0.05em;
+          margin: 16px 0;
+        }
+
+        .resultsTop p {
+          margin: 0;
+          color: #756d60;
+          font-size: 14px;
+        }
+
+        .newCalculation {
+          white-space: nowrap;
+          background: transparent;
+          border: 1px solid #cfc4b2;
+          border-radius: 100px;
+          padding: 12px 17px;
+          cursor: pointer;
+          font-size: 12px;
+        }
+
+        .numbersGrid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
         }
 
         .numberCard {
-          min-height:
-            150px;
+          background: #fffdf8;
+          border: 1px solid #e1d8ca;
+          border-radius: 20px;
+          padding: 28px;
+          min-height: 210px;
         }
 
-        .numberValue {
-          font-size:
-            58px;
+        .numberLabel {
+          color: #9b7221;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.16em;
         }
 
-        .planTop {
-          align-items:
-            flex-start;
+        .bigNumber {
+          margin: 25px 0 12px;
+          font-size: 70px;
+          line-height: 0.8;
+          font-weight: 800;
+          letter-spacing: -0.06em;
         }
 
-        .planFeatures {
-          grid-template-columns:
-            1fr;
+        .numberDescription {
+          color: #827a6d;
+          font-size: 12px;
         }
 
-        .aiMessage {
-          max-width:
-            100%;
+        .profileDetails {
+          margin-top: 14px;
+          padding: 30px;
+          border-radius: 20px;
+          background: #171512;
+          color: white;
         }
 
-      }
-
-
-      @media (max-width: 390px) {
-
-        .introPage,
-        .profilePage,
-        .numbersPage,
-        .chatPage,
-        .paywallPage {
-          padding-left:
-            22px;
-
-          padding-right:
-            22px;
+        .detailHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 30px;
         }
 
-        .heroTitle {
-          font-size:
-            50px;
+        .detailHeader .sectionEyebrow {
+          color: #d4a94c;
         }
 
-        .sectionTitle {
-          font-size:
-            47px;
+        .detailHeader h3 {
+          margin: 8px 0 0;
+          font-size: 25px;
         }
 
-      }
+        .detailsGrid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1px;
+          background: #38352f;
+        }
 
-    `}</style>
+        .detail {
+          min-height: 120px;
+          padding: 20px;
+          background: #171512;
+        }
+
+        .detail span {
+          display: block;
+          color: #938c80;
+          font-size: 9px;
+          letter-spacing: 0.13em;
+          font-weight: 800;
+          margin-bottom: 12px;
+        }
+
+        .detail strong {
+          font-size: 14px;
+          line-height: 1.5;
+          font-weight: 600;
+        }
+
+        .resultNote {
+          display: flex;
+          gap: 12px;
+          margin-top: 18px;
+          padding: 18px;
+          border: 1px solid #e0d7c8;
+          border-radius: 15px;
+          color: #756d60;
+          font-size: 11px;
+          line-height: 1.6;
+        }
+
+        .resultNote span {
+          color: #b78320;
+        }
+
+        .resultNote p {
+          margin: 0;
+        }
+
+        footer {
+          padding: 35px 20px;
+          border-top: 1px solid #ded5c7;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1050px;
+          margin: 0 auto;
+          gap: 20px;
+        }
+
+        .footerBrand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .footerLogo {
+          width: 36px;
+          height: 36px;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        .footerBrand div {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .footerBrand strong {
+          font-size: 12px;
+          letter-spacing: 0.12em;
+        }
+
+        .footerBrand span {
+          font-size: 10px;
+          color: #8b8274;
+          margin-top: 4px;
+        }
+
+        footer p {
+          margin: 0;
+          color: #968d7f;
+          font-size: 10px;
+        }
+
+        @media (max-width: 700px) {
+          .hero {
+            padding-bottom: 60px;
+          }
+
+          .heroContent {
+            padding-top: 45px;
+          }
+
+          h1 {
+            font-size: 45px;
+          }
+
+          .calculatorCard {
+            padding: 21px;
+            border-radius: 19px;
+          }
+
+          .steps {
+            grid-template-columns: 1fr;
+          }
+
+          .step {
+            padding: 28px 22px;
+          }
+
+          .resultsSection {
+            padding: 70px 18px;
+          }
+
+          .resultsTop {
+            display: block;
+          }
+
+          .newCalculation {
+            margin-top: 20px;
+          }
+
+          .numbersGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .numberCard {
+            min-height: 180px;
+          }
+
+          .detailsGrid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .profileDetails {
+            padding: 20px;
+          }
+
+          footer {
+            display: block;
+          }
+
+          footer p {
+            margin-top: 15px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .nav {
+            padding-top: 16px;
+          }
+
+          .maukshLogo {
+            width: 38px;
+            height: 38px;
+          }
+
+          .brandText strong {
+            font-size: 12px;
+          }
+
+          .detailsGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .detail {
+            min-height: auto;
+          }
+        }
+      `}
+      </style>
+    </main>
   );
 }
