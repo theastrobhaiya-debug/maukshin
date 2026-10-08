@@ -218,8 +218,6 @@ function renderAIAnswer(text: string) {
             line.trim();
 
 
-          /* Empty line */
-
           if (!trimmed) {
             return (
               <div
@@ -229,8 +227,6 @@ function renderAIAnswer(text: string) {
             );
           }
 
-
-          /* Heading */
 
           if (
             trimmed.startsWith("### ")
@@ -251,8 +247,6 @@ function renderAIAnswer(text: string) {
           }
 
 
-          /* ## heading */
-
           if (
             trimmed.startsWith("## ")
           ) {
@@ -271,8 +265,6 @@ function renderAIAnswer(text: string) {
             );
           }
 
-
-          /* Bullet */
 
           if (
             trimmed.startsWith("- ") ||
@@ -305,8 +297,6 @@ function renderAIAnswer(text: string) {
           }
 
 
-          /* Numbered list */
-
           if (
             /^\d+\.\s/.test(trimmed)
           ) {
@@ -337,8 +327,6 @@ function renderAIAnswer(text: string) {
             }
           }
 
-
-          /* Normal paragraph */
 
           return (
             <p
@@ -530,6 +518,80 @@ export default function NumerologyAIPage() {
     } finally {
 
       setLoading(false);
+
+    }
+  }
+
+
+  /* =======================================================
+     START DODO CHECKOUT
+     ======================================================= */
+
+  async function startCheckout() {
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/checkout",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify({
+                product_cart: [
+                  {
+                    product_id:
+                      "pdt_0NPhQ9ymsZTOP17n8ujXk",
+                    quantity: 1,
+                  },
+                ],
+              }),
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+          "Unable to start checkout"
+        );
+      }
+
+
+      if (data.checkout_url) {
+
+        window.location.href =
+          data.checkout_url;
+
+        return;
+      }
+
+
+      throw new Error(
+        "Checkout URL was not returned"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Dodo checkout error:",
+        error
+      );
+
+      alert(
+        "Unable to start checkout. Please try again."
+      );
 
     }
   }
@@ -985,8 +1047,6 @@ export default function NumerologyAIPage() {
 
             <div className="chatBox">
 
-              {/* HEADER */}
-
               <div className="chatTop">
 
                 <div className="chatAvatar">
@@ -1023,8 +1083,6 @@ export default function NumerologyAIPage() {
 
               </div>
 
-
-              {/* MESSAGES */}
 
               <div className="chatMessages">
 
@@ -1132,8 +1190,6 @@ export default function NumerologyAIPage() {
               </div>
 
 
-              {/* INPUT */}
-
               {!answer && (
                 <div className="chatInput">
 
@@ -1170,8 +1226,6 @@ export default function NumerologyAIPage() {
                 </div>
               )}
 
-
-              {/* CONTINUE ONLY AFTER ANSWER */}
 
               {answer &&
                 !loading && (
@@ -1270,9 +1324,9 @@ export default function NumerologyAIPage() {
             <p className="sectionDescription">
 
               Your numerology profile is ready.
-              Keep Mauksh AI with you for personalized
-              guidance whenever you need another
-              perspective.
+              Get personalized guidance whenever
+              you need another perspective, powered
+              by your numbers.
 
             </p>
 
@@ -1303,7 +1357,7 @@ export default function NumerologyAIPage() {
                 <div className="planPrice">
 
                   <strong>
-                    ₹99
+                    $9
                   </strong>
 
                   <span>
@@ -1318,15 +1372,19 @@ export default function NumerologyAIPage() {
               <div className="planFeatures">
 
                 <Feature>
-                  Personalized AI guidance
+                  60 AI credits every month
                 </Feature>
 
                 <Feature>
-                  Your numbers always remembered
+                  Personalized AI numerology guidance
                 </Feature>
 
                 <Feature>
                   Career, love, money & life
+                </Feature>
+
+                <Feature>
+                  Your numerology profile remembered
                 </Feature>
 
                 <Feature>
@@ -1342,11 +1400,9 @@ export default function NumerologyAIPage() {
 
               <button
                 className="subscribeButton"
-                onClick={() => {
-                  alert(
-                    "Dodo Payments checkout will be connected here."
-                  );
-                }}
+                onClick={
+                  startCheckout
+                }
               >
 
                 Unlock Mauksh AI
@@ -1523,25 +1579,21 @@ function PageStyles() {
         box-sizing: border-box;
       }
 
-
       html,
       body {
         margin: 0;
         padding: 0;
       }
 
-
       body {
         background: #f7f5ef;
       }
-
 
       button,
       input,
       textarea {
         font: inherit;
       }
-
 
       button {
         -webkit-tap-highlight-color:
@@ -1598,7 +1650,6 @@ function PageStyles() {
         pointer-events: none;
       }
 
-
       .orbOne {
         width: 220px;
         height: 220px;
@@ -1610,7 +1661,6 @@ function PageStyles() {
           rgba(205,160,75,.12);
       }
 
-
       .orbTwo {
         width: 180px;
         height: 180px;
@@ -1621,7 +1671,6 @@ function PageStyles() {
         background:
           rgba(233,212,172,.15);
       }
-
 
       .orbThree {
         width: 120px;
@@ -1656,7 +1705,6 @@ function PageStyles() {
         z-index: 2;
       }
 
-
       .sectionBadge,
       .topBadge {
         color: #a97830;
@@ -1667,7 +1715,6 @@ function PageStyles() {
 
         letter-spacing: 2px;
       }
-
 
       .sectionTitle {
         margin:
@@ -1682,7 +1729,6 @@ function PageStyles() {
 
         font-weight: 650;
       }
-
 
       .sectionTitle span,
       .heroTitle span,
@@ -1699,7 +1745,6 @@ function PageStyles() {
         padding:
           95px 30px 100px;
       }
-
 
       .topBadge {
         display: inline-flex;
@@ -1722,7 +1767,6 @@ function PageStyles() {
           rgba(255,250,239,.65);
       }
 
-
       .heroTitle {
         margin:
           28px 0 0;
@@ -1740,7 +1784,6 @@ function PageStyles() {
         font-weight: 700;
       }
 
-
       .heroDescription {
         max-width:
           510px;
@@ -1754,7 +1797,6 @@ function PageStyles() {
 
         line-height: 1.65;
       }
-
 
       .heroButton {
         height: 56px;
@@ -1783,19 +1825,16 @@ function PageStyles() {
           transform .25s ease;
       }
 
-
       .heroButton:hover {
         transform:
           translateY(-2px);
       }
-
 
       .heroButtonText {
         font-size: 12px;
 
         font-weight: 700;
       }
-
 
       .heroArrow {
         width: 40px;
@@ -1814,7 +1853,6 @@ function PageStyles() {
         font-size: 18px;
       }
 
-
       .freePill {
         margin-top: 13px;
 
@@ -1822,7 +1860,6 @@ function PageStyles() {
 
         font-size: 9px;
       }
-
 
       .freePill span {
         color: #b18035;
@@ -1878,7 +1915,6 @@ function PageStyles() {
           rotate(3deg);
       }
 
-
       .previewTop {
         display: flex;
 
@@ -1886,7 +1922,6 @@ function PageStyles() {
 
         gap: 9px;
       }
-
 
       .miniAvatar {
         width: 42px;
@@ -1905,22 +1940,18 @@ function PageStyles() {
           rgba(40,35,28,.08);
       }
 
-
       .previewIdentity {
         min-width: 0;
       }
-
 
       .previewTop strong,
       .previewTop small {
         display: block;
       }
 
-
       .previewTop strong {
         font-size: 10px;
       }
-
 
       .previewTop small {
         margin-top: 2px;
@@ -1930,7 +1961,6 @@ function PageStyles() {
         font-size: 7px;
       }
 
-
       .previewOnline {
         margin-left: auto;
 
@@ -1938,7 +1968,6 @@ function PageStyles() {
 
         font-size: 7px;
       }
-
 
       .previewMessage {
         margin-top: 20px;
@@ -1957,7 +1986,6 @@ function PageStyles() {
         line-height: 1.5;
       }
 
-
       .previewAI {
         margin-top: 8px;
 
@@ -1974,7 +2002,6 @@ function PageStyles() {
 
         line-height: 1.5;
       }
-
 
       .previewAI span {
         margin-right: 5px;
@@ -1995,7 +2022,6 @@ function PageStyles() {
         margin-bottom: 48px;
       }
 
-
       .progress span {
         width: 35px;
         height: 3px;
@@ -2004,7 +2030,6 @@ function PageStyles() {
 
         background: #dfd9ce;
       }
-
 
       .progress span.active {
         background: #ae8038;
@@ -2020,7 +2045,6 @@ function PageStyles() {
           75px 30px 100px;
       }
 
-
       .sectionDescription {
         max-width:
           450px;
@@ -2035,7 +2059,6 @@ function PageStyles() {
         line-height: 1.7;
       }
 
-
       .form {
         max-width:
           620px;
@@ -2044,12 +2067,10 @@ function PageStyles() {
           38px;
       }
 
-
       .inputGroup {
         margin-bottom:
           24px;
       }
-
 
       .inputGroup label {
         display: block;
@@ -2070,7 +2091,6 @@ function PageStyles() {
         text-transform:
           uppercase;
       }
-
 
       .inputGroup input {
         width: 100%;
@@ -2106,7 +2126,6 @@ function PageStyles() {
           background .2s ease;
       }
 
-
       .inputGroup input:hover {
         border-color:
           #cfc5b7;
@@ -2114,7 +2133,6 @@ function PageStyles() {
         background:
           rgba(255,255,255,.9);
       }
-
 
       .inputGroup input:focus {
         border-color:
@@ -2127,13 +2145,11 @@ function PageStyles() {
           rgba(184,136,61,.08);
       }
 
-
       .inputGroup input::placeholder {
         color: #aaa39b;
 
         font-weight: 400;
       }
-
 
       .inputGroup input[type="date"] {
         color: #1d1a17;
@@ -2173,13 +2189,11 @@ function PageStyles() {
         cursor: pointer;
       }
 
-
       .continueButton span {
         font-size: 12px;
 
         font-weight: 700;
       }
-
 
       .continueButton strong {
         width: 44px;
@@ -2199,19 +2213,16 @@ function PageStyles() {
         font-size: 20px;
       }
 
-
       .continueButton:disabled {
         background: #b9b6b2;
 
         cursor: not-allowed;
       }
 
-
       .continueButton:disabled strong {
         background:
           #ead9b8;
       }
-
 
       .privacyNote {
         margin-top: 15px;
@@ -2220,7 +2231,6 @@ function PageStyles() {
 
         font-size: 9px;
       }
-
 
       .privacyNote span {
         margin-right: 5px;
@@ -2238,7 +2248,6 @@ function PageStyles() {
           70px 30px 100px;
       }
 
-
       .numbersHeader {
         display: flex;
 
@@ -2249,12 +2258,10 @@ function PageStyles() {
           space-between;
       }
 
-
       .sectionTitle.small {
         font-size:
           clamp(47px, 7vw, 70px);
       }
-
 
       .sparkle {
         width: 48px;
@@ -2278,7 +2285,6 @@ function PageStyles() {
         font-size: 22px;
       }
 
-
       .numberCards {
         display: grid;
 
@@ -2290,7 +2296,6 @@ function PageStyles() {
         margin-top:
           35px;
       }
-
 
       .numberCard {
         position: relative;
@@ -2313,13 +2318,11 @@ function PageStyles() {
         overflow: hidden;
       }
 
-
       .numberCard.featured {
         background: #1e1b17;
 
         color: white;
       }
-
 
       .numberLabel {
         font-size: 8px;
@@ -2332,11 +2335,9 @@ function PageStyles() {
         color: #8c8379;
       }
 
-
       .featured .numberLabel {
         color: #a99d8c;
       }
-
 
       .numberValue {
         margin-top: 18px;
@@ -2352,11 +2353,9 @@ function PageStyles() {
         color: #b27f30;
       }
 
-
       .featured .numberValue {
         color: #d6ad62;
       }
-
 
       .numberDescription {
         margin-top: 13px;
@@ -2366,11 +2365,9 @@ function PageStyles() {
         font-size: 9px;
       }
 
-
       .featured .numberDescription {
         color: #8f877c;
       }
-
 
       .featuredBadge {
         position: absolute;
@@ -2387,7 +2384,8 @@ function PageStyles() {
         background:
           #c39a53;
 
-        color: #211d17;
+        color:
+          #211d17;
 
         font-size: 6px;
 
@@ -2429,7 +2427,6 @@ function PageStyles() {
         text-align: left;
       }
 
-
       .askIcon {
         width: 43px;
         height: 43px;
@@ -2450,18 +2447,15 @@ function PageStyles() {
           #211c16;
       }
 
-
       .askText {
         flex: 1;
       }
-
 
       .askText strong {
         display: block;
 
         font-size: 11px;
       }
-
 
       .askText p {
         margin:
@@ -2471,7 +2465,6 @@ function PageStyles() {
 
         font-size: 8px;
       }
-
 
       .askArrow {
         width: 40px;
@@ -2491,7 +2484,6 @@ function PageStyles() {
 
         font-size: 20px;
       }
-
 
       .freeLabel {
         margin-top: 14px;
@@ -2513,7 +2505,6 @@ function PageStyles() {
           70px 30px 100px;
       }
 
-
       .chatTitle {
         margin:
           18px 0 30px;
@@ -2525,7 +2516,6 @@ function PageStyles() {
 
         letter-spacing: -4px;
       }
-
 
       .chatBox {
         overflow: hidden;
@@ -2545,7 +2535,6 @@ function PageStyles() {
           rgba(30,25,20,.06);
       }
 
-
       .chatTop {
         padding: 16px;
 
@@ -2559,7 +2548,6 @@ function PageStyles() {
           1px solid
           rgba(40,35,28,.07);
       }
-
 
       .chatAvatar {
         width: 42px;
@@ -2575,22 +2563,18 @@ function PageStyles() {
         background: white;
       }
 
-
       .chatIdentity {
         flex: 1;
       }
-
 
       .chatIdentity strong,
       .chatIdentity span {
         display: block;
       }
 
-
       .chatIdentity strong {
         font-size: 11px;
       }
-
 
       .chatIdentity span {
         margin-top: 3px;
@@ -2600,13 +2584,11 @@ function PageStyles() {
         font-size: 8px;
       }
 
-
       .chatStatus {
         color: #8b847c;
 
         font-size: 8px;
       }
-
 
       .chatStatus i {
         width: 6px;
@@ -2621,14 +2603,12 @@ function PageStyles() {
         background: #82935c;
       }
 
-
       .chatMessages {
         min-height:
           320px;
 
         padding: 20px;
       }
-
 
       .aiGreeting {
         max-width:
@@ -2641,11 +2621,9 @@ function PageStyles() {
         line-height: 1.7;
       }
 
-
       .aiGreeting span {
         color: #b07d30;
       }
-
 
       .suggestions {
         display: flex;
@@ -2656,7 +2634,6 @@ function PageStyles() {
 
         margin-top: 20px;
       }
-
 
       .suggestions button {
         padding:
@@ -2678,7 +2655,6 @@ function PageStyles() {
 
         cursor: pointer;
       }
-
 
       .userMessage {
         max-width: 80%;
@@ -2704,7 +2680,6 @@ function PageStyles() {
         line-height: 1.5;
       }
 
-
       .aiMessage {
         max-width: 92%;
 
@@ -2726,7 +2701,6 @@ function PageStyles() {
         overflow-wrap:
           break-word;
       }
-
 
       .aiLabel {
         margin-bottom: 10px;
@@ -2751,7 +2725,6 @@ function PageStyles() {
         width: 100%;
       }
 
-
       .answerHeading {
         margin:
           18px 0 9px;
@@ -2772,11 +2745,9 @@ function PageStyles() {
           -.15px;
       }
 
-
       .answerHeading:first-child {
         margin-top: 0;
       }
-
 
       .answerParagraph {
         margin:
@@ -2792,7 +2763,6 @@ function PageStyles() {
           1.8;
       }
 
-
       .answerParagraph strong {
         color:
           #29241e;
@@ -2800,7 +2770,6 @@ function PageStyles() {
         font-weight:
           750;
       }
-
 
       .answerBullet {
         display: flex;
@@ -2820,7 +2789,6 @@ function PageStyles() {
           1.7;
       }
 
-
       .answerBullet > span {
         flex-shrink: 0;
 
@@ -2831,7 +2799,6 @@ function PageStyles() {
           900;
       }
 
-
       .answerBullet strong {
         color:
           #29241e;
@@ -2840,7 +2807,6 @@ function PageStyles() {
           750;
       }
 
-
       .numberBullet {
         min-width:
           18px;
@@ -2848,7 +2814,6 @@ function PageStyles() {
         color:
           #b27d30;
       }
-
 
       .answerSpacer {
         height: 3px;
@@ -2870,7 +2835,6 @@ function PageStyles() {
           1px solid
           rgba(40,35,28,.07);
       }
-
 
       .chatInput textarea {
         flex: 1;
@@ -2895,12 +2859,10 @@ function PageStyles() {
         font-size: 11px;
       }
 
-
       .chatInput textarea:focus {
         border-color:
           #b8883d;
       }
-
 
       .chatInput button {
         width: 45px;
@@ -2922,14 +2884,12 @@ function PageStyles() {
         cursor: pointer;
       }
 
-
       .chatInput button:disabled {
         opacity: .35;
 
         cursor:
           not-allowed;
       }
-
 
       .loader {
         width: 14px;
@@ -2951,7 +2911,6 @@ function PageStyles() {
           spin .7s linear infinite;
       }
 
-
       @keyframes spin {
 
         to {
@@ -2971,7 +2930,6 @@ function PageStyles() {
           0 14px
           18px;
       }
-
 
       .continueToPlan {
         width: 100%;
@@ -3005,7 +2963,6 @@ function PageStyles() {
         cursor: pointer;
       }
 
-
       .continueToPlan span {
         width: 39px;
         height: 39px;
@@ -3028,7 +2985,6 @@ function PageStyles() {
         font-size: 18px;
       }
 
-
       .answerActions p {
         margin:
           10px 0 0;
@@ -3041,7 +2997,6 @@ function PageStyles() {
 
         font-size: 8px;
       }
-
 
       .questionCounter {
         margin-top:
@@ -3057,7 +3012,6 @@ function PageStyles() {
           9px;
       }
 
-
       .questionCounter strong {
         color:
           #a97830;
@@ -3072,7 +3026,6 @@ function PageStyles() {
         padding:
           70px 30px 100px;
       }
-
 
       .successIcon {
         width: 48px;
@@ -3100,7 +3053,6 @@ function PageStyles() {
         font-size: 18px;
       }
 
-
       .plan {
         max-width:
           600px;
@@ -3123,7 +3075,6 @@ function PageStyles() {
           rgba(25,22,18,.15);
       }
 
-
       .planTop {
         display: flex;
 
@@ -3132,7 +3083,6 @@ function PageStyles() {
 
         gap: 20px;
       }
-
 
       .planPill {
         display:
@@ -3157,7 +3107,6 @@ function PageStyles() {
         letter-spacing: 1px;
       }
 
-
       .plan h3 {
         margin:
           15px 0 0;
@@ -3172,12 +3121,10 @@ function PageStyles() {
           -.7px;
       }
 
-
       .planPrice {
         text-align:
           right;
       }
-
 
       .planPrice strong {
         display: block;
@@ -3193,7 +3140,6 @@ function PageStyles() {
           38px;
       }
 
-
       .planPrice span {
         color:
           #938b80;
@@ -3201,7 +3147,6 @@ function PageStyles() {
         font-size:
           8px;
       }
-
 
       .planFeatures {
         margin-top:
@@ -3216,7 +3161,6 @@ function PageStyles() {
         gap: 11px;
       }
 
-
       .feature {
         color:
           #c0b9af;
@@ -3225,7 +3169,6 @@ function PageStyles() {
           9px;
       }
 
-
       .feature span {
         margin-right:
           6px;
@@ -3233,7 +3176,6 @@ function PageStyles() {
         color:
           #c89a4d;
       }
-
 
       .subscribeButton {
         width: 100%;
@@ -3275,7 +3217,6 @@ function PageStyles() {
         cursor: pointer;
       }
 
-
       .subscribeButton span {
         width: 40px;
         height: 40px;
@@ -3301,7 +3242,6 @@ function PageStyles() {
           18px;
       }
 
-
       .secureText {
         margin:
           12px 0 0;
@@ -3316,7 +3256,6 @@ function PageStyles() {
           8px;
       }
 
-
       .savedProfile {
         margin-top:
           18px;
@@ -3327,7 +3266,6 @@ function PageStyles() {
         font-size:
           9px;
       }
-
 
       .savedProfile span {
         margin-right:
@@ -3352,14 +3290,12 @@ function PageStyles() {
           width: 100%;
         }
 
-
         .introPage {
           padding:
             75px
             30px
             80px;
         }
-
 
         .heroTitle {
           font-size:
@@ -3369,12 +3305,10 @@ function PageStyles() {
             -4px;
         }
 
-
         .heroDescription {
           font-size:
             14px;
         }
-
 
         .floatingPreview {
           position:
@@ -3394,7 +3328,6 @@ function PageStyles() {
             rotate(2deg);
         }
 
-
         .profilePage,
         .numbersPage,
         .chatPage,
@@ -3405,7 +3338,6 @@ function PageStyles() {
             80px;
         }
 
-
         .sectionTitle {
           font-size:
             52px;
@@ -3414,36 +3346,30 @@ function PageStyles() {
             -4px;
         }
 
-
         .numberCards {
           grid-template-columns:
             1fr;
         }
-
 
         .numberCard {
           min-height:
             150px;
         }
 
-
         .numberValue {
           font-size:
             58px;
         }
-
 
         .planTop {
           align-items:
             flex-start;
         }
 
-
         .planFeatures {
           grid-template-columns:
             1fr;
         }
-
 
         .aiMessage {
           max-width:
@@ -3467,12 +3393,10 @@ function PageStyles() {
             22px;
         }
 
-
         .heroTitle {
           font-size:
             50px;
         }
-
 
         .sectionTitle {
           font-size:
