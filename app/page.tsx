@@ -1,646 +1,431 @@
 "use client";
 
-import { useState } from "react";
-
-const API_BASE = "https://mauksh-kundali-engine.onrender.com";
-
-type LocationData = {
-  city: string;
-  latitude: number | null;
-  longitude: number | null;
-};
-
-function getToday() {
-  const d = new Date();
-
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function formatDate(date: string) {
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function display(value: any) {
-  if (value === undefined || value === null || value === "") {
-    return "—";
-  }
-
-  return String(value);
-}
+import Link from "next/link";
 
 export default function Home() {
-  const [date, setDate] = useState(getToday());
-
-  const [city, setCity] = useState("");
-
-  const [location, setLocation] = useState<LocationData>({
-    city: "",
-    latitude: null,
-    longitude: null,
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const [error, setError] = useState("");
-
-  const [panchang, setPanchang] = useState<any>(null);
-
-  async function findCity(cityName: string) {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-        cityName
-      )}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Unable to find this city.");
-    }
-
-    const results = await response.json();
-
-    if (!results.length) {
-      throw new Error("City not found. Please check the city name.");
-    }
-
-    return {
-      city: results[0].display_name.split(",")[0],
-      latitude: Number(results[0].lat),
-      longitude: Number(results[0].lon),
-    };
-  }
-
-  function detectLocation() {
-    setError("");
-
-    if (!navigator.geolocation) {
-      setError("Location detection is not supported by your browser.");
-      return;
-    }
-
-    setCity("Detecting...");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
-
-          if (!response.ok) {
-            throw new Error("Unable to identify your location.");
-          }
-
-          const result = await response.json();
-
-          const address = result.address || {};
-
-          const detectedCity =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.municipality ||
-            "Current location";
-
-          const newLocation = {
-            city: detectedCity,
-            latitude,
-            longitude,
-          };
-
-          setLocation(newLocation);
-          setCity(detectedCity);
-        } catch {
-          setCity("");
-          setError("Location detected, but the city could not be identified.");
-        }
-      },
-      () => {
-        setCity("");
-        setError(
-          "Unable to detect your location. Please enter your city manually."
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000,
-      }
-    );
-  }
-
-  async function loadPanchang() {
-    setError("");
-    setPanchang(null);
-
-    if (!date) {
-      setError("Please select a date.");
-      return;
-    }
-
-    if (!city || city === "Detecting...") {
-      if (location.latitude === null || location.longitude === null) {
-        setError("Please enter a city or use Detect.");
-        return;
-      }
-    }
-
-    setLoading(true);
-
-    try {
-      let selectedLocation = location;
-
-      if (city && city !== "Detecting...") {
-        selectedLocation = await findCity(city);
-        setLocation(selectedLocation);
-      }
-
-      if (
-        selectedLocation.latitude === null ||
-        selectedLocation.longitude === null
-      ) {
-        throw new Error("Please enter a valid city.");
-      }
-
-      const timezone =
-        Intl.DateTimeFormat().resolvedOptions().timeZone ||
-        "Asia/Kolkata";
-
-      const params = new URLSearchParams();
-
-      params.set("date", date);
-      params.set("latitude", String(selectedLocation.latitude));
-      params.set("longitude", String(selectedLocation.longitude));
-      params.set("timezone", timezone);
-
-      const response = await fetch(
-        `${API_BASE}/api/panchang?${params.toString()}`
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Panchang engine returned ${response.status}.`
-        );
-      }
-
-      const result = await response.json();
-
-      setPanchang(result);
-    } catch (err: any) {
-      console.error("Panchang error:", err);
-
-      setError(
-        err?.message ||
-          "Unable to load Panchang. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function Choghadiya({ items }: { items: any }) {
-    if (!Array.isArray(items) || items.length === 0) {
-      return <div className="empty">No data available.</div>;
-    }
-
-    return (
-      <div>
-        {items.map((item: any, index: number) => (
-          <div className="choghadiya-row" key={index}>
-
-            <span>
-              {display(item?.name)}{" "}
-            </span>
-
-            <strong>
-              {display(item?.start)}
-              {" – "}
-              {display(item?.end)}
-            </strong>
-
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const timings = panchang?.timings || {};
-
   return (
     <>
-      <main className="page">
+      <main className="mauksh-home">
 
         {/* HERO */}
-
         <section className="hero">
-          <div className="eyebrow">DAILY VEDIC PANCHANG</div>
 
-          <h1>Daily Panchang</h1>
+          <div className="hero-content">
 
-          <p>
-            Accurate Vedic Panchang for your date and location
-          </p>
+            <div className="eyebrow">
+              MAUKSH AI
+            </div>
+
+            <h1>
+              Your Personal
+              <br />
+              <span>Numerology AI</span>
+            </h1>
+
+            <p className="hero-text">
+              Understand your numbers. Ask questions about your life.
+              Get personalized guidance based on your numerology profile.
+            </p>
+
+            <div className="hero-buttons">
+
+              <Link
+                href="/numerology-ai"
+                className="primary-button"
+              >
+                Calculate My Numbers
+                <span>→</span>
+              </Link>
+
+              <Link
+                href="/numerology"
+                className="secondary-button"
+              >
+                Explore Numerology
+              </Link>
+
+            </div>
+
+            <div className="free-note">
+              ✦ Start free · No credit card required
+            </div>
+
+          </div>
+
         </section>
 
 
-        {/* SEARCH */}
+        {/* AI INTRO */}
+        <section className="ai-section">
 
-        <section className="search-section">
+          <div className="section-heading">
 
-          <div className="search-card">
-
-            <div className="field">
-
-              <label htmlFor="date">
-                DATE
-              </label>
-
-              <div className="date-input-wrap">
-
-                <span className="calendar-icon">
-                  ◷
-                </span>
-
-                <input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                    setPanchang(null);
-                    setError("");
-                  }}
-                />
-
-              </div>
-
+            <div className="eyebrow">
+              A DIFFERENT WAY TO USE NUMEROLOGY
             </div>
 
+            <h2>
+              Your numbers.
+              <br />
+              Your questions.
+              <br />
+              <span>Your AI.</span>
+            </h2>
 
-            <div className="field location-field">
-
-              <label htmlFor="city">
-                LOCATION
-              </label>
-
-              <input
-                id="city"
-                type="text"
-                value={city}
-                placeholder="Enter city"
-                onChange={(e) => {
-                  setCity(e.target.value);
-
-                  setLocation({
-                    city: "",
-                    latitude: null,
-                    longitude: null,
-                  });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    loadPanchang();
-                  }
-                }}
-              />
-
-            </div>
-
-
-            <button
-              type="button"
-              className="detect-button"
-              onClick={detectLocation}
-            >
-              Use my location
-            </button>
-
-
-            <button
-              type="button"
-              className="view-button"
-              onClick={loadPanchang}
-              disabled={loading}
-            >
-              {loading ? "Calculating..." : "View Panchang"}
-            </button>
+            <p>
+              Mauksh AI creates your personal numerology profile and
+              uses it to answer questions specifically for you.
+            </p>
 
           </div>
 
 
-          {location.city && (
-            <div className="location-confirmed">
-              <span>●</span>
-              {location.city}
+          <div className="feature-grid">
+
+            <div className="feature-card">
+
+              <div className="feature-number">
+                01
+              </div>
+
+              <div className="feature-icon">
+                3
+              </div>
+
+              <h3>
+                Know Your Numbers
+              </h3>
+
+              <p>
+                Discover your Mulank, Bhagyank, Name Number and
+                Vedic numerology grid.
+              </p>
+
             </div>
-          )}
 
 
-          {error && (
-            <div className="error">
-              {error}
+            <div className="feature-card featured">
+
+              <div className="feature-number">
+                02
+              </div>
+
+              <div className="feature-icon">
+                ✦
+              </div>
+
+              <h3>
+                Ask Mauksh AI
+              </h3>
+
+              <p>
+                Ask questions about career, relationships, money,
+                business, decisions and more.
+              </p>
+
             </div>
-          )}
+
+
+            <div className="feature-card">
+
+              <div className="feature-number">
+                03
+              </div>
+
+              <div className="feature-icon">
+                ♡
+              </div>
+
+              <h3>
+                Your Profile Remembers
+              </h3>
+
+              <p>
+                Your numerology profile stays saved so you don't
+                have to enter your details every time.
+              </p>
+
+            </div>
+
+          </div>
 
         </section>
 
 
-        {/* RESULTS */}
+        {/* EXAMPLE CHAT */}
+        <section className="chat-section">
 
-        {panchang && (
+          <div className="chat-header">
 
-          <section className="results">
-
-            <div className="date-summary">
-
-              <div>
-
-                <span className="summary-label">
-                  PANCHANG FOR
-                </span>
-
-                <h2>
-                  {formatDate(date)}
-                </h2>
-
+            <div>
+              <div className="eyebrow">
+                ASK MAUKSH AI
               </div>
 
-              <div className="summary-location">
-                {location.city}
+              <h2>
+                Ask questions
+                <br />
+                that actually matter.
+              </h2>
+            </div>
+
+            <div className="ai-mark">
+              ✦
+            </div>
+
+          </div>
+
+
+          <div className="chat-box">
+
+            <div className="message user-message">
+              Should I change my job this year?
+            </div>
+
+            <div className="message ai-message">
+
+              <div className="ai-label">
+                MAUKSH AI
+              </div>
+
+              Based on your numerology profile, your current
+              numbers indicate a period where professional
+              changes can be considered carefully.
+
+              <br />
+              <br />
+
+              Rather than making a sudden move, focus on
+              opportunities that offer better responsibility,
+              stability and long-term growth.
+
+            </div>
+
+            <div className="chat-input">
+
+              <span>
+                Ask Mauksh AI anything...
+              </span>
+
+              <div className="send-button">
+                →
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* HOW IT WORKS */}
+        <section className="how-section">
+
+          <div className="eyebrow">
+            HOW IT WORKS
+          </div>
+
+          <h2>
+            Start in
+            <br />
+            <span>three steps.</span>
+          </h2>
+
+
+          <div className="steps">
+
+            <div className="step">
+
+              <div className="step-number">
+                1
+              </div>
+
+              <div>
+                <h3>
+                  Create your profile
+                </h3>
+
+                <p>
+                  Enter your name and date of birth.
+                </p>
               </div>
 
             </div>
 
 
-            {/* PANCHANG */}
+            <div className="step">
 
-            <section className="section">
-
-              <div className="section-title">
-                <h2>Panchang</h2>
-                <div />
+              <div className="step-number">
+                2
               </div>
 
+              <div>
+                <h3>
+                  Discover your numbers
+                </h3>
 
-              <div className="panchang-grid">
-
-                <PanchangCard
-                  icon="☀"
-                  label="Vara"
-                  value={panchang?.vara?.name}
-                />
-
-                <PanchangCard
-                  icon="☾"
-                  label="Tithi"
-                  value={panchang?.tithi?.name}
-                  end={panchang?.tithi?.ends}
-                />
-
-                <PanchangCard
-                  icon="✦"
-                  label="Nakshatra"
-                  value={panchang?.nakshatra?.name}
-                  end={panchang?.nakshatra?.ends}
-                />
-
-                <PanchangCard
-                  icon="✧"
-                  label="Yoga"
-                  value={panchang?.yoga?.name}
-                  end={panchang?.yoga?.ends}
-                />
-
-                <PanchangCard
-                  icon="◐"
-                  label="Karana"
-                  value={panchang?.karana?.name}
-                  end={panchang?.karana?.ends}
-                />
-
+                <p>
+                  Get your personalized Vedic numerology profile.
+                </p>
               </div>
 
-            </section>
+            </div>
 
 
-            {/* SUN MOON */}
+            <div className="step">
 
-            <section className="section">
-
-              <div className="section-title">
-                <h2>Sun & Moon</h2>
-                <div />
+              <div className="step-number">
+                3
               </div>
 
+              <div>
+                <h3>
+                  Ask Mauksh AI
+                </h3>
 
-              <div className="two-columns">
-
-                <InfoCard title="Sun">
-
-                  <TimeRow
-                    label="Sunrise"
-                    value={panchang?.sun?.rise}
-                  />
-
-                  <TimeRow
-                    label="Sunset"
-                    value={panchang?.sun?.set}
-                  />
-
-                </InfoCard>
-
-
-                <InfoCard title="Moon">
-
-                  <TimeRow
-                    label="Moonrise"
-                    value={panchang?.moon?.rise}
-                  />
-
-                  <TimeRow
-                    label="Moonset"
-                    value={panchang?.moon?.set}
-                  />
-
-                </InfoCard>
-
+                <p>
+                  Ask your first question free and continue
+                  with your personal AI companion.
+                </p>
               </div>
 
-            </section>
+            </div>
+
+          </div>
+
+        </section>
 
 
-            {/* SHUBH ASHUBH */}
+        {/* CTA */}
+        <section className="cta-section">
 
-            <section className="section">
+          <div className="cta-card">
 
-              <div className="section-title">
-                <h2>Shubh & Ashubh Kaal</h2>
-                <div />
-              </div>
+            <div className="eyebrow">
+              MAUKSH AI
+            </div>
 
+            <h2>
+              Ready to understand
+              <br />
+              your numbers?
+            </h2>
 
-              <div className="info-grid">
+            <p>
+              Create your free numerology profile and ask
+              Mauksh AI your first question.
+            </p>
 
-                <SimpleCard
-                  label="Rahu Kaal"
-                  value={timings.rahuKaal}
-                />
+            <Link
+              href="/numerology-ai"
+              className="cta-button"
+            >
+              Start Free
+              <span>→</span>
+            </Link>
 
-                <SimpleCard
-                  label="Yamaganda"
-                  value={timings.yamaganda}
-                />
+            <div className="cta-note">
+              Your first AI question is free.
+            </div>
 
-                <SimpleCard
-                  label="Gulika Kaal"
-                  value={timings.gulika}
-                />
+          </div>
 
-                <SimpleCard
-                  label="Abhijit Muhurat"
-                  value={timings.abhijit}
-                />
-
-                <SimpleCard
-                  label="Brahma Muhurat"
-                  value={timings.brahma}
-                />
-
-              </div>
-
-            </section>
+        </section>
 
 
-            {/* CHOGHADIYA */}
+        {/* EXISTING TOOLS */}
+        <section className="tools-section">
 
-            <section className="section">
+          <div className="eyebrow">
+            FREE MAUKSH TOOLS
+          </div>
 
-              <div className="section-title">
-                <h2>Choghadiya</h2>
-                <div />
-              </div>
+          <h2>
+            Explore Numerology
+          </h2>
 
+          <div className="tools-grid">
 
-              <div className="two-columns">
+            <Link
+              href="/numerology"
+              className="tool-card"
+            >
+              <span>03</span>
 
-                <div className="large-card">
+              <h3>
+                Vedic Numerology
+              </h3>
 
-                  <h3>Day Choghadiya</h3>
+              <p>
+                Generate your Vedic numerology grid and
+                explore your number patterns.
+              </p>
 
-                  <Choghadiya
-                    items={panchang?.choghadiya?.day}
-                  />
-
-                </div>
-
-
-                <div className="large-card">
-
-                  <h3>Night Choghadiya</h3>
-
-                  <Choghadiya
-                    items={panchang?.choghadiya?.night}
-                  />
-
-                </div>
-
-              </div>
-
-            </section>
+              <strong>
+                Explore →
+              </strong>
+            </Link>
 
 
-            {/* ADDITIONAL */}
+            <Link
+              href="/numerologyreport"
+              className="tool-card"
+            >
+              <span>09</span>
 
-            <section className="section">
+              <h3>
+                Full Numerology Report
+              </h3>
 
-              <div className="section-title">
-                <h2>Additional Panchang</h2>
-                <div />
-              </div>
+              <p>
+                Generate a detailed numerology report based
+                on your name and date of birth.
+              </p>
+
+              <strong>
+                Generate →
+              </strong>
+            </Link>
 
 
-              <div className="info-grid">
+            <Link
+              href="/name-checker"
+              className="tool-card"
+            >
+              <span>05</span>
 
-                <SimpleCard
-                  label="Ayana"
-                  value={panchang?.ayana}
-                />
+              <h3>
+                Name Checker
+              </h3>
 
-                <SimpleCard
-                  label="Ritu"
-                  value={panchang?.ritu}
-                />
+              <p>
+                Check your name number and explore its
+                numerological significance.
+              </p>
 
-                <SimpleCard
-                  label="Paksha"
-                  value={panchang?.paksha}
-                />
+              <strong>
+                Check Name →
+              </strong>
+            </Link>
 
-                <SimpleCard
-                  label="Masa"
-                  value={panchang?.masa}
-                />
+          </div>
 
-                <SimpleCard
-                  label="Vikram Samvat"
-                  value={panchang?.vikramSamvat}
-                />
-
-                <SimpleCard
-                  label="Shaka Samvat"
-                  value={panchang?.shakaSamvat}
-                />
-
-                <SimpleCard
-                  label="Sun Rashi"
-                  value={panchang?.sun?.rashi?.name}
-                />
-
-                <SimpleCard
-                  label="Moon Rashi"
-                  value={panchang?.moon?.rashi?.name}
-                />
-
-                <SimpleCard
-                  label="Moon Nakshatra Pada"
-                  value={
-                    panchang?.moon?.nakshatra?.pada
-                      ? `Pada ${panchang.moon.nakshatra.pada}`
-                      : "—"
-                  }
-                />
-
-              </div>
-
-            </section>
-
-          </section>
-        )}
+        </section>
 
       </main>
 
 
       <style jsx>{`
 
-        /* =========================
-           PAGE
-        ========================= */
+        * {
+          box-sizing: border-box;
+        }
 
-        .page {
+
+        .mauksh-home {
           min-height: 100vh;
           background: #f8f5ef;
           color: #29251f;
-          padding-bottom: 90px;
         }
 
 
@@ -649,480 +434,552 @@ export default function Home() {
         ========================= */
 
         .hero {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 65px 24px 45px;
+          min-height: 680px;
+
+          display: flex;
+          align-items: center;
+
+          background:
+            radial-gradient(
+              circle at 75% 25%,
+              rgba(194, 148, 71, .14),
+              transparent 35%
+            );
+
+          border-bottom: 1px solid #ded6c9;
         }
+
+
+        .hero-content {
+          width: 100%;
+          max-width: 1100px;
+
+          margin: 0 auto;
+
+          padding: 100px 28px 90px;
+        }
+
 
         .eyebrow {
           color: #a87935;
+
           font-size: 11px;
           font-weight: 700;
-          letter-spacing: 2.5px;
-          margin-bottom: 17px;
+
+          letter-spacing: 3px;
+
+          margin-bottom: 20px;
         }
+
 
         .hero h1 {
           margin: 0;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(42px, 6vw, 70px);
-          line-height: 1;
-          font-weight: 600;
-          letter-spacing: -2px;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: clamp(48px, 7vw, 88px);
+
+          line-height: .98;
+
+          font-weight: 500;
+
+          letter-spacing: -4px;
         }
 
-        .hero p {
-          margin: 16px 0 0;
-          color: #756f64;
-          font-size: 16px;
+
+        .hero h1 span,
+        .section-heading h2 span,
+        .how-section h2 span {
+          color: #a87935;
         }
 
 
-        /* =========================
-           SEARCH
-           UNCHANGED
-        ========================= */
+        .hero-text {
+          max-width: 590px;
 
-        .search-section {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 0 24px 40px;
+          margin: 30px 0 0;
+
+          color: #71695e;
+
+          font-size: 18px;
+
+          line-height: 1.7;
         }
 
-        .search-card {
-          display: grid;
-          grid-template-columns: 210px 1fr 145px 175px;
+
+        .hero-buttons {
+          display: flex;
+
           gap: 12px;
-          align-items: end;
 
-          padding: 18px;
+          margin-top: 36px;
 
-          background: #fffdf9;
-          border: 1px solid #dfd7ca;
-          border-radius: 18px;
-
-          box-shadow:
-            0 8px 30px rgba(70, 50, 30, .055);
-        }
-
-        .field {
-          min-width: 0;
-        }
-
-        .field label {
-          display: block;
-          margin-bottom: 8px;
-
-          color: #756f64;
-
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1.3px;
+          flex-wrap: wrap;
         }
 
 
-        /* DATE */
-
-        .date-input-wrap {
-          position: relative;
-        }
-
-        .date-input-wrap input {
-          appearance: none;
-          -webkit-appearance: none;
-
-          width: 100%;
-          height: 50px;
-
-          padding: 0 42px 0 42px;
-
-          border: 1px solid #d8d0c3;
-          border-radius: 12px;
-
-          background: #fff;
-
-          color: #29251f;
-
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
-
-          font-size: 14px;
-
-          outline: none;
-          cursor: pointer;
-        }
-
-        .date-input-wrap input:hover {
-          border-color: #c5b9a8;
-        }
-
-        .date-input-wrap input:focus {
-          border-color: #a87935;
-          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
-        }
-
-        .date-input-wrap input::-webkit-calendar-picker-indicator {
-          position: absolute;
-          right: 13px;
-
-          width: 17px;
-          height: 17px;
-
-          opacity: .55;
-
-          cursor: pointer;
-        }
-
-        .calendar-icon {
-          position: absolute;
-          left: 15px;
-          top: 50%;
-
-          transform: translateY(-50%);
-
-          color: #a87935;
-          font-size: 17px;
-
-          pointer-events: none;
-          z-index: 1;
-        }
-
-
-        /* LOCATION */
-
-        .location-field input {
-          width: 100%;
-          height: 50px;
-
-          padding: 0 15px;
-
-          border: 1px solid #d8d0c3;
-          border-radius: 12px;
-
-          background: #fff;
-
-          color: #29251f;
-
-          font-size: 14px;
-
-          outline: none;
-        }
-
-        .location-field input:focus {
-          border-color: #a87935;
-          box-shadow: 0 0 0 3px rgba(168, 121, 53, .08);
-        }
-
-        .location-field input::placeholder {
-          color: #aaa196;
-        }
-
-
-        /* BUTTONS */
-
-        .detect-button,
-        .view-button {
-          height: 50px;
-
-          border-radius: 12px;
-
-          font-size: 13px;
-          font-weight: 600;
-
-          cursor: pointer;
-
-          transition:
-            transform .15s ease,
-            opacity .15s ease;
-        }
-
-        .detect-button {
-          border: 1px solid #d8d0c3;
-
-          background: #f7f3eb;
-
-          color: #60482f;
-        }
-
-        .detect-button:hover {
-          background: #f0e9de;
-        }
-
-        .view-button {
-          border: 1px solid #29251f;
-
-          background: #29251f;
-
-          color: #fff;
-        }
-
-        .view-button:hover {
-          transform: translateY(-1px);
-        }
-
-        .view-button:disabled {
-          opacity: .6;
-          cursor: wait;
-        }
-
-
-        /* LOCATION STATUS */
-
-        .location-confirmed {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-
-          margin-top: 11px;
-
-          color: #756f64;
-
-          font-size: 12px;
-        }
-
-        .location-confirmed span {
-          color: #a87935;
-          font-size: 9px;
-        }
-
-
-        /* ERROR */
-
-        .error {
-          margin-top: 13px;
-
-          padding: 13px 15px;
-
-          border: 1px solid #e3c9c0;
-          border-radius: 11px;
-
-          background: #f9eae6;
-
-          color: #863c31;
-
-          font-size: 13px;
-        }
-
-
-        /* =====================================================
-           KAALDARPAN OUTPUT
-           CLEAR BLACK TEXT
-        ===================================================== */
-
-        .results {
-          max-width: 1080px;
-          margin: 0 auto;
-          padding: 0 24px 70px;
-
-          color: #111111;
-        }
-
-
-        /* =========================
-           DATE SUMMARY
-        ========================= */
-
-        .date-summary {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          gap: 20px;
-
-          padding: 25px 24px;
-
-          background: #fffdf9;
-
-          border-top: 1px solid #c9b894;
-          border-bottom: 1px solid #c9b894;
-
-          border-radius: 0;
-        }
-
-        .summary-label {
-          display: block;
-
-          margin-bottom: 7px;
-
-          color: #6a5a42;
-
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1.4px;
-        }
-
-        .date-summary h2 {
-          margin: 0;
-
-          color: #111111;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 24px;
-          font-weight: 600;
-        }
-
-        .summary-location {
-          color: #333333;
-          font-size: 13px;
-        }
-
-
-        /* =========================
-           SECTIONS
-        ========================= */
-
-        .section {
-          margin-top: 48px;
-        }
-
-        .section-title {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-
-          margin-bottom: 15px;
-        }
-
-        .section-title h2 {
-          margin: 0;
-
-          color: #111111;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 24px;
-          font-weight: 600;
-        }
-
-        .section-title div {
-          flex: 1;
-
-          height: 1px;
-
-          background: #c9b894;
-        }
-
-
-        /* =========================
-           PANCHANG
-        ========================= */
-
-        .panchang-grid {
-          display: grid;
-
-          grid-template-columns:
-            repeat(5, 1fr);
-
-          gap: 10px;
-        }
-
-        .panchang-card {
-          min-height: 150px;
-
-          display: flex;
-          flex-direction: column;
+        .primary-button,
+        .secondary-button,
+        .cta-button {
+          display: inline-flex;
 
           align-items: center;
           justify-content: center;
 
-          padding: 18px 10px;
+          gap: 18px;
 
-          text-align: center;
+          min-height: 54px;
+
+          padding: 0 24px;
+
+          border-radius: 10px;
+
+          text-decoration: none;
+
+          font-size: 14px;
+          font-weight: 600;
+
+          transition:
+            transform .2s ease,
+            background .2s ease;
+        }
+
+
+        .primary-button {
+          background: #29251f;
+          color: white;
+        }
+
+
+        .primary-button:hover,
+        .cta-button:hover {
+          transform: translateY(-2px);
+        }
+
+
+        .primary-button span,
+        .cta-button span {
+          color: #d6ae63;
+          font-size: 18px;
+        }
+
+
+        .secondary-button {
+          border: 1px solid #cfc5b5;
 
           background: #fffdf9;
 
-          border: 1px solid #d9cdbb;
-          border-radius: 14px;
-
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .045);
-
-          transition:
-            transform .15s ease,
-            box-shadow .15s ease;
+          color: #29251f;
         }
 
-        .panchang-card:hover {
-          transform: translateY(-2px);
 
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .08);
+        .secondary-button:hover {
+          background: #f0e9de;
         }
 
-        .panchang-icon {
-          margin-bottom: 10px;
+
+        .free-note {
+          margin-top: 17px;
+
+          color: #81786d;
+
+          font-size: 12px;
+        }
+
+
+        /* =========================
+           AI SECTION
+        ========================= */
+
+        .ai-section {
+          max-width: 1100px;
+
+          margin: 0 auto;
+
+          padding: 110px 28px;
+        }
+
+
+        .section-heading {
+          max-width: 650px;
+        }
+
+
+        .section-heading h2,
+        .chat-header h2,
+        .how-section h2,
+        .tools-section h2 {
+          margin: 0;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-weight: 500;
+
+          letter-spacing: -1.8px;
+        }
+
+
+        .section-heading h2 {
+          font-size: clamp(38px, 5vw, 62px);
+
+          line-height: 1.02;
+        }
+
+
+        .section-heading p {
+          max-width: 600px;
+
+          margin-top: 22px;
+
+          color: #756e64;
+
+          line-height: 1.7;
+
+          font-size: 16px;
+        }
+
+
+        .feature-grid {
+          display: grid;
+
+          grid-template-columns:
+            repeat(3, 1fr);
+
+          gap: 14px;
+
+          margin-top: 55px;
+        }
+
+
+        .feature-card {
+          min-height: 300px;
+
+          padding: 28px;
+
+          background: #fffdf9;
+
+          border: 1px solid #ded6c9;
+
+          border-radius: 16px;
+
+          position: relative;
+        }
+
+
+        .feature-card.featured {
+          background: #29251f;
+
+          color: white;
+
+          border-color: #29251f;
+        }
+
+
+        .feature-number {
+          color: #9b9285;
+
+          font-size: 11px;
+
+          letter-spacing: 1px;
+        }
+
+
+        .featured .feature-number {
+          color: #bca878;
+        }
+
+
+        .feature-icon {
+          width: 50px;
+          height: 50px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          margin-top: 45px;
+
+          border-radius: 50%;
+
+          background: #f1e7d5;
 
           color: #a87935;
 
           font-family: Georgia, serif;
 
-          font-size: 24px;
+          font-size: 23px;
         }
 
-        .panchang-card .label {
-          margin-bottom: 7px;
 
-          color: #625847;
-
-          font-size: 11px;
+        .featured .feature-icon {
+          background: #a87935;
+          color: white;
         }
 
-        .panchang-card strong {
-          color: #111111;
 
-          font-size: 15px;
-          font-weight: 600;
+        .feature-card h3 {
+          margin: 23px 0 10px;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 23px;
+
+          font-weight: 500;
         }
 
-        .panchang-card small {
-          margin-top: 6px;
 
-          color: #55504a;
+        .feature-card p {
+          margin: 0;
 
-          font-size: 10px;
+          color: #756e64;
+
+          font-size: 14px;
+
+          line-height: 1.7;
+        }
+
+
+        .featured p {
+          color: #c5bfb5;
         }
 
 
         /* =========================
-           GENERAL CARDS
+           CHAT
         ========================= */
 
-        .two-columns {
-          display: grid;
+        .chat-section {
+          max-width: 1100px;
 
-          grid-template-columns:
-            1fr 1fr;
+          margin: 0 auto;
 
-          gap: 12px;
+          padding: 20px 28px 110px;
         }
 
-        .info-card,
-        .large-card {
-          padding: 20px;
+
+        .chat-header {
+          display: flex;
+
+          align-items: flex-end;
+          justify-content: space-between;
+
+          gap: 30px;
+        }
+
+
+        .chat-header h2 {
+          font-size: clamp(38px, 5vw, 60px);
+
+          line-height: 1.02;
+        }
+
+
+        .ai-mark {
+          width: 75px;
+          height: 75px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          flex-shrink: 0;
+
+          border: 1px solid #d1b277;
+
+          border-radius: 50%;
+
+          color: #a87935;
+
+          font-size: 28px;
+        }
+
+
+        .chat-box {
+          max-width: 760px;
+
+          margin: 50px auto 0;
+
+          padding: 22px;
+
+          background: #29251f;
+
+          border-radius: 20px;
+
+          box-shadow:
+            0 20px 60px rgba(50, 40, 25, .13);
+        }
+
+
+        .message {
+          max-width: 80%;
+
+          padding: 16px 18px;
+
+          border-radius: 14px;
+
+          font-size: 14px;
+
+          line-height: 1.65;
+        }
+
+
+        .user-message {
+          margin-left: auto;
+
+          background: #a87935;
+
+          color: white;
+
+          border-bottom-right-radius: 4px;
+        }
+
+
+        .ai-message {
+          margin-top: 15px;
 
           background: #fffdf9;
 
-          border: 1px solid #d9cdbb;
-          border-radius: 14px;
+          color: #29251f;
 
-          box-shadow:
-            0 8px 22px rgba(70, 50, 30, .045);
+          border-bottom-left-radius: 4px;
         }
 
-        .info-card h3,
-        .large-card h3 {
-          margin: 0 0 12px;
 
-          color: #111111;
+        .ai-label {
+          margin-bottom: 8px;
+
+          color: #a87935;
+
+          font-size: 10px;
+
+          font-weight: 700;
+
+          letter-spacing: 1.5px;
+        }
+
+
+        .chat-input {
+          display: flex;
+
+          align-items: center;
+          justify-content: space-between;
+
+          gap: 15px;
+
+          height: 54px;
+
+          margin-top: 18px;
+
+          padding: 0 8px 0 17px;
+
+          background: #3a352e;
+
+          border: 1px solid #514b42;
+
+          border-radius: 12px;
+
+          color: #a9a298;
+
+          font-size: 13px;
+        }
+
+
+        .send-button {
+          width: 40px;
+          height: 40px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 9px;
+
+          background: #a87935;
+
+          color: white;
+
+          font-size: 18px;
+        }
+
+
+        /* =========================
+           HOW IT WORKS
+        ========================= */
+
+        .how-section {
+          max-width: 1100px;
+
+          margin: 0 auto;
+
+          padding: 20px 28px 110px;
+        }
+
+
+        .how-section h2 {
+          font-size: clamp(40px, 5vw, 62px);
+
+          line-height: 1;
+        }
+
+
+        .steps {
+          display: grid;
+
+          grid-template-columns:
+            repeat(3, 1fr);
+
+          gap: 15px;
+
+          margin-top: 55px;
+        }
+
+
+        .step {
+          display: flex;
+
+          gap: 18px;
+
+          padding: 25px;
+
+          background: #fffdf9;
+
+          border-top: 1px solid #cdbb99;
+
+          border-bottom: 1px solid #ded6c9;
+        }
+
+
+        .step-number {
+          width: 38px;
+          height: 38px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          flex-shrink: 0;
+
+          border-radius: 50%;
+
+          background: #f0e6d3;
+
+          color: #8e672e;
+
+          font-weight: 600;
+        }
+
+
+        .step h3 {
+          margin: 0;
 
           font-family:
             Georgia,
@@ -1130,123 +987,208 @@ export default function Home() {
             serif;
 
           font-size: 19px;
-          font-weight: 600;
+
+          font-weight: 500;
         }
 
-        .time-row,
-        .choghadiya-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
 
-          gap: 20px;
+        .step p {
+          margin: 7px 0 0;
 
-          padding: 12px 0;
-
-          border-bottom: 1px solid #ebe4da;
-        }
-
-        .time-row:last-child,
-        .choghadiya-row:last-child {
-          border-bottom: 0;
-        }
-
-        .time-row span,
-        .choghadiya-row span {
-          color: #333333;
-          font-size: 13px;
-        }
-
-        .time-row strong,
-        .choghadiya-row strong {
-          color: #111111;
+          color: #756e64;
 
           font-size: 13px;
-          font-weight: 600;
 
-          text-align: right;
+          line-height: 1.6;
         }
 
 
         /* =========================
-           INFO GRID
+           CTA
         ========================= */
 
-        .info-grid {
+        .cta-section {
+          padding: 20px 20px 110px;
+        }
+
+
+        .cta-card {
+          max-width: 1000px;
+
+          margin: 0 auto;
+
+          padding: 75px 30px;
+
+          text-align: center;
+
+          background:
+            radial-gradient(
+              circle at center,
+              rgba(193, 147, 67, .18),
+              transparent 60%
+            ),
+            #29251f;
+
+          border-radius: 22px;
+
+          color: white;
+        }
+
+
+        .cta-card .eyebrow {
+          color: #d6ae63;
+        }
+
+
+        .cta-card h2 {
+          margin: 0;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: clamp(38px, 5vw, 62px);
+
+          line-height: 1;
+
+          font-weight: 500;
+
+          letter-spacing: -2px;
+        }
+
+
+        .cta-card p {
+          max-width: 550px;
+
+          margin: 22px auto 30px;
+
+          color: #c4beb4;
+
+          font-size: 15px;
+
+          line-height: 1.7;
+        }
+
+
+        .cta-button {
+          background: #d0a552;
+
+          color: #29251f;
+        }
+
+
+        .cta-note {
+          margin-top: 14px;
+
+          color: #918a81;
+
+          font-size: 11px;
+        }
+
+
+        /* =========================
+           TOOLS
+        ========================= */
+
+        .tools-section {
+          max-width: 1100px;
+
+          margin: 0 auto;
+
+          padding: 0 28px 110px;
+        }
+
+
+        .tools-section h2 {
+          font-size: 48px;
+
+          line-height: 1;
+        }
+
+
+        .tools-grid {
           display: grid;
 
           grid-template-columns:
             repeat(3, 1fr);
 
-          gap: 10px;
+          gap: 14px;
+
+          margin-top: 40px;
         }
 
-        .simple-card {
-          padding: 18px;
+
+        .tool-card {
+          display: block;
+
+          padding: 28px;
 
           background: #fffdf9;
 
-          border: 1px solid #d9cdbb;
-          border-radius: 13px;
+          border: 1px solid #ded6c9;
 
-          box-shadow:
-            0 6px 18px rgba(70, 50, 30, .035);
-        }
+          border-radius: 15px;
 
-        .simple-card span {
-          display: block;
+          color: #29251f;
 
-          margin-bottom: 7px;
+          text-decoration: none;
 
-          color: #625847;
-
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: .2px;
-        }
-
-        .simple-card strong {
-          color: #111111;
-
-          font-size: 15px;
-          font-weight: 600;
+          transition:
+            transform .2s ease,
+            border-color .2s ease;
         }
 
 
-        /* =========================
-           EMPTY
-        ========================= */
+        .tool-card:hover {
+          transform: translateY(-3px);
 
-        .empty {
-          padding: 8px 0;
+          border-color: #b99a62;
+        }
 
-          color: #55504a;
+
+        .tool-card > span {
+          color: #a87935;
+
+          font-size: 11px;
+
+          letter-spacing: 2px;
+        }
+
+
+        .tool-card h3 {
+          margin: 35px 0 10px;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: 23px;
+
+          font-weight: 500;
+        }
+
+
+        .tool-card p {
+          margin: 0;
+
+          color: #756e64;
+
+          font-size: 13px;
+
+          line-height: 1.7;
+        }
+
+
+        .tool-card strong {
+          display: inline-block;
+
+          margin-top: 22px;
+
+          color: #9b702d;
 
           font-size: 12px;
-        }
-
-
-        /* =========================
-           TABLET
-        ========================= */
-
-        @media (max-width: 850px) {
-
-          .search-card {
-            grid-template-columns:
-              1fr 1fr;
-          }
-
-          .panchang-grid {
-            grid-template-columns:
-              repeat(3, 1fr);
-          }
-
-          .info-grid {
-            grid-template-columns:
-              repeat(2, 1fr);
-          }
-
         }
 
 
@@ -1254,74 +1196,95 @@ export default function Home() {
            MOBILE
         ========================= */
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
 
           .hero {
-            padding: 48px 18px 34px;
+            min-height: auto;
           }
+
+
+          .hero-content {
+            padding:
+              70px 20px
+              70px;
+          }
+
 
           .hero h1 {
-            font-size: 44px;
-            letter-spacing: -1.5px;
+            font-size: 52px;
+
+            letter-spacing: -2.5px;
           }
 
-          .hero p {
-            font-size: 14px;
-            line-height: 1.5;
+
+          .hero-text {
+            font-size: 15px;
           }
 
-          .search-section,
-          .results {
-            padding-left: 18px;
-            padding-right: 18px;
+
+          .hero-buttons {
+            flex-direction: column;
           }
 
-          .search-card {
-            grid-template-columns: 1fr;
 
-            padding: 16px;
-
-            border-radius: 16px;
+          .primary-button,
+          .secondary-button {
+            width: 100%;
           }
 
-          .field input,
-          .date-input-wrap input,
-          .detect-button,
-          .view-button {
-            height: 50px;
+
+          .ai-section,
+          .chat-section,
+          .how-section,
+          .tools-section {
+            padding-left: 20px;
+            padding-right: 20px;
           }
 
-          .panchang-grid {
-            grid-template-columns:
-              1fr 1fr;
-          }
 
-          .panchang-card {
-            min-height: 140px;
-          }
-
-          .two-columns {
+          .feature-grid,
+          .steps,
+          .tools-grid {
             grid-template-columns: 1fr;
           }
 
-          .info-grid {
-            grid-template-columns: 1fr;
+
+          .feature-card {
+            min-height: 270px;
           }
 
-          .date-summary {
-            display: block;
+
+          .chat-header {
+            align-items: flex-start;
           }
 
-          .summary-location {
-            margin-top: 8px;
-          }
 
-          .section {
-            margin-top: 40px;
-          }
+          .ai-mark {
+            width: 55px;
+            height: 55px;
 
-          .section-title h2 {
             font-size: 22px;
+          }
+
+
+          .message {
+            max-width: 92%;
+          }
+
+
+          .cta-card {
+            padding:
+              60px 22px;
+          }
+
+
+          .cta-card h2 {
+            font-size: 42px;
+          }
+
+
+          .tools-section h2 {
+            font-size: 40px;
           }
 
         }
@@ -1330,139 +1293,19 @@ export default function Home() {
         @media (max-width: 380px) {
 
           .hero h1 {
+            font-size: 45px;
+          }
+
+
+          .section-heading h2,
+          .chat-header h2,
+          .how-section h2 {
             font-size: 40px;
-          }
-
-          .panchang-card {
-            padding-left: 7px;
-            padding-right: 7px;
-          }
-
-          .panchang-card strong {
-            font-size: 14px;
           }
 
         }
 
       `}</style>
     </>
-  );
-}
-
-
-/* =====================================
-   PANCHANG CARD
-===================================== */
-
-function PanchangCard({
-  icon,
-  label,
-  value,
-  end,
-}: {
-  icon: string;
-  label: string;
-  value: any;
-  end?: any;
-}) {
-  return (
-    <div className="panchang-card">
-
-      <div className="panchang-icon">
-        {icon}
-      </div>
-
-      <div className="label">
-        {label}
-      </div>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-      {end && (
-        <small>
-          Ends: {display(end)}
-        </small>
-      )}
-
-    </div>
-  );
-}
-
-
-/* =====================================
-   INFO CARD
-===================================== */
-
-function InfoCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="info-card">
-
-      <h3>{title}</h3>
-
-      {children}
-
-    </div>
-  );
-}
-
-
-/* =====================================
-   TIME ROW
-===================================== */
-
-function TimeRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: any;
-}) {
-  return (
-    <div className="time-row">
-
-      <span>
-        {label}:{" "}
-      </span>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-    </div>
-  );
-}
-
-
-/* =====================================
-   SIMPLE CARD
-===================================== */
-
-function SimpleCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: any;
-}) {
-  return (
-    <div className="simple-card">
-
-      <span>
-        {label}:{" "}
-      </span>
-
-      <strong>
-        {display(value)}
-      </strong>
-
-    </div>
   );
 }
