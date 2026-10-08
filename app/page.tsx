@@ -1,418 +1,730 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
-export default function Home() {
+type Step =
+  | "profile"
+  | "profile-created"
+  | "chat"
+  | "plans";
+
+type NumerologyProfile = {
+  name: string;
+  dob: string;
+  mulank: number;
+  bhagyank: number;
+  nameNumber: number;
+};
+
+export default function NumerologyAIPage() {
+  const [step, setStep] = useState<Step>("profile");
+
+  const [name, setName] = useState("");
+  const [dob, setDob] = useState("");
+
+  const [profile, setProfile] =
+    useState<NumerologyProfile | null>(null);
+
+  const [question, setQuestion] = useState("");
+
+  const [answer, setAnswer] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  /*
+   * TEMPORARY FRONTEND CALCULATION
+   *
+   * Replace this with your existing Mauksh numerology
+   * calculation logic when connecting the real backend.
+   */
+
+  function reduceNumber(value: number): number {
+    while (value > 9) {
+      value = String(value)
+        .split("")
+        .reduce((sum, digit) => sum + Number(digit), 0);
+    }
+
+    return value;
+  }
+
+  function calculateMulank(date: string) {
+    const day = Number(date.split("-")[2]);
+
+    if (!day) return 0;
+
+    return reduceNumber(day);
+  }
+
+  function calculateBhagyank(date: string) {
+    const digits = date
+      .replaceAll("-", "")
+      .split("")
+      .map(Number);
+
+    const total = digits.reduce(
+      (sum, digit) => sum + digit,
+      0
+    );
+
+    return reduceNumber(total);
+  }
+
+  function calculateNameNumber(value: string) {
+    /*
+     * Temporary visual calculation.
+     *
+     * IMPORTANT:
+     * Replace with your existing Mauksh name-number
+     * calculation before production.
+     */
+
+    const letters = value
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "");
+
+    if (!letters) return 0;
+
+    const total = letters
+      .split("")
+      .reduce(
+        (sum, letter) =>
+          sum + (letter.charCodeAt(0) - 64),
+        0
+      );
+
+    return reduceNumber(total);
+  }
+
+  function createProfile() {
+    if (!name.trim() || !dob) return;
+
+    const newProfile: NumerologyProfile = {
+      name: name.trim(),
+      dob,
+      mulank: calculateMulank(dob),
+      bhagyank: calculateBhagyank(dob),
+      nameNumber: calculateNameNumber(name),
+    };
+
+    setProfile(newProfile);
+
+    setStep("profile-created");
+  }
+
+  function continueToAI() {
+    setStep("chat");
+  }
+
+  async function askQuestion() {
+    if (!question.trim()) return;
+
+    setLoading(true);
+
+    /*
+     * TEMPORARY DEMO RESPONSE.
+     *
+     * Later this will call:
+     *
+     * POST /api/numerology-ai
+     *
+     * The backend will:
+     * 1. Verify logged-in user
+     * 2. Load their Supabase profile
+     * 3. Check AI usage
+     * 4. Send numerology profile + question to OpenAI
+     * 5. Save conversation
+     * 6. Increment usage
+     */
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1400)
+    );
+
+    setAnswer(
+      `Based on your numerology profile, your Mulank is ${profile?.mulank} and your Bhagyank is ${profile?.bhagyank}. This combination suggests that you should approach important decisions with patience while staying open to new opportunities. Your personal numbers can be used as a framework for understanding your strengths, timing and patterns.`
+    );
+
+    setLoading(false);
+
+    /*
+     * For the first version we immediately consider
+     * the free question consumed after the answer.
+     */
+
+    setTimeout(() => {
+      setStep("plans");
+    }, 2500);
+  }
+
   return (
-    <>
-      <main className="mauksh-home">
+    <main className="page">
 
-        {/* HERO */}
-        <section className="hero">
+      {/* HEADER */}
 
-          <div className="hero-content">
+      <header className="header">
 
-            <div className="eyebrow">
-              MAUKSH AI
-            </div>
+        <Link href="/" className="logo">
+          <span className="logo-mark">
+            M
+          </span>
 
-            <h1>
-              Your Personal
-              <br />
-              <span>Numerology AI</span>
-            </h1>
+          <span>
+            MAUKSH
+            <small>AI</small>
+          </span>
+        </Link>
 
-            <p className="hero-text">
-              Understand your numbers. Ask questions about your life.
-              Get personalized guidance based on your numerology profile.
-            </p>
+        <div className="header-status">
+          <span />
+          Numerology AI
+        </div>
 
-            <div className="hero-buttons">
+      </header>
 
-              <Link
-                href="/numerology-ai"
-                className="primary-button"
-              >
-                Calculate My Numbers
-                <span>→</span>
-              </Link>
 
-              <Link
-                href="/numerology"
-                className="secondary-button"
-              >
-                Explore Numerology
-              </Link>
+      {/* =========================
+          PROFILE
+      ========================= */}
 
-            </div>
+      {step === "profile" && (
 
-            <div className="free-note">
-              ✦ Start free · No credit card required
-            </div>
+        <section className="center-section">
+
+          <div className="eyebrow">
+            STEP 01 · YOUR PROFILE
+          </div>
+
+          <h1>
+            Let's discover
+            <br />
+            <em>your numbers.</em>
+          </h1>
+
+          <p className="intro">
+            Enter your name and date of birth.
+            We'll create your personal numerology profile
+            before you ask Mauksh AI your first question.
+          </p>
+
+
+          <div className="form-card">
+
+            <label>
+              Full Name
+
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
+              />
+
+            </label>
+
+
+            <label>
+              Date of Birth
+
+              <input
+                type="date"
+                value={dob}
+                onChange={(e) =>
+                  setDob(e.target.value)
+                }
+              />
+
+            </label>
+
+
+            <button
+              onClick={createProfile}
+              disabled={!name.trim() || !dob}
+              className="primary-button"
+            >
+              Create My Profile
+              <span>→</span>
+            </button>
+
+
+            <small className="form-note">
+              Your profile will be saved to your Mauksh
+              account.
+            </small>
 
           </div>
 
         </section>
 
+      )}
 
-        {/* AI INTRO */}
-        <section className="ai-section">
 
-          <div className="section-heading">
+      {/* =========================
+          PROFILE CREATED
+      ========================= */}
 
-            <div className="eyebrow">
-              A DIFFERENT WAY TO USE NUMEROLOGY
-            </div>
+      {step === "profile-created" && profile && (
 
-            <h2>
-              Your numbers.
-              <br />
-              Your questions.
-              <br />
-              <span>Your AI.</span>
-            </h2>
+        <section className="profile-section">
 
-            <p>
-              Mauksh AI creates your personal numerology profile and
-              uses it to answer questions specifically for you.
-            </p>
-
+          <div className="eyebrow">
+            YOUR NUMEROLOGY PROFILE
           </div>
 
+          <h1>
+            Welcome,
+            <br />
+            <em>{profile.name}.</em>
+          </h1>
 
-          <div className="feature-grid">
-
-            <div className="feature-card">
-
-              <div className="feature-number">
-                01
-              </div>
-
-              <div className="feature-icon">
-                3
-              </div>
-
-              <h3>
-                Know Your Numbers
-              </h3>
-
-              <p>
-                Discover your Mulank, Bhagyank, Name Number and
-                Vedic numerology grid.
-              </p>
-
-            </div>
+          <p className="intro">
+            Your personal numerology profile is ready.
+          </p>
 
 
-            <div className="feature-card featured">
+          <div className="numbers-card">
 
-              <div className="feature-number">
-                02
-              </div>
+            <div className="number">
 
-              <div className="feature-icon">
-                ✦
-              </div>
+              <small>
+                MULANK
+              </small>
 
-              <h3>
-                Ask Mauksh AI
-              </h3>
+              <strong>
+                {profile.mulank}
+              </strong>
 
-              <p>
-                Ask questions about career, relationships, money,
-                business, decisions and more.
-              </p>
+              <span>
+                Your core nature
+              </span>
 
             </div>
 
 
-            <div className="feature-card">
+            <div className="number active">
 
-              <div className="feature-number">
-                03
-              </div>
+              <small>
+                BHAGYANK
+              </small>
 
-              <div className="feature-icon">
-                ♡
-              </div>
+              <strong>
+                {profile.bhagyank}
+              </strong>
 
-              <h3>
-                Your Profile Remembers
-              </h3>
+              <span>
+                Your life path
+              </span>
 
-              <p>
-                Your numerology profile stays saved so you don't
-                have to enter your details every time.
-              </p>
+            </div>
+
+
+            <div className="number">
+
+              <small>
+                NAME NUMBER
+              </small>
+
+              <strong>
+                {profile.nameNumber}
+              </strong>
+
+              <span>
+                Your expression
+              </span>
 
             </div>
 
           </div>
 
-        </section>
 
+          <div className="grid-preview">
 
-        {/* EXAMPLE CHAT */}
-        <section className="chat-section">
-
-          <div className="chat-header">
-
-            <div>
-              <div className="eyebrow">
-                ASK MAUKSH AI
-              </div>
-
-              <h2>
-                Ask questions
-                <br />
-                that actually matter.
-              </h2>
+            <div className="grid-title">
+              YOUR VEDIC NUMEROLOGY GRID
             </div>
 
-            <div className="ai-mark">
+            <div className="vedic-grid">
+
+              {[3, 1, 9, 6, 7, 5, 2, 8, 4].map(
+                (number) => (
+
+                  <div
+                    key={number}
+                    className={
+                      number === profile.mulank ||
+                      number === profile.bhagyank
+                        ? "grid-number highlighted"
+                        : "grid-number"
+                    }
+                  >
+                    {number}
+                  </div>
+
+                )
+              )}
+
+            </div>
+
+          </div>
+
+
+          <div className="free-question">
+
+            <div className="free-icon">
               ✦
             </div>
 
+            <div>
+
+              <strong>
+                Your first AI question is free
+              </strong>
+
+              <p>
+                Ask Mauksh AI anything about your
+                career, relationships, money or life.
+              </p>
+
+            </div>
+
           </div>
 
 
-          <div className="chat-box">
+          <button
+            onClick={continueToAI}
+            className="primary-button"
+          >
+            Ask Mauksh AI
+            <span>→</span>
+          </button>
 
-            <div className="message user-message">
-              Should I change my job this year?
-            </div>
+        </section>
 
-            <div className="message ai-message">
+      )}
 
-              <div className="ai-label">
-                MAUKSH AI
+
+      {/* =========================
+          CHAT
+      ========================= */}
+
+      {step === "chat" && profile && (
+
+        <section className="chat-section">
+
+          <div className="chat-heading">
+
+            <div>
+
+              <div className="eyebrow">
+                STEP 03 · ASK MAUKSH AI
               </div>
 
-              Based on your numerology profile, your current
-              numbers indicate a period where professional
-              changes can be considered carefully.
-
-              <br />
-              <br />
-
-              Rather than making a sudden move, focus on
-              opportunities that offer better responsibility,
-              stability and long-term growth.
+              <h1>
+                What would you
+                <br />
+                like to <em>know?</em>
+              </h1>
 
             </div>
 
-            <div className="chat-input">
+
+            <div className="profile-mini">
+
+              <div>
+                {profile.name
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
 
               <span>
-                Ask Mauksh AI anything...
+                {profile.mulank} · {profile.bhagyank}
               </span>
 
-              <div className="send-button">
-                →
+            </div>
+
+          </div>
+
+
+          <div className="chat-card">
+
+            <div className="chat-top">
+
+              <div className="ai-avatar">
+                M
               </div>
 
+              <div>
+
+                <strong>
+                  Mauksh AI
+                </strong>
+
+                <small>
+                  Personal Numerology Companion
+                </small>
+
+              </div>
+
+              <span className="online">
+                ●
+              </span>
+
             </div>
+
+
+            <div className="chat-content">
+
+              {answer ? (
+
+                <>
+
+                  <div className="user-bubble">
+                    {question}
+                  </div>
+
+
+                  <div className="ai-answer">
+
+                    <div className="answer-label">
+                      MAUKSH AI
+                    </div>
+
+                    <p>
+                      {answer}
+                    </p>
+
+                  </div>
+
+                </>
+
+              ) : (
+
+                <div className="suggestions">
+
+                  <span>
+                    Try asking:
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      setQuestion(
+                        "Should I change my job this year?"
+                      )
+                    }
+                  >
+                    Should I change my job this year?
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setQuestion(
+                        "What should I focus on in my career?"
+                      )
+                    }
+                  >
+                    What should I focus on in my career?
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setQuestion(
+                        "What does my numerology say about relationships?"
+                      )
+                    }
+                  >
+                    What does my numerology say about relationships?
+                  </button>
+
+                </div>
+
+              )}
+
+            </div>
+
+
+            {!answer && (
+
+              <div className="input-area">
+
+                <textarea
+                  placeholder="Ask anything about your numbers..."
+                  value={question}
+                  onChange={(e) =>
+                    setQuestion(e.target.value)
+                  }
+                  rows={3}
+                />
+
+                <button
+                  onClick={askQuestion}
+                  disabled={
+                    !question.trim() ||
+                    loading
+                  }
+                  className="send-button"
+                >
+                  {loading ? "..." : "↑"}
+                </button>
+
+              </div>
+
+            )}
+
+          </div>
+
+
+          <div className="free-indicator">
+
+            <span>
+              1 free question
+            </span>
+
+            Your first answer is free.
 
           </div>
 
         </section>
 
+      )}
 
-        {/* HOW IT WORKS */}
-        <section className="how-section">
+
+      {/* =========================
+          PLANS
+      ========================= */}
+
+      {step === "plans" && (
+
+        <section className="plans-section">
 
           <div className="eyebrow">
-            HOW IT WORKS
+            YOUR FREE QUESTION IS USED
           </div>
 
-          <h2>
-            Start in
+          <h1>
+            Keep your
             <br />
-            <span>three steps.</span>
-          </h2>
+            <em>conversation going.</em>
+          </h1>
+
+          <p className="intro">
+            Your numerology profile is saved.
+            Unlock Mauksh AI to continue asking
+            personalized questions whenever you need guidance.
+          </p>
 
 
-          <div className="steps">
+          <div className="plan-card">
 
-            <div className="step">
-
-              <div className="step-number">
-                1
-              </div>
-
-              <div>
-                <h3>
-                  Create your profile
-                </h3>
-
-                <p>
-                  Enter your name and date of birth.
-                </p>
-              </div>
-
-            </div>
-
-
-            <div className="step">
-
-              <div className="step-number">
-                2
-              </div>
+            <div className="plan-top">
 
               <div>
-                <h3>
-                  Discover your numbers
-                </h3>
 
-                <p>
-                  Get your personalized Vedic numerology profile.
-                </p>
+                <div className="plan-badge">
+                  MAUKSH AI
+                </div>
+
+                <h2>
+                  Personal Numerology AI
+                </h2>
+
+              </div>
+
+              <div className="price">
+
+                <strong>
+                  ₹99
+                </strong>
+
+                <span>
+                  / month
+                </span>
+
               </div>
 
             </div>
 
 
-            <div className="step">
+            <div className="plan-divider" />
 
-              <div className="step-number">
-                3
-              </div>
 
-              <div>
-                <h3>
-                  Ask Mauksh AI
-                </h3>
+            <div className="benefits">
 
-                <p>
-                  Ask your first question free and continue
-                  with your personal AI companion.
-                </p>
-              </div>
+              <Benefit>
+                Personalized AI guidance
+              </Benefit>
+
+              <Benefit>
+                Your saved numerology profile
+              </Benefit>
+
+              <Benefit>
+                Career, relationship & life questions
+              </Benefit>
+
+              <Benefit>
+                Saved conversation history
+              </Benefit>
+
+              <Benefit>
+                Your profile stays with you
+              </Benefit>
 
             </div>
 
-          </div>
 
-        </section>
-
-
-        {/* CTA */}
-        <section className="cta-section">
-
-          <div className="cta-card">
-
-            <div className="eyebrow">
-              MAUKSH AI
-            </div>
-
-            <h2>
-              Ready to understand
-              <br />
-              your numbers?
-            </h2>
-
-            <p>
-              Create your free numerology profile and ask
-              Mauksh AI your first question.
-            </p>
-
-            <Link
-              href="/numerology-ai"
-              className="cta-button"
+            <button
+              className="subscribe-button"
+              onClick={() => {
+                /*
+                 * NEXT STEP:
+                 *
+                 * Call your backend:
+                 *
+                 * POST /api/dodo/create-checkout
+                 *
+                 * Then redirect to Dodo checkout.
+                 */
+                alert(
+                  "Dodo Payments will be connected here."
+                );
+              }}
             >
-              Start Free
+              Continue with Mauksh AI
               <span>→</span>
-            </Link>
+            </button>
 
-            <div className="cta-note">
-              Your first AI question is free.
+
+            <div className="cancel-note">
+              Cancel anytime · Secure payment
+            </div>
+
+          </div>
+
+
+          <div className="saved-profile-note">
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                Your numerology profile is saved.
+              </strong>
+
+              <small>
+                You won't need to enter your details again.
+              </small>
+
             </div>
 
           </div>
 
         </section>
 
-
-        {/* EXISTING TOOLS */}
-        <section className="tools-section">
-
-          <div className="eyebrow">
-            FREE MAUKSH TOOLS
-          </div>
-
-          <h2>
-            Explore Numerology
-          </h2>
-
-          <div className="tools-grid">
-
-            <Link
-              href="/numerology"
-              className="tool-card"
-            >
-              <span>03</span>
-
-              <h3>
-                Vedic Numerology
-              </h3>
-
-              <p>
-                Generate your Vedic numerology grid and
-                explore your number patterns.
-              </p>
-
-              <strong>
-                Explore →
-              </strong>
-            </Link>
-
-
-            <Link
-              href="/numerologyreport"
-              className="tool-card"
-            >
-              <span>09</span>
-
-              <h3>
-                Full Numerology Report
-              </h3>
-
-              <p>
-                Generate a detailed numerology report based
-                on your name and date of birth.
-              </p>
-
-              <strong>
-                Generate →
-              </strong>
-            </Link>
-
-
-            <Link
-              href="/name-checker"
-              className="tool-card"
-            >
-              <span>05</span>
-
-              <h3>
-                Name Checker
-              </h3>
-
-              <p>
-                Check your name number and explore its
-                numerological significance.
-              </p>
-
-              <strong>
-                Check Name →
-              </strong>
-            </Link>
-
-          </div>
-
-        </section>
-
-      </main>
+      )}
 
 
       <style jsx>{`
@@ -421,479 +733,365 @@ export default function Home() {
           box-sizing: border-box;
         }
 
-
-        .mauksh-home {
+        .page {
           min-height: 100vh;
           background: #f8f5ef;
           color: #29251f;
         }
 
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-          min-height: 680px;
+        .header {
+          height: 70px;
 
           display: flex;
           align-items: center;
+          justify-content: space-between;
 
-          background:
-            radial-gradient(
-              circle at 75% 25%,
-              rgba(194, 148, 71, .14),
-              transparent 35%
-            );
+          padding: 0 28px;
 
           border-bottom: 1px solid #ded6c9;
         }
 
-
-        .hero-content {
-          width: 100%;
-          max-width: 1100px;
-
-          margin: 0 auto;
-
-          padding: 100px 28px 90px;
-        }
-
-
-        .eyebrow {
-          color: #a87935;
-
-          font-size: 11px;
-          font-weight: 700;
-
-          letter-spacing: 3px;
-
-          margin-bottom: 20px;
-        }
-
-
-        .hero h1 {
-          margin: 0;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: clamp(48px, 7vw, 88px);
-
-          line-height: .98;
-
-          font-weight: 500;
-
-          letter-spacing: -4px;
-        }
-
-
-        .hero h1 span,
-        .section-heading h2 span,
-        .how-section h2 span {
-          color: #a87935;
-        }
-
-
-        .hero-text {
-          max-width: 590px;
-
-          margin: 30px 0 0;
-
-          color: #71695e;
-
-          font-size: 18px;
-
-          line-height: 1.7;
-        }
-
-
-        .hero-buttons {
+        .logo {
           display: flex;
-
-          gap: 12px;
-
-          margin-top: 36px;
-
-          flex-wrap: wrap;
-        }
-
-
-        .primary-button,
-        .secondary-button,
-        .cta-button {
-          display: inline-flex;
-
           align-items: center;
-          justify-content: center;
-
-          gap: 18px;
-
-          min-height: 54px;
-
-          padding: 0 24px;
-
-          border-radius: 10px;
-
-          text-decoration: none;
-
-          font-size: 14px;
-          font-weight: 600;
-
-          transition:
-            transform .2s ease,
-            background .2s ease;
-        }
-
-
-        .primary-button {
-          background: #29251f;
-          color: white;
-        }
-
-
-        .primary-button:hover,
-        .cta-button:hover {
-          transform: translateY(-2px);
-        }
-
-
-        .primary-button span,
-        .cta-button span {
-          color: #d6ae63;
-          font-size: 18px;
-        }
-
-
-        .secondary-button {
-          border: 1px solid #cfc5b5;
-
-          background: #fffdf9;
+          gap: 9px;
 
           color: #29251f;
+          text-decoration: none;
+
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 2px;
         }
 
-
-        .secondary-button:hover {
-          background: #f0e9de;
-        }
-
-
-        .free-note {
-          margin-top: 17px;
-
-          color: #81786d;
-
-          font-size: 12px;
-        }
-
-
-        /* =========================
-           AI SECTION
-        ========================= */
-
-        .ai-section {
-          max-width: 1100px;
-
-          margin: 0 auto;
-
-          padding: 110px 28px;
-        }
-
-
-        .section-heading {
-          max-width: 650px;
-        }
-
-
-        .section-heading h2,
-        .chat-header h2,
-        .how-section h2,
-        .tools-section h2 {
-          margin: 0;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-weight: 500;
-
-          letter-spacing: -1.8px;
-        }
-
-
-        .section-heading h2 {
-          font-size: clamp(38px, 5vw, 62px);
-
-          line-height: 1.02;
-        }
-
-
-        .section-heading p {
-          max-width: 600px;
-
-          margin-top: 22px;
-
-          color: #756e64;
-
-          line-height: 1.7;
-
-          font-size: 16px;
-        }
-
-
-        .feature-grid {
-          display: grid;
-
-          grid-template-columns:
-            repeat(3, 1fr);
-
-          gap: 14px;
-
-          margin-top: 55px;
-        }
-
-
-        .feature-card {
-          min-height: 300px;
-
-          padding: 28px;
-
-          background: #fffdf9;
-
-          border: 1px solid #ded6c9;
-
-          border-radius: 16px;
-
-          position: relative;
-        }
-
-
-        .feature-card.featured {
-          background: #29251f;
-
-          color: white;
-
-          border-color: #29251f;
-        }
-
-
-        .feature-number {
-          color: #9b9285;
-
-          font-size: 11px;
-
-          letter-spacing: 1px;
-        }
-
-
-        .featured .feature-number {
-          color: #bca878;
-        }
-
-
-        .feature-icon {
-          width: 50px;
-          height: 50px;
+        .logo-mark {
+          width: 31px;
+          height: 31px;
 
           display: flex;
           align-items: center;
           justify-content: center;
-
-          margin-top: 45px;
 
           border-radius: 50%;
 
-          background: #f1e7d5;
+          background: #29251f;
+          color: #d4aa5d;
+
+          font-family: Georgia, serif;
+          font-size: 16px;
+        }
+
+        .logo small {
+          margin-left: 4px;
+          color: #a87935;
+          font-size: 8px;
+          letter-spacing: 1px;
+        }
+
+        .header-status {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+
+          color: #81786d;
+
+          font-size: 10px;
+        }
+
+        .header-status span {
+          width: 6px;
+          height: 6px;
+
+          border-radius: 50%;
+
+          background: #9a9f68;
+        }
+
+        .center-section,
+        .profile-section,
+        .plans-section {
+          max-width: 760px;
+          margin: auto;
+          padding: 85px 25px 100px;
+        }
+
+        .eyebrow {
+          margin-bottom: 18px;
+
+          color: #a87935;
+
+          font-size: 9px;
+          font-weight: 700;
+
+          letter-spacing: 2.3px;
+        }
+
+        h1 {
+          margin: 0;
+
+          font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+          font-size: clamp(48px, 7vw, 75px);
+
+          line-height: .97;
+
+          font-weight: 500;
+
+          letter-spacing: -3px;
+        }
+
+        em {
+          color: #a87935;
+          font-style: normal;
+        }
+
+        .intro {
+          max-width: 590px;
+
+          margin: 23px 0 38px;
+
+          color: #756e64;
+
+          font-size: 15px;
+          line-height: 1.75;
+        }
+
+        .form-card {
+          padding: 28px;
+
+          border: 1px solid #ddd4c5;
+          border-radius: 18px;
+
+          background: #fffdf9;
+
+          box-shadow:
+            0 20px 60px rgba(60,45,25,.06);
+        }
+
+        label {
+          display: block;
+
+          margin-bottom: 20px;
+
+          color: #5e564d;
+
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        input {
+          display: block;
+
+          width: 100%;
+
+          height: 52px;
+
+          margin-top: 8px;
+
+          padding: 0 15px;
+
+          border: 1px solid #ded5c8;
+          border-radius: 9px;
+
+          background: #fbf9f5;
+
+          color: #29251f;
+
+          font-size: 14px;
+
+          outline: none;
+        }
+
+        input:focus {
+          border-color: #b08a4b;
+          box-shadow: 0 0 0 3px rgba(176,138,75,.08);
+        }
+
+        .primary-button {
+          width: 100%;
+          height: 54px;
+
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          padding: 0 17px 0 20px;
+
+          border: 0;
+          border-radius: 9px;
+
+          background: #29251f;
+          color: white;
+
+          font-size: 12px;
+          font-weight: 700;
+
+          cursor: pointer;
+        }
+
+        .primary-button span {
+          width: 35px;
+          height: 35px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 7px;
+
+          background: #a87935;
+
+          font-size: 17px;
+        }
+
+        .primary-button:disabled {
+          opacity: .4;
+          cursor: not-allowed;
+        }
+
+        .form-note {
+          display: block;
+
+          margin-top: 13px;
+
+          color: #91887c;
+
+          text-align: center;
+
+          font-size: 9px;
+        }
+
+        /* PROFILE */
+
+        .profile-section {
+          max-width: 800px;
+        }
+
+        .numbers-card {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+
+          gap: 9px;
+
+          margin-top: 35px;
+        }
+
+        .number {
+          padding: 22px 10px;
+
+          border: 1px solid #ded6c9;
+          border-radius: 13px;
+
+          background: #fffdf9;
+
+          text-align: center;
+        }
+
+        .number.active {
+          border-color: #c8a76c;
+          background: #f7f0e2;
+        }
+
+        .number small {
+          display: block;
+
+          color: #887f74;
+
+          font-size: 8px;
+          font-weight: 700;
+
+          letter-spacing: 1.3px;
+        }
+
+        .number strong {
+          display: block;
+
+          margin: 9px 0 5px;
 
           color: #a87935;
 
           font-family: Georgia, serif;
 
-          font-size: 23px;
-        }
-
-
-        .featured .feature-icon {
-          background: #a87935;
-          color: white;
-        }
-
-
-        .feature-card h3 {
-          margin: 23px 0 10px;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 23px;
-
+          font-size: 42px;
           font-weight: 500;
         }
 
-
-        .feature-card p {
-          margin: 0;
-
-          color: #756e64;
-
-          font-size: 14px;
-
-          line-height: 1.7;
+        .number span {
+          color: #91887c;
+          font-size: 9px;
         }
 
+        .grid-preview {
+          margin-top: 18px;
 
-        .featured p {
-          color: #c5bfb5;
+          padding: 22px;
+
+          border-radius: 14px;
+
+          background: #29251f;
+          color: white;
         }
 
+        .grid-title {
+          color: #cda85f;
 
-        /* =========================
-           CHAT
-        ========================= */
+          font-size: 8px;
+          font-weight: 700;
 
-        .chat-section {
-          max-width: 1100px;
+          letter-spacing: 1.5px;
 
-          margin: 0 auto;
-
-          padding: 20px 28px 110px;
+          text-align: center;
         }
 
+        .vedic-grid {
+          width: 180px;
 
-        .chat-header {
-          display: flex;
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
 
-          align-items: flex-end;
-          justify-content: space-between;
-
-          gap: 30px;
+          margin: 18px auto 0;
         }
 
-
-        .chat-header h2 {
-          font-size: clamp(38px, 5vw, 60px);
-
-          line-height: 1.02;
-        }
-
-
-        .ai-mark {
-          width: 75px;
-          height: 75px;
+        .grid-number {
+          height: 55px;
 
           display: flex;
           align-items: center;
           justify-content: center;
 
-          flex-shrink: 0;
+          border: 1px solid #4a443b;
 
-          border: 1px solid #d1b277;
+          color: #aaa197;
 
-          border-radius: 50%;
-
-          color: #a87935;
-
-          font-size: 28px;
+          font-family: Georgia, serif;
+          font-size: 17px;
         }
 
-
-        .chat-box {
-          max-width: 760px;
-
-          margin: 50px auto 0;
-
-          padding: 22px;
-
-          background: #29251f;
-
-          border-radius: 20px;
-
-          box-shadow:
-            0 20px 60px rgba(50, 40, 25, .13);
-        }
-
-
-        .message {
-          max-width: 80%;
-
-          padding: 16px 18px;
-
-          border-radius: 14px;
-
-          font-size: 14px;
-
-          line-height: 1.65;
-        }
-
-
-        .user-message {
-          margin-left: auto;
-
+        .grid-number.highlighted {
           background: #a87935;
-
           color: white;
-
-          border-bottom-right-radius: 4px;
         }
 
-
-        .ai-message {
-          margin-top: 15px;
-
-          background: #fffdf9;
-
-          color: #29251f;
-
-          border-bottom-left-radius: 4px;
-        }
-
-
-        .ai-label {
-          margin-bottom: 8px;
-
-          color: #a87935;
-
-          font-size: 10px;
-
-          font-weight: 700;
-
-          letter-spacing: 1.5px;
-        }
-
-
-        .chat-input {
+        .free-question {
           display: flex;
-
           align-items: center;
-          justify-content: space-between;
 
-          gap: 15px;
+          gap: 14px;
 
-          height: 54px;
+          margin: 18px 0;
 
-          margin-top: 18px;
+          padding: 16px;
 
-          padding: 0 8px 0 17px;
-
-          background: #3a352e;
-
-          border: 1px solid #514b42;
-
+          border: 1px solid #dfd4c2;
           border-radius: 12px;
 
-          color: #a9a298;
-
-          font-size: 13px;
+          background: #fffdf9;
         }
 
-
-        .send-button {
+        .free-icon {
           width: 40px;
           height: 40px;
 
@@ -901,64 +1099,107 @@ export default function Home() {
           align-items: center;
           justify-content: center;
 
-          border-radius: 9px;
+          flex-shrink: 0;
 
-          background: #a87935;
+          border-radius: 10px;
 
-          color: white;
-
-          font-size: 18px;
+          background: #f0e3ca;
+          color: #a87935;
         }
 
-
-        /* =========================
-           HOW IT WORKS
-        ========================= */
-
-        .how-section {
-          max-width: 1100px;
-
-          margin: 0 auto;
-
-          padding: 20px 28px 110px;
+        .free-question strong {
+          font-family: Georgia, serif;
+          font-size: 14px;
+          font-weight: 500;
         }
 
+        .free-question p {
+          margin: 4px 0 0;
 
-        .how-section h2 {
-          font-size: clamp(40px, 5vw, 62px);
+          color: #81786d;
 
-          line-height: 1;
+          font-size: 10px;
+          line-height: 1.5;
         }
 
+        /* CHAT */
 
-        .steps {
-          display: grid;
+        .chat-section {
+          max-width: 900px;
 
-          grid-template-columns:
-            repeat(3, 1fr);
+          margin: auto;
 
-          gap: 15px;
-
-          margin-top: 55px;
+          padding: 70px 25px 100px;
         }
 
-
-        .step {
+        .chat-heading {
           display: flex;
 
-          gap: 18px;
+          align-items: flex-end;
+          justify-content: space-between;
 
-          padding: 25px;
+          margin-bottom: 35px;
+        }
+
+        .profile-mini {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+
+          padding: 7px 11px 7px 7px;
+
+          border: 1px solid #ddd3c3;
+          border-radius: 100px;
 
           background: #fffdf9;
 
-          border-top: 1px solid #cdbb99;
-
-          border-bottom: 1px solid #ded6c9;
+          font-size: 10px;
         }
 
+        .profile-mini div {
+          width: 30px;
+          height: 30px;
 
-        .step-number {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 50%;
+
+          background: #29251f;
+          color: #d3aa5d;
+
+          font-family: Georgia, serif;
+        }
+
+        .profile-mini span {
+          color: #756e64;
+        }
+
+        .chat-card {
+          overflow: hidden;
+
+          border-radius: 18px;
+
+          background: #29251f;
+
+          box-shadow:
+            0 25px 70px rgba(45,35,22,.16);
+        }
+
+        .chat-top {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+
+          padding: 17px 20px;
+
+          border-bottom: 1px solid #474139;
+
+          color: white;
+        }
+
+        .ai-avatar {
           width: 38px;
           height: 38px;
 
@@ -966,346 +1207,482 @@ export default function Home() {
           align-items: center;
           justify-content: center;
 
-          flex-shrink: 0;
+          border-radius: 10px;
 
-          border-radius: 50%;
+          background: #a87935;
 
-          background: #f0e6d3;
-
-          color: #8e672e;
-
-          font-weight: 600;
+          font-family: Georgia, serif;
         }
 
-
-        .step h3 {
-          margin: 0;
-
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 19px;
-
-          font-weight: 500;
+        .chat-top strong,
+        .chat-top small {
+          display: block;
         }
 
-
-        .step p {
-          margin: 7px 0 0;
-
-          color: #756e64;
-
-          font-size: 13px;
-
-          line-height: 1.6;
+        .chat-top strong {
+          font-size: 12px;
         }
 
+        .chat-top small {
+          margin-top: 3px;
 
-        /* =========================
-           CTA
-        ========================= */
+          color: #928a81;
 
-        .cta-section {
-          padding: 20px 20px 110px;
+          font-size: 8px;
         }
 
+        .online {
+          margin-left: auto;
 
-        .cta-card {
-          max-width: 1000px;
+          color: #98a56d;
 
-          margin: 0 auto;
+          font-size: 8px;
+        }
 
-          padding: 75px 30px;
+        .chat-content {
+          min-height: 300px;
 
-          text-align: center;
+          padding: 25px;
+        }
 
-          background:
-            radial-gradient(
-              circle at center,
-              rgba(193, 147, 67, .18),
-              transparent 60%
-            ),
-            #29251f;
+        .suggestions > span {
+          display: block;
 
-          border-radius: 22px;
+          margin-bottom: 13px;
+
+          color: #928a81;
+
+          font-size: 9px;
+        }
+
+        .suggestions button {
+          display: block;
+
+          width: fit-content;
+
+          margin-bottom: 8px;
+
+          padding: 11px 14px;
+
+          border: 1px solid #4b453d;
+          border-radius: 9px;
+
+          background: #332f29;
+
+          color: #d4cec4;
+
+          font-size: 10px;
+
+          cursor: pointer;
+        }
+
+        .user-bubble {
+          max-width: 70%;
+
+          margin-left: auto;
+
+          padding: 13px 15px;
+
+          border-radius: 11px 11px 3px 11px;
+
+          background: #a87935;
 
           color: white;
+
+          font-size: 11px;
+          line-height: 1.5;
         }
 
+        .ai-answer {
+          max-width: 80%;
 
-        .cta-card .eyebrow {
-          color: #d6ae63;
-        }
+          margin-top: 13px;
 
+          padding: 16px;
 
-        .cta-card h2 {
-          margin: 0;
+          border-radius: 11px 11px 11px 3px;
 
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+          background: #fffdf9;
 
-          font-size: clamp(38px, 5vw, 62px);
+          color: #29251f;
 
-          line-height: 1;
-
-          font-weight: 500;
-
-          letter-spacing: -2px;
-        }
-
-
-        .cta-card p {
-          max-width: 550px;
-
-          margin: 22px auto 30px;
-
-          color: #c4beb4;
-
-          font-size: 15px;
+          font-size: 12px;
 
           line-height: 1.7;
         }
 
+        .answer-label {
+          margin-bottom: 8px;
 
-        .cta-button {
-          background: #d0a552;
+          color: #a87935;
 
-          color: #29251f;
+          font-size: 8px;
+          font-weight: 700;
+
+          letter-spacing: 1.3px;
         }
 
+        .ai-answer p {
+          margin: 0;
+        }
 
-        .cta-note {
-          margin-top: 14px;
+        .input-area {
+          display: flex;
+          align-items: flex-end;
+          gap: 10px;
 
-          color: #918a81;
+          margin: 0 17px 17px;
+
+          padding: 10px;
+
+          border: 1px solid #514b42;
+          border-radius: 11px;
+
+          background: #332f29;
+        }
+
+        textarea {
+          flex: 1;
+
+          min-height: 45px;
+
+          padding: 8px;
+
+          resize: none;
+
+          border: 0;
+          outline: none;
+
+          background: transparent;
+
+          color: white;
 
           font-size: 11px;
         }
 
-
-        /* =========================
-           TOOLS
-        ========================= */
-
-        .tools-section {
-          max-width: 1100px;
-
-          margin: 0 auto;
-
-          padding: 0 28px 110px;
+        textarea::placeholder {
+          color: #777067;
         }
 
+        .send-button {
+          width: 38px;
+          height: 38px;
 
-        .tools-section h2 {
-          font-size: 48px;
+          border: 0;
+          border-radius: 8px;
 
-          line-height: 1;
+          background: #a87935;
+          color: white;
+
+          cursor: pointer;
         }
 
-
-        .tools-grid {
-          display: grid;
-
-          grid-template-columns:
-            repeat(3, 1fr);
-
-          gap: 14px;
-
-          margin-top: 40px;
+        .send-button:disabled {
+          opacity: .4;
         }
 
+        .free-indicator {
+          margin-top: 14px;
 
-        .tool-card {
-          display: block;
+          text-align: center;
 
+          color: #938a80;
+
+          font-size: 9px;
+        }
+
+        .free-indicator span {
+          margin-right: 6px;
+
+          padding: 4px 7px;
+
+          border-radius: 100px;
+
+          background: #eee4d2;
+
+          color: #88672f;
+        }
+
+        /* PLANS */
+
+        .plans-section {
+          max-width: 780px;
+
+          text-align: center;
+        }
+
+        .plans-section .intro {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .plan-card {
           padding: 28px;
+
+          border: 1px solid #cdb88f;
+
+          border-radius: 20px;
 
           background: #fffdf9;
 
-          border: 1px solid #ded6c9;
+          text-align: left;
 
-          border-radius: 15px;
-
-          color: #29251f;
-
-          text-decoration: none;
-
-          transition:
-            transform .2s ease,
-            border-color .2s ease;
+          box-shadow:
+            0 25px 70px rgba(55,40,20,.08);
         }
 
+        .plan-top {
+          display: flex;
 
-        .tool-card:hover {
-          transform: translateY(-3px);
+          justify-content: space-between;
+          align-items: flex-start;
 
-          border-color: #b99a62;
+          gap: 20px;
         }
 
-
-        .tool-card > span {
+        .plan-badge {
           color: #a87935;
 
-          font-size: 11px;
+          font-size: 8px;
+          font-weight: 700;
 
           letter-spacing: 2px;
         }
 
+        .plan-top h2 {
+          margin: 8px 0 0;
 
-        .tool-card h3 {
-          margin: 35px 0 10px;
+          font-family: Georgia, serif;
 
-          font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-          font-size: 23px;
-
+          font-size: 25px;
           font-weight: 500;
         }
 
+        .price {
+          text-align: right;
+          white-space: nowrap;
+        }
 
-        .tool-card p {
-          margin: 0;
+        .price strong {
+          font-family: Georgia, serif;
+
+          font-size: 38px;
+          font-weight: 500;
+
+          color: #29251f;
+        }
+
+        .price span {
+          color: #81786d;
+          font-size: 10px;
+        }
+
+        .plan-divider {
+          height: 1px;
+
+          margin: 25px 0;
+
+          background: #e3dace;
+        }
+
+        .benefits {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+
+          gap: 14px;
+        }
+
+        .benefit {
+          display: flex;
+          gap: 8px;
+
+          color: #5f574e;
+
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .benefit span {
+          color: #a87935;
+          font-weight: 700;
+        }
+
+        .subscribe-button {
+          width: 100%;
+
+          height: 55px;
+
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          margin-top: 28px;
+          padding: 0 17px 0 20px;
+
+          border: 0;
+          border-radius: 9px;
+
+          background: #29251f;
+          color: white;
+
+          font-size: 12px;
+          font-weight: 700;
+
+          cursor: pointer;
+        }
+
+        .subscribe-button span {
+          width: 35px;
+          height: 35px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 7px;
+
+          background: #a87935;
+
+          font-size: 17px;
+        }
+
+        .cancel-note {
+          margin-top: 12px;
+
+          color: #91887c;
+
+          text-align: center;
+
+          font-size: 9px;
+        }
+
+        .saved-profile-note {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          gap: 9px;
+
+          margin-top: 20px;
 
           color: #756e64;
 
-          font-size: 13px;
-
-          line-height: 1.7;
+          font-size: 10px;
         }
 
+        .saved-profile-note > span {
+          width: 25px;
+          height: 25px;
 
-        .tool-card strong {
-          display: inline-block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-          margin-top: 22px;
+          border-radius: 50%;
 
-          color: #9b702d;
-
-          font-size: 12px;
+          background: #e7ecd9;
+          color: #71804e;
         }
 
+        .saved-profile-note strong,
+        .saved-profile-note small {
+          display: block;
+        }
 
-        /* =========================
-           MOBILE
-        ========================= */
+        .saved-profile-note small {
+          margin-top: 2px;
+          color: #968d82;
+        }
 
-        @media (max-width: 700px) {
+        @media (max-width: 650px) {
 
-          .hero {
-            min-height: auto;
+          .header {
+            padding: 0 18px;
           }
 
-
-          .hero-content {
-            padding:
-              70px 20px
-              70px;
+          .header-status {
+            display: none;
           }
 
+          .center-section,
+          .profile-section,
+          .plans-section,
+          .chat-section {
+            padding-left: 18px;
+            padding-right: 18px;
+          }
 
-          .hero h1 {
+          h1 {
             font-size: 52px;
-
-            letter-spacing: -2.5px;
+            letter-spacing: -2px;
           }
 
-
-          .hero-text {
-            font-size: 15px;
-          }
-
-
-          .hero-buttons {
-            flex-direction: column;
-          }
-
-
-          .primary-button,
-          .secondary-button {
-            width: 100%;
-          }
-
-
-          .ai-section,
-          .chat-section,
-          .how-section,
-          .tools-section {
-            padding-left: 20px;
-            padding-right: 20px;
-          }
-
-
-          .feature-grid,
-          .steps,
-          .tools-grid {
+          .numbers-card {
             grid-template-columns: 1fr;
           }
 
-
-          .feature-card {
-            min-height: 270px;
+          .number {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            align-items: center;
+            text-align: left;
+            padding: 13px 15px;
           }
 
-
-          .chat-header {
-            align-items: flex-start;
+          .number strong {
+            margin: 0;
+            text-align: center;
           }
 
-
-          .ai-mark {
-            width: 55px;
-            height: 55px;
-
-            font-size: 22px;
+          .number span {
+            text-align: right;
           }
 
+          .chat-heading {
+            display: block;
+          }
 
-          .message {
+          .profile-mini {
+            width: fit-content;
+            margin-top: 18px;
+          }
+
+          .user-bubble,
+          .ai-answer {
             max-width: 92%;
           }
 
-
-          .cta-card {
-            padding:
-              60px 22px;
+          .plan-top {
+            display: block;
           }
 
-
-          .cta-card h2 {
-            font-size: 42px;
+          .price {
+            margin-top: 18px;
+            text-align: left;
           }
 
-
-          .tools-section h2 {
-            font-size: 40px;
-          }
-
-        }
-
-
-        @media (max-width: 380px) {
-
-          .hero h1 {
-            font-size: 45px;
-          }
-
-
-          .section-heading h2,
-          .chat-header h2,
-          .how-section h2 {
-            font-size: 40px;
+          .benefits {
+            grid-template-columns: 1fr;
           }
 
         }
 
       `}</style>
-    </>
+
+    </main>
+  );
+}
+
+
+function Benefit({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="benefit">
+      <span>✓</span>
+      <div>{children}</div>
+    </div>
   );
 }
