@@ -25,19 +25,11 @@ function reduceNumber(value: number): number {
   while (value > 9) {
     value = String(value)
       .split("")
-      .reduce(
-        (sum, digit) => sum + Number(digit),
-        0
-      );
+      .reduce((sum, digit) => sum + Number(digit), 0);
   }
 
   return value;
 }
-
-
-/* =========================================================
-   MULANK
-   ========================================================= */
 
 function getMulank(dob: string): number {
   if (!dob) return 0;
@@ -52,11 +44,6 @@ function getMulank(dob: string): number {
 
   return reduceNumber(day);
 }
-
-
-/* =========================================================
-   BHAGYANK
-   ========================================================= */
 
 function getBhagyank(dob: string): number {
   if (!dob) return 0;
@@ -117,7 +104,6 @@ const NAME_VALUES: Record<string, number> = {
   P: 8,
 };
 
-
 function getNameNumber(name: string): number {
   const cleanName = name
     .toUpperCase()
@@ -139,12 +125,7 @@ function getNameNumber(name: string): number {
 
 /* =========================================================
    INTERNAL VEDIC GRID
-   ========================================================= */
-
-/*
-   The grid is calculated internally.
-
-   It is NOT shown anywhere in the UI.
+   =========================================================
 
    3 1 9
    6 7 5
@@ -152,7 +133,11 @@ function getNameNumber(name: string): number {
 
    Century digits excluded.
    Zero ignored.
-*/
+
+   IMPORTANT:
+   This is calculated internally only.
+   It is NEVER rendered in the UI.
+   ========================================================= */
 
 function getVedicGrid(dob: string): number[] {
   if (!dob) return [];
@@ -182,7 +167,7 @@ function getVedicGrid(dob: string): number[] {
 
 
 /* =========================================================
-   MAIN
+   MAIN PAGE
    ========================================================= */
 
 export default function NumerologyAIPage() {
@@ -235,12 +220,11 @@ export default function NumerologyAIPage() {
         getNameNumber(cleanName),
     };
 
-    /*
-      Calculate internally.
 
-      This isn't displayed to the user.
-      Later this can be saved in Supabase.
-    */
+    /*
+     * Calculate Vedic grid internally.
+     * It is deliberately not displayed.
+     */
 
     getVedicGrid(dob);
 
@@ -251,7 +235,7 @@ export default function NumerologyAIPage() {
 
 
   /* =======================================================
-     ASK AI
+     REAL MAUKSH AI
      ======================================================= */
 
   async function askQuestion() {
@@ -260,42 +244,75 @@ export default function NumerologyAIPage() {
     }
 
     setLoading(true);
+    setAnswer("");
 
     try {
-      /*
-       * TEMPORARY DEMO RESPONSE.
-       *
-       * IMPORTANT:
-       * There is NO automatic paywall transition here.
-       *
-       * The user can read the answer first.
-       */
 
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1200)
+      const response = await fetch(
+        "/api/numerology-ai",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            name: profile.name,
+
+            dob: profile.dob,
+
+            mulank:
+              profile.mulank,
+
+            bhagyank:
+              profile.bhagyank,
+
+            nameNumber:
+              profile.nameNumber,
+
+            question:
+              question.trim(),
+          }),
+        }
       );
 
-      const generatedAnswer =
-        `Based on your Mulank ${profile.mulank}, ` +
-        `Bhagyank ${profile.bhagyank}, and ` +
-        `Name Number ${profile.nameNumber}, ` +
-        `your question needs to be looked at through ` +
-        `both your natural tendencies and your current ` +
-        `situation. Your numbers suggest avoiding an ` +
-        `impulsive decision and giving yourself enough ` +
-        `space to make a practical choice.`;
 
-      setAnswer(generatedAnswer);
+      const data =
+        await response.json();
 
-    } catch (error) {
-      console.error(error);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Unable to generate answer"
+        );
+      }
+
 
       setAnswer(
-        "Something went wrong while preparing your reading. Please try again."
+        data.answer
       );
 
+
+    } catch (error) {
+
+      console.error(
+        "Mauksh AI request failed:",
+        error
+      );
+
+
+      setAnswer(
+        "I couldn't generate your reading right now. Please try again."
+      );
+
+
     } finally {
+
       setLoading(false);
+
     }
   }
 
@@ -316,8 +333,13 @@ export default function NumerologyAIPage() {
           <section className="introPage">
 
             <div className="topBadge">
-              <span>✦</span>
+
+              <span>
+                ✦
+              </span>
+
               PERSONAL NUMEROLOGY
+
             </div>
 
 
@@ -375,8 +397,6 @@ export default function NumerologyAIPage() {
 
             </div>
 
-
-            {/* AI PREVIEW */}
 
             <div className="floatingPreview">
 
@@ -615,8 +635,6 @@ export default function NumerologyAIPage() {
             </div>
 
 
-            {/* USER ONLY SEES THE USEFUL NUMBERS */}
-
             <div className="numberCards">
 
               <NumberCard
@@ -643,7 +661,7 @@ export default function NumerologyAIPage() {
             </div>
 
 
-            {/* NO VEDIC GRID */}
+            {/* VEDIC GRID INTENTIONALLY NOT SHOWN */}
 
 
             <button
@@ -733,8 +751,6 @@ export default function NumerologyAIPage() {
 
             <div className="chatBox">
 
-              {/* HEADER */}
-
               <div className="chatTop">
 
                 <div className="chatAvatar">
@@ -771,8 +787,6 @@ export default function NumerologyAIPage() {
 
               </div>
 
-
-              {/* MESSAGES */}
 
               <div className="chatMessages">
 
@@ -844,7 +858,22 @@ export default function NumerologyAIPage() {
                 )}
 
 
-                {answer && (
+                {loading && (
+                  <div className="aiMessage">
+
+                    <div className="aiLabel">
+                      ✦ MAUKSH AI
+                    </div>
+
+                    <p>
+                      Reading your numbers...
+                    </p>
+
+                  </div>
+                )}
+
+
+                {answer && !loading && (
                   <div className="aiMessage">
 
                     <div className="aiLabel">
@@ -860,8 +889,6 @@ export default function NumerologyAIPage() {
 
               </div>
 
-
-              {/* INPUT */}
 
               {!answer && (
                 <div className="chatInput">
@@ -898,9 +925,9 @@ export default function NumerologyAIPage() {
               )}
 
 
-              {/* CONTINUE ONLY AFTER ANSWER */}
+              {/* PAYMENT NEVER APPEARS AUTOMATICALLY */}
 
-              {answer && (
+              {answer && !loading && (
                 <div className="answerActions">
 
                   <button
@@ -992,15 +1019,13 @@ export default function NumerologyAIPage() {
 
             <p className="sectionDescription">
 
-              Your numerology profile is saved.
+              Your numerology profile is ready.
               Keep Mauksh AI with you for personalized
               guidance whenever you need another
               perspective.
 
             </p>
 
-
-            {/* PLAN */}
 
             <div className="plan">
 
@@ -1096,7 +1121,7 @@ export default function NumerologyAIPage() {
                 ✓
               </span>
 
-              Your numerology profile is already saved.
+              Your numerology profile is ready.
 
             </div>
 
@@ -1231,7 +1256,7 @@ function Feature({
 
 
 /* =========================================================
-   CSS
+   STYLES
    ========================================================= */
 
 function PageStyles() {
@@ -2229,7 +2254,7 @@ function PageStyles() {
       }
 
       .aiMessage {
-        max-width: 85%;
+        max-width: 90%;
 
         padding: 15px;
 
@@ -2240,7 +2265,9 @@ function PageStyles() {
         color: #554d44;
 
         font-size: 11px;
-        line-height: 1.7;
+        line-height: 1.75;
+
+        white-space: pre-wrap;
       }
 
       .aiLabel {
