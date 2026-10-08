@@ -127,13 +127,16 @@ function calculateMulank(day: number): number {
   return reduceNumber(day);
 }
 
-function calculateBhagyank(day: number, month: number, year: number): number {
-  const total = day + month + year;
-  return reduceNumber(total);
+function calculateBhagyank(
+  day: number,
+  month: number,
+  year: number
+): number {
+  return reduceNumber(day + month + year);
 }
 
 /*
-  Vedic / Chaldean style name-number mapping used by Mauksh.
+  Mauksh Vedic / Chaldean name-number mapping
 
   1: A I J Q Y
   2: B K R
@@ -145,6 +148,7 @@ function calculateBhagyank(day: number, month: number, year: number): number {
   8: F P
   9: No letters
 */
+
 const NAME_VALUES: Record<string, number> = {
   A: 1,
   I: 1,
@@ -182,37 +186,41 @@ const NAME_VALUES: Record<string, number> = {
 };
 
 function calculateNameNumber(name: string): number {
-  const cleanName = name.toUpperCase().replace(/[^A-Z]/g, "");
+  const cleanName = name
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
 
   const total = cleanName
     .split("")
-    .reduce((sum, letter) => sum + (NAME_VALUES[letter] || 0), 0);
+    .reduce(
+      (sum, letter) => sum + (NAME_VALUES[letter] || 0),
+      0
+    );
 
   return reduceNumber(total);
 }
+
+/*
+  Internal Mauksh Vedic Grid
+
+  3 1 9
+  6 7 5
+  2 8 4
+
+  Century digits are excluded.
+  Zero is ignored.
+  The grid is intentionally NOT displayed.
+*/
 
 function getVedicGrid(
   day: number,
   month: number,
   year: number
 ): Record<number, number> {
-  /*
-    Internal Mauksh Vedic grid:
-
-    3 1 9
-    6 7 5
-    2 8 4
-
-    Century digits are excluded.
-    Zero is ignored.
-
-    The grid is calculated internally and intentionally
-    not displayed to the visitor.
-  */
-
-  const dobDigits = `${String(day).padStart(2, "0")}${String(
-    month
-  ).padStart(2, "0")}${String(year).slice(-2)}`;
+  const dobDigits =
+    `${String(day).padStart(2, "0")}` +
+    `${String(month).padStart(2, "0")}` +
+    `${String(year).slice(-2)}`;
 
   const counts: Record<number, number> = {
     1: 0,
@@ -238,11 +246,13 @@ function getVedicGrid(
 }
 
 function parseDOB(value: string) {
-  const match = value.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (!value) return null;
 
-  if (!match) {
-    return null;
-  }
+  const match = value.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+  );
+
+  if (!match) return null;
 
   const day = Number(match[1]);
   const month = Number(match[2]);
@@ -265,7 +275,10 @@ function parseDOB(value: string) {
   };
 }
 
-function getResult(name: string, dob: string): Result | null {
+function getResult(
+  name: string,
+  dob: string
+): Result | null {
   const parsed = parseDOB(dob);
 
   if (!parsed || !name.trim()) {
@@ -275,10 +288,16 @@ function getResult(name: string, dob: string): Result | null {
   const { day, month, year } = parsed;
 
   const mulank = calculateMulank(day);
-  const bhagyank = calculateBhagyank(day, month, year);
+
+  const bhagyank = calculateBhagyank(
+    day,
+    month,
+    year
+  );
+
   const nameNumber = calculateNameNumber(name);
 
-  // Calculate internally so the Vedic grid logic remains part of the engine.
+  // Keep the internal Mauksh grid calculation.
   getVedicGrid(day, month, year);
 
   const data = NUMBER_DATA[mulank];
@@ -287,7 +306,8 @@ function getResult(name: string, dob: string): Result | null {
     mulank,
     bhagyank,
     nameNumber,
-    favourableNumber: `${mulank}, ${bhagyank}, ${nameNumber}`,
+    favourableNumber:
+      `${mulank}, ${bhagyank}, ${nameNumber}`,
     days: data.days,
     colour: data.colour,
     alphabets: data.alphabets,
@@ -309,9 +329,17 @@ function NumberCard({
 }) {
   return (
     <div className="numberCard">
-      <div className="numberLabel">{label}</div>
-      <div className="bigNumber">{number}</div>
-      <div className="numberDescription">{description}</div>
+      <div className="numberLabel">
+        {label}
+      </div>
+
+      <div className="bigNumber">
+        {number}
+      </div>
+
+      <div className="numberDescription">
+        {description}
+      </div>
     </div>
   );
 }
@@ -319,30 +347,76 @@ function NumberCard({
 export default function Home() {
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] =
+    useState<Result | null>(null);
   const [error, setError] = useState("");
 
   const isValid = useMemo(() => {
-    return name.trim().length > 1 && !!parseDOB(dob);
+    return (
+      name.trim().length > 1 &&
+      !!parseDOB(dob)
+    );
   }, [name, dob]);
+
+  function handleDOBChange(
+    value: string
+  ) {
+    if (!value) {
+      setDob("");
+      return;
+    }
+
+    const [year, month, day] =
+      value.split("-");
+
+    setDob(
+      `${day}/${month}/${year}`
+    );
+  }
+
+  function dobForInput() {
+    if (!dob) return "";
+
+    const parts = dob.split("/");
+
+    if (parts.length !== 3) {
+      return "";
+    }
+
+    const [day, month, year] = parts;
+
+    return `${year}-${month.padStart(
+      2,
+      "0"
+    )}-${day.padStart(2, "0")}`;
+  }
 
   function calculate() {
     setError("");
 
     if (!name.trim()) {
-      setError("Please enter your full name.");
+      setError(
+        "Please enter your full name."
+      );
       return;
     }
 
     if (!parseDOB(dob)) {
-      setError("Please enter your date of birth in DD/MM/YYYY format.");
+      setError(
+        "Please select a valid date of birth."
+      );
       return;
     }
 
-    const calculated = getResult(name, dob);
+    const calculated = getResult(
+      name,
+      dob
+    );
 
     if (!calculated) {
-      setError("Please check your details and try again.");
+      setError(
+        "Please check your details and try again."
+      );
       return;
     }
 
@@ -351,13 +425,16 @@ export default function Home() {
     setTimeout(() => {
       document
         .getElementById("results")
-        ?.scrollIntoView({ behavior: "smooth" });
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
     }, 100);
   }
 
   function reset() {
     setResult(null);
     setError("");
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -366,9 +443,15 @@ export default function Home() {
 
   return (
     <main className="page">
+
+      {/* HERO */}
+
       <section className="hero">
+
         <nav className="nav">
+
           <div className="brand">
+
             <img
               src="/assets/mauksh-logo.jpg"
               alt="Mauksh"
@@ -376,138 +459,271 @@ export default function Home() {
             />
 
             <div className="brandText">
-              <strong>MAUKSH AI</strong>
-              <span>Numerology</span>
+              <strong>
+                MAUKSH AI
+              </strong>
+
+              <span>
+                Numerology
+              </span>
             </div>
+
           </div>
 
-          <div className="navBadge">FREE</div>
+          <div className="navBadge">
+            FREE
+          </div>
+
         </nav>
 
         <div className="heroContent">
+
           <div className="eyebrow">
-            <span>✦</span> YOUR NUMBERS. YOUR PATTERN.
+            <span>✦</span>
+            YOUR NUMBERS. YOUR PATTERN.
           </div>
 
           <h1>
             Discover what your
             <br />
-            <span>numbers say</span> about you.
+            <span>
+              numbers say
+            </span>{" "}
+            about you.
           </h1>
 
           <p className="heroText">
-            Enter your name and date of birth to calculate your core
-            numerology numbers using the Mauksh numerology system.
+            Enter your name and date of
+            birth to discover your core
+            numerology numbers using the
+            Mauksh numerology system.
           </p>
 
           <div className="calculatorCard">
+
             <div className="cardHeader">
+
               <div>
-                <span className="smallEyebrow">PERSONAL CALCULATION</span>
-                <h2>Enter your details</h2>
+
+                <span className="smallEyebrow">
+                  PERSONAL CALCULATION
+                </span>
+
+                <h2>
+                  Enter your details
+                </h2>
+
               </div>
 
-              <div className="spark">✦</div>
+              <div className="spark">
+                ✦
+              </div>
+
             </div>
 
+            {/* NAME */}
+
             <div className="field">
-              <label htmlFor="name">FULL NAME</label>
+
+              <label htmlFor="name">
+                FULL NAME
+              </label>
+
               <input
                 id="name"
                 type="text"
                 placeholder="Enter your full birth name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
                 autoComplete="name"
               />
+
             </div>
+
+            {/* DOB */}
 
             <div className="field">
-              <label htmlFor="dob">DATE OF BIRTH</label>
-              <input
-                id="dob"
-                type="text"
-                inputMode="numeric"
-                placeholder="DD/MM/YYYY"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                maxLength={10}
-              />
+
+              <label htmlFor="dob">
+                DATE OF BIRTH
+              </label>
+
+              <div className="dateInputWrapper">
+
+                <input
+                  id="dob"
+                  type="date"
+                  value={dobForInput()}
+                  onChange={(e) =>
+                    handleDOBChange(
+                      e.target.value
+                    )
+                  }
+                  className="dateInput"
+                />
+
+              </div>
+
               <span className="fieldHint">
-                Example: 08/10/1995
+                Select your date of birth
+                from the calendar
               </span>
+
             </div>
 
-            {error && <div className="error">{error}</div>}
+            {error && (
+              <div className="error">
+                {error}
+              </div>
+            )}
 
             <button
               className="calculateButton"
               onClick={calculate}
               disabled={!isValid}
             >
-              <span>Calculate My Numbers</span>
-              <span className="arrow">→</span>
+
+              <span>
+                Calculate My Numbers
+              </span>
+
+              <span className="arrow">
+                →
+              </span>
+
             </button>
 
             <p className="privacy">
-              Your calculation is performed instantly on this page.
+              Your calculation is performed
+              instantly on this page.
             </p>
+
           </div>
+
         </div>
+
       </section>
 
+      {/* HOW IT WORKS */}
+
       <section className="howSection">
-        <div className="sectionEyebrow">HOW IT WORKS</div>
+
+        <div className="sectionEyebrow">
+          HOW IT WORKS
+        </div>
 
         <h2>
           Three numbers can reveal
           <br />
-          <span>your core pattern.</span>
+          <span>
+            your core pattern.
+          </span>
         </h2>
 
         <div className="steps">
+
           <div className="step">
-            <div className="stepNumber">01</div>
-            <h3>Enter your details</h3>
-            <p>Your full birth name and date of birth.</p>
+
+            <div className="stepNumber">
+              01
+            </div>
+
+            <h3>
+              Enter your details
+            </h3>
+
+            <p>
+              Your full birth name and
+              date of birth.
+            </p>
+
           </div>
 
           <div className="step">
-            <div className="stepNumber">02</div>
-            <h3>Calculate your numbers</h3>
-            <p>Mauksh calculates your core numerology profile.</p>
+
+            <div className="stepNumber">
+              02
+            </div>
+
+            <h3>
+              Calculate your numbers
+            </h3>
+
+            <p>
+              Mauksh calculates your core
+              numerology profile.
+            </p>
+
           </div>
 
           <div className="step">
-            <div className="stepNumber">03</div>
-            <h3>Understand yourself</h3>
-            <p>Explore your numbers and favourable energies.</p>
+
+            <div className="stepNumber">
+              03
+            </div>
+
+            <h3>
+              Understand yourself
+            </h3>
+
+            <p>
+              Explore your numbers and
+              favourable energies.
+            </p>
+
           </div>
+
         </div>
+
       </section>
 
+      {/* RESULTS */}
+
       {result && (
-        <section id="results" className="resultsSection">
+
+        <section
+          id="results"
+          className="resultsSection"
+        >
+
           <div className="resultsTop">
+
             <div>
-              <div className="sectionEyebrow">YOUR MAUKSH PROFILE</div>
+
+              <div className="sectionEyebrow">
+                YOUR MAUKSH PROFILE
+              </div>
 
               <h2>
-                Hello, <span>{name.trim()}</span>
+                Hello,{" "}
+                <span>
+                  {name.trim()}
+                </span>
               </h2>
 
               <p>
-                Here are your core numerology numbers based on your
-                birth details.
+                Here are your core
+                numerology numbers based
+                on your birth details.
               </p>
+
             </div>
 
-            <button className="newCalculation" onClick={reset}>
+            <button
+              className="newCalculation"
+              onClick={reset}
+            >
               New calculation
             </button>
+
           </div>
 
+          {/* CORE NUMBERS */}
+
           <div className="numbersGrid">
+
             <NumberCard
               label="MULANK"
               number={result.mulank}
@@ -525,73 +741,135 @@ export default function Home() {
               number={result.nameNumber}
               description="Your name vibration"
             />
+
           </div>
 
+          {/* DETAILS */}
+
           <div className="profileDetails">
+
             <div className="detailHeader">
+
               <div>
-                <div className="sectionEyebrow">YOUR NUMEROLOGY</div>
-                <h3>Favourable energies</h3>
+
+                <div className="sectionEyebrow">
+                  YOUR NUMEROLOGY
+                </div>
+
+                <h3>
+                  Favourable energies
+                </h3>
+
               </div>
 
-              <div className="goldCircle">✦</div>
+              <div className="goldCircle">
+                ✦
+              </div>
+
             </div>
 
             <div className="detailsGrid">
+
               <div className="detail">
-                <span>FAVOURABLE NUMBERS</span>
-                <strong>{result.favourableNumber}</strong>
+                <span>
+                  FAVOURABLE NUMBERS
+                </span>
+                <strong>
+                  {result.favourableNumber}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>FAVOURABLE DAYS</span>
-                <strong>{result.days}</strong>
+                <span>
+                  FAVOURABLE DAYS
+                </span>
+                <strong>
+                  {result.days}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>FAVOURABLE COLOURS</span>
-                <strong>{result.colour}</strong>
+                <span>
+                  FAVOURABLE COLOURS
+                </span>
+                <strong>
+                  {result.colour}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>FAVOURABLE ALPHABETS</span>
-                <strong>{result.alphabets}</strong>
+                <span>
+                  FAVOURABLE ALPHABETS
+                </span>
+                <strong>
+                  {result.alphabets}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>PLANET</span>
-                <strong>{result.planet}</strong>
+                <span>
+                  PLANET
+                </span>
+                <strong>
+                  {result.planet}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>DIRECTION</span>
-                <strong>{result.direction}</strong>
+                <span>
+                  DIRECTION
+                </span>
+                <strong>
+                  {result.direction}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>DEITY</span>
-                <strong>{result.deity}</strong>
+                <span>
+                  DEITY
+                </span>
+                <strong>
+                  {result.deity}
+                </strong>
               </div>
 
               <div className="detail">
-                <span>FAVOURABLE DATES</span>
-                <strong>{result.dates}</strong>
+                <span>
+                  FAVOURABLE DATES
+                </span>
+                <strong>
+                  {result.dates}
+                </strong>
               </div>
+
             </div>
+
           </div>
 
           <div className="resultNote">
+
             <span>✦</span>
+
             <p>
-              Numerology is a system of interpretation and self-reflection.
-              Use these numbers as guidance rather than absolute predictions.
+              Numerology is a system of
+              interpretation and
+              self-reflection. Use these
+              numbers as guidance rather
+              than absolute predictions.
             </p>
+
           </div>
+
         </section>
+
       )}
 
+      {/* FOOTER */}
+
       <footer>
+
         <div className="footerBrand">
+
           <img
             src="/assets/mauksh-logo.jpg"
             alt="Mauksh"
@@ -599,15 +877,28 @@ export default function Home() {
           />
 
           <div>
-            <strong>MAUKSH AI</strong>
-            <span>Spirituality is Personal.</span>
+
+            <strong>
+              MAUKSH AI
+            </strong>
+
+            <span>
+              Spirituality is Personal.
+            </span>
+
           </div>
+
         </div>
 
-        <p>© {new Date().getFullYear()} Mauksh. All rights reserved.</p>
+        <p>
+          © {new Date().getFullYear()}{" "}
+          Mauksh. All rights reserved.
+        </p>
+
       </footer>
 
       <style jsx>{`
+
         * {
           box-sizing: border-box;
         }
@@ -709,7 +1000,11 @@ export default function Home() {
         }
 
         h1 {
-          font-size: clamp(42px, 8vw, 78px);
+          font-size: clamp(
+            42px,
+            8vw,
+            78px
+          );
           line-height: 0.98;
           letter-spacing: -0.055em;
           margin: 22px 0;
@@ -733,10 +1028,23 @@ export default function Home() {
           max-width: 570px;
           margin: 45px auto 0;
           padding: 28px;
-          background: rgba(255, 253, 248, 0.9);
+          background:
+            rgba(
+              255,
+              253,
+              248,
+              0.9
+            );
           border: 1px solid #e4dbcc;
           border-radius: 24px;
-          box-shadow: 0 20px 60px rgba(60, 45, 20, 0.08);
+          box-shadow:
+            0 20px 60px
+            rgba(
+              60,
+              45,
+              20,
+              0.08
+            );
           text-align: left;
         }
 
@@ -793,7 +1101,20 @@ export default function Home() {
 
         .field input:focus {
           border-color: #c3912c;
-          box-shadow: 0 0 0 3px rgba(195, 145, 44, 0.1);
+          box-shadow:
+            0 0 0 3px
+            rgba(
+              195,
+              145,
+              44,
+              0.1
+            );
+        }
+
+        .dateInput {
+          appearance: auto;
+          -webkit-appearance: auto;
+          cursor: pointer;
         }
 
         .fieldHint {
@@ -820,7 +1141,9 @@ export default function Home() {
           transition: 0.2s ease;
         }
 
-        .calculateButton:hover:not(:disabled) {
+        .calculateButton:hover:not(
+          :disabled
+        ) {
           transform: translateY(-2px);
           background: #28251f;
         }
@@ -863,7 +1186,11 @@ export default function Home() {
 
         .howSection h2 {
           margin: 18px 0 55px;
-          font-size: clamp(34px, 6vw, 55px);
+          font-size: clamp(
+            34px,
+            6vw,
+            55px
+          );
           line-height: 1;
           letter-spacing: -0.05em;
         }
@@ -876,7 +1203,8 @@ export default function Home() {
           max-width: 1050px;
           margin: 0 auto;
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns:
+            repeat(3, 1fr);
           gap: 1px;
           background: #3a3731;
         }
@@ -922,7 +1250,11 @@ export default function Home() {
         }
 
         .resultsTop h2 {
-          font-size: clamp(34px, 6vw, 55px);
+          font-size: clamp(
+            34px,
+            6vw,
+            55px
+          );
           line-height: 1;
           letter-spacing: -0.05em;
           margin: 16px 0;
@@ -946,7 +1278,8 @@ export default function Home() {
 
         .numbersGrid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns:
+            repeat(3, 1fr);
           gap: 14px;
         }
 
@@ -993,7 +1326,8 @@ export default function Home() {
           margin-bottom: 30px;
         }
 
-        .detailHeader .sectionEyebrow {
+        .detailHeader
+          .sectionEyebrow {
           color: #d4a94c;
         }
 
@@ -1004,7 +1338,8 @@ export default function Home() {
 
         .detailsGrid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns:
+            repeat(4, 1fr);
           gap: 1px;
           background: #38352f;
         }
@@ -1097,6 +1432,7 @@ export default function Home() {
         }
 
         @media (max-width: 700px) {
+
           .hero {
             padding-bottom: 60px;
           }
@@ -1143,7 +1479,8 @@ export default function Home() {
           }
 
           .detailsGrid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns:
+              repeat(2, 1fr);
           }
 
           .profileDetails {
@@ -1160,6 +1497,7 @@ export default function Home() {
         }
 
         @media (max-width: 420px) {
+
           .nav {
             padding-top: 16px;
           }
@@ -1181,8 +1519,9 @@ export default function Home() {
             min-height: auto;
           }
         }
-      `}
-      </style>
+
+      `}</style>
+
     </main>
   );
 }
