@@ -11,7 +11,8 @@
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "openai": "^6.0.0"
+    "openai": "^6.0.0",
+    "@dodopayments/nextjs": "^0.3.9"
   },
   "devDependencies": {
     "@types/node": "latest",
