@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 
-type Step = "intro" | "profile" | "numbers" | "chat" | "paywall";
+type Step =
+  | "intro"
+  | "profile"
+  | "numbers"
+  | "chat"
+  | "paywall";
 
 type Profile = {
   name: string;
@@ -13,7 +18,11 @@ type Profile = {
   nameNumber: number;
 };
 
-function reduceNumber(num: number) {
+/* =========================================================
+   NUMEROLOGY HELPERS
+   ========================================================= */
+
+function reduceNumber(num: number): number {
   while (num > 9) {
     num = String(num)
       .split("")
@@ -23,26 +32,35 @@ function reduceNumber(num: number) {
   return num;
 }
 
-function getMulank(dob: string) {
-  const day = Number(dob.split("-")[2]);
+function getMulank(dob: string): number {
+  const parts = dob.split("-");
+
+  if (parts.length !== 3) return 0;
+
+  const day = Number(parts[2]);
 
   if (!day) return 0;
 
   return reduceNumber(day);
 }
 
-function getBhagyank(dob: string) {
+function getBhagyank(dob: string): number {
   const digits = dob
     .replaceAll("-", "")
     .split("")
     .map(Number);
 
-  return reduceNumber(
-    digits.reduce((sum, digit) => sum + digit, 0)
+  if (!digits.length) return 0;
+
+  const total = digits.reduce(
+    (sum, digit) => sum + digit,
+    0
   );
+
+  return reduceNumber(total);
 }
 
-function getNameNumber(name: string) {
+function getNameNumber(name: string): number {
   const letters = name
     .toUpperCase()
     .replace(/[^A-Z]/g, "");
@@ -60,19 +78,37 @@ function getNameNumber(name: string) {
   return reduceNumber(total);
 }
 
-export default function NumerologyAIPage() {
-  const [step, setStep] = useState<Step>("intro");
 
-  const [name, setName] = useState("");
-  const [dob, setDob] = useState("");
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
+export default function NumerologyAIPage() {
+  const [step, setStep] =
+    useState<Step>("intro");
+
+  const [name, setName] =
+    useState("");
+
+  const [dob, setDob] =
+    useState("");
 
   const [profile, setProfile] =
     useState<Profile | null>(null);
 
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [question, setQuestion] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [answer, setAnswer] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  /* =======================================================
+     CREATE PROFILE
+     ======================================================= */
 
   function createProfile() {
     if (!name.trim() || !dob) return;
@@ -86,19 +122,36 @@ export default function NumerologyAIPage() {
     };
 
     setProfile(newProfile);
+
     setStep("numbers");
   }
 
+
+  /* =======================================================
+     ASK QUESTION
+     ======================================================= */
+
   async function askQuestion() {
-    if (!question.trim() || !profile) return;
+    if (!question.trim() || !profile) {
+      return;
+    }
 
     setLoading(true);
 
-    // Temporary demo response.
-    // Replace with /api/numerology-ai later.
+    /*
+     * TEMPORARY DEMO RESPONSE.
+     *
+     * Later this will call:
+     *
+     * /api/numerology-ai
+     *
+     * and use:
+     *
+     * Supabase + OpenAI
+     */
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1300)
+      setTimeout(resolve, 1400)
     );
 
     setAnswer(
@@ -107,62 +160,70 @@ export default function NumerologyAIPage() {
 
     setLoading(false);
 
-    // Free question consumed.
+    /*
+     * Demo only.
+     *
+     * Once the real backend is connected,
+     * the server will record that the free
+     * question has been consumed.
+     */
+
     setTimeout(() => {
       setStep("paywall");
-    }, 2200);
+    }, 2500);
   }
+
+
+  /* =======================================================
+     RENDER
+     ======================================================= */
 
   return (
     <main className="app">
 
-      {/* BACKGROUND */}
+      {/* Background atmosphere */}
 
       <div className="orb orbOne" />
       <div className="orb orbTwo" />
       <div className="orb orbThree" />
 
 
-      {/* HEADER */}
+      {/* =================================================
+          HEADER
+          ================================================= */}
 
       <header className="header">
 
-        <Link href="/" className="brand">
+        <Link
+          href="/"
+          className="brand"
+        >
 
-          <div className="brandLogo">
-            M
-          </div>
-
-          <div className="brandText">
-            mauksh
-            <span>.ai</span>
-          </div>
+          <img
+            src="/assets/Mauksh-logo.jpg"
+            alt="Mauksh"
+            className="maukshLogo"
+          />
 
         </Link>
-
-
-        <div className="headerPill">
-
-          <span className="liveDot" />
-
-          AI numerology
-
-        </div>
 
       </header>
 
 
-      {/* ==================================================
+      {/* =================================================
           INTRO
-      ================================================== */}
+          ================================================= */}
 
       {step === "intro" && (
 
         <section className="introPage">
 
           <div className="topBadge">
+
             <span>✦</span>
-            YOUR PERSONAL NUMEROLOGY AI
+
+            PERSONAL NUMEROLOGY
+
           </div>
 
 
@@ -182,9 +243,9 @@ export default function NumerologyAIPage() {
 
           <p className="heroDescription">
 
-            Meet Mauksh AI — a personal numerology
-            companion that understands your numbers
-            and helps you make sense of life's questions.
+            Meet your personal numerology companion.
+            Understand your numbers and get personalized
+            guidance for the questions that matter to you.
 
           </p>
 
@@ -205,12 +266,12 @@ export default function NumerologyAIPage() {
 
             <span>✦</span>
 
-            1 personalized AI question free
+            Your first AI question is free
 
           </div>
 
 
-          {/* floating preview */}
+          {/* Floating AI preview */}
 
           <div className="floatingPreview">
 
@@ -227,7 +288,7 @@ export default function NumerologyAIPage() {
                 </strong>
 
                 <small>
-                  Your numbers, understood.
+                  Personal numerology companion
                 </small>
 
               </div>
@@ -260,8 +321,11 @@ export default function NumerologyAIPage() {
 
 
           <div className="scrollHint">
-            SCROLL TO EXPLORE
+
+            EXPLORE
+
             <span>↓</span>
+
           </div>
 
         </section>
@@ -269,26 +333,21 @@ export default function NumerologyAIPage() {
       )}
 
 
-      {/* ==================================================
+      {/* =================================================
           PROFILE
-      ================================================== */}
+          ================================================= */}
 
       {step === "profile" && (
 
         <section className="profilePage">
 
-          <div className="progress">
-
-            <span className="active" />
-            <span />
-            <span />
-            <span />
-
-          </div>
+          <Progress active={1} />
 
 
           <div className="sectionBadge">
+
             01 · YOUR PROFILE
+
           </div>
 
 
@@ -304,8 +363,8 @@ export default function NumerologyAIPage() {
 
           <p className="sectionDescription">
 
-            Just two things. We'll handle
-            everything else.
+            Just two things.
+            We'll handle everything else.
 
           </p>
 
@@ -315,7 +374,7 @@ export default function NumerologyAIPage() {
             <div className="inputGroup">
 
               <label>
-                Your name
+                YOUR NAME
               </label>
 
               <input
@@ -333,7 +392,7 @@ export default function NumerologyAIPage() {
             <div className="inputGroup">
 
               <label>
-                Date of birth
+                DATE OF BIRTH
               </label>
 
               <input
@@ -350,7 +409,8 @@ export default function NumerologyAIPage() {
             <button
               className="continueButton"
               disabled={
-                !name.trim() || !dob
+                !name.trim() ||
+                !dob
               }
               onClick={createProfile}
             >
@@ -366,7 +426,7 @@ export default function NumerologyAIPage() {
 
           <div className="privacyNote">
 
-            <span>⌁</span>
+            <span>✦</span>
 
             Your information stays private.
 
@@ -377,533 +437,636 @@ export default function NumerologyAIPage() {
       )}
 
 
-      {/* ==================================================
+      {/* =================================================
           NUMBERS
-      ================================================== */}
+          ================================================= */}
 
-      {step === "numbers" && profile && (
+      {step === "numbers" &&
+        profile && (
 
-        <section className="numbersPage">
+          <section className="numbersPage">
 
-          <div className="progress">
-
-            <span className="active" />
-            <span className="active" />
-            <span />
-            <span />
-
-          </div>
+            <Progress active={2} />
 
 
-          <div className="sectionBadge">
-            02 · YOUR NUMBERS
-          </div>
+            <div className="sectionBadge">
 
-
-          <div className="numbersHeader">
-
-            <div>
-
-              <h2 className="sectionTitle small">
-
-                Hey {profile.name.split(" ")[0]}.
-                <br />
-
-                <span>Here you are.</span>
-
-              </h2>
+              02 · YOUR NUMBERS
 
             </div>
 
 
-            <div className="sparkle">
-              ✦
-            </div>
-
-          </div>
-
-
-          {/* NUMBER CARDS */}
-
-          <div className="numberCards">
-
-            <NumberCard
-              label="MULANK"
-              value={profile.mulank}
-              description="Your core energy"
-            />
-
-            <NumberCard
-              label="BHAGYANK"
-              value={profile.bhagyank}
-              description="Your life path"
-              featured
-            />
-
-            <NumberCard
-              label="NAME NUMBER"
-              value={profile.nameNumber}
-              description="Your expression"
-            />
-
-          </div>
-
-
-          {/* GRID */}
-
-          <div className="gridCard">
-
-            <div className="gridHeader">
+            <div className="numbersHeader">
 
               <div>
 
-                <span>
-                  VEDIC GRID
-                </span>
+                <h2 className="sectionTitle small">
 
-                <strong>
-                  Your number map
-                </strong>
+                  Hey{" "}
+
+                  {profile.name
+                    .split(" ")[0]}
+
+                  .
+
+                  <br />
+
+                  <span>
+                    Here you are.
+                  </span>
+
+                </h2>
 
               </div>
 
-              <span className="gridIcon">
-                ⊹
-              </span>
+
+              <div className="sparkle">
+
+                ✦
+
+              </div>
 
             </div>
 
 
-            <div className="vedicGrid">
+            {/* NUMBER CARDS */}
 
-              {[3, 1, 9, 6, 7, 5, 2, 8, 4].map(
-                (num) => (
+            <div className="numberCards">
 
-                  <div
-                    key={num}
-                    className={
-                      num === profile.mulank ||
-                      num === profile.bhagyank
-                        ? "gridCell selected"
-                        : "gridCell"
-                    }
-                  >
+              <NumberCard
+                label="MULANK"
+                value={profile.mulank}
+                description="Your core energy"
+              />
 
-                    {num}
+              <NumberCard
+                label="BHAGYANK"
+                value={profile.bhagyank}
+                description="Your life path"
+                featured
+              />
+
+              <NumberCard
+                label="NAME NUMBER"
+                value={profile.nameNumber}
+                description="Your expression"
+              />
+
+            </div>
+
+
+            {/* VEDIC GRID */}
+
+            <div className="gridCard">
+
+              <div className="gridHeader">
+
+                <div>
+
+                  <span>
+                    VEDIC GRID
+                  </span>
+
+                  <strong>
+                    Your number map
+                  </strong>
+
+                </div>
+
+                <span className="gridIcon">
+                  ⊹
+                </span>
+
+              </div>
+
+
+              <div className="vedicGrid">
+
+                {[3, 1, 9, 6, 7, 5, 2, 8, 4].map(
+                  (num) => (
+
+                    <div
+                      key={num}
+                      className={
+                        num === profile.mulank ||
+                        num === profile.bhagyank
+                          ? "gridCell selected"
+                          : "gridCell"
+                      }
+                    >
+
+                      {num}
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+
+            {/* ASK AI */}
+
+            <div className="askCard">
+
+              <div className="askIcon">
+
+                ✦
+
+              </div>
+
+
+              <div className="askText">
+
+                <strong>
+                  Your numbers are ready.
+                </strong>
+
+                <p>
+                  Now ask Mauksh AI anything.
+                </p>
+
+              </div>
+
+
+              <button
+                onClick={() =>
+                  setStep("chat")
+                }
+              >
+
+                →
+
+              </button>
+
+            </div>
+
+
+            <div className="freeLabel">
+
+              ✦ Your first AI question is free
+
+            </div>
+
+          </section>
+        )}
+
+
+      {/* =================================================
+          CHAT
+          ================================================= */}
+
+      {step === "chat" &&
+        profile && (
+
+          <section className="chatPage">
+
+            <Progress active={3} />
+
+
+            <div className="chatHeader">
+
+              <div>
+
+                <div className="sectionBadge">
+
+                  03 · ASK ANYTHING
+
+                </div>
+
+
+                <h2 className="chatTitle">
+
+                  Your numbers.
+                  <br />
+
+                  <span>
+                    Your questions.
+                  </span>
+
+                </h2>
+
+              </div>
+
+
+              <div className="chatProfile">
+
+                <div>
+
+                  {profile.name
+                    .charAt(0)
+                    .toUpperCase()}
+
+                </div>
+
+                <span>
+
+                  {profile.mulank}
+                  {" · "}
+                  {profile.bhagyank}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            {/* CHAT BOX */}
+
+            <div className="chatBox">
+
+              <div className="chatTop">
+
+                <div className="chatAvatar">
+                  M
+                </div>
+
+
+                <div>
+
+                  <strong>
+                    Mauksh AI
+                  </strong>
+
+                  <span>
+                    Personal numerology companion
+                  </span>
+
+                </div>
+
+
+                <div className="chatStatus">
+
+                  <i />
+
+                  Online
+
+                </div>
+
+              </div>
+
+
+              <div className="chatMessages">
+
+                {!answer && (
+
+                  <>
+
+                    <div className="aiGreeting">
+
+                      <span>✦</span>
+
+                      Hey{" "}
+
+                      {profile.name
+                        .split(" ")[0]}
+
+                      .
+
+                      <br />
+
+                      Ask me anything about your
+                      career, relationships, money
+                      or life.
+
+                    </div>
+
+
+                    <div className="suggestions">
+
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "Should I change my career this year?"
+                          )
+                        }
+                      >
+                        Should I change my career?
+                      </button>
+
+
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "What should I focus on financially?"
+                          )
+                        }
+                      >
+                        What about money?
+                      </button>
+
+
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "What does my numerology say about love?"
+                          )
+                        }
+                      >
+                        What about my love life?
+                      </button>
+
+                    </div>
+
+                  </>
+
+                )}
+
+
+                {question && (
+
+                  <div className="userMessage">
+
+                    {question}
 
                   </div>
 
-                )
+                )}
+
+
+                {answer && (
+
+                  <div className="aiMessage">
+
+                    <div className="aiLabel">
+
+                      ✦ MAUKSH AI
+
+                    </div>
+
+
+                    <p>
+                      {answer}
+                    </p>
+
+                  </div>
+
+                )}
+
+              </div>
+
+
+              {!answer && (
+
+                <div className="chatInput">
+
+                  <textarea
+                    value={question}
+                    onChange={(e) =>
+                      setQuestion(
+                        e.target.value
+                      )
+                    }
+                    placeholder="Ask something..."
+                    rows={2}
+                  />
+
+
+                  <button
+                    disabled={
+                      !question.trim() ||
+                      loading
+                    }
+                    onClick={askQuestion}
+                  >
+
+                    {loading ? (
+                      <span className="loader" />
+                    ) : (
+                      "↑"
+                    )}
+
+                  </button>
+
+                </div>
+
               )}
 
             </div>
 
-          </div>
 
+            <div className="questionCounter">
 
-          {/* AI CTA */}
+              <span>
+                1
+              </span>
 
-          <div className="askCard">
+              free question · no card required
 
-            <div className="askIcon">
-              ✦
             </div>
 
-            <div className="askText">
+          </section>
 
-              <strong>
-                Your numbers are ready.
-              </strong>
+        )}
 
-              <p>
-                Now ask Mauksh AI anything.
+
+      {/* =================================================
+          PAYWALL
+          ================================================= */}
+
+      {step === "paywall" &&
+        profile && (
+
+          <section className="paywallPage">
+
+            <div className="successIcon">
+
+              ✓
+
+            </div>
+
+
+            <div className="sectionBadge">
+
+              YOUR FREE QUESTION IS USED
+
+            </div>
+
+
+            <h2 className="sectionTitle">
+
+              That was just
+              <br />
+
+              <span>
+                the beginning.
+              </span>
+
+            </h2>
+
+
+            <p className="sectionDescription">
+
+              Your numerology profile is saved.
+              Keep your personal numerology companion
+              with you whenever you need another
+              perspective.
+
+            </p>
+
+
+            {/* PLAN */}
+
+            <div className="plan">
+
+              <div className="planGlow" />
+
+
+              <div className="planTop">
+
+                <div>
+
+                  <div className="planPill">
+
+                    MAUKSH AI
+
+                  </div>
+
+
+                  <h3>
+
+                    Your personal
+                    <br />
+
+                    numerology companion
+
+                  </h3>
+
+                </div>
+
+
+                <div className="planPrice">
+
+                  <strong>
+                    ₹99
+                  </strong>
+
+                  <span>
+                    / month
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div className="planFeatures">
+
+                <Feature>
+                  Personalized AI guidance
+                </Feature>
+
+                <Feature>
+                  Your numbers always remembered
+                </Feature>
+
+                <Feature>
+                  Career, love, money & life
+                </Feature>
+
+                <Feature>
+                  Saved conversations
+                </Feature>
+
+                <Feature>
+                  Cancel anytime
+                </Feature>
+
+              </div>
+
+
+              <button
+                className="subscribeButton"
+                onClick={() => {
+
+                  /*
+                   * NEXT:
+                   *
+                   * Dodo checkout
+                   */
+
+                  alert(
+                    "Dodo Payments checkout will be connected here."
+                  );
+
+                }}
+              >
+
+                Unlock Mauksh AI
+
+                <span>
+                  →
+                </span>
+
+              </button>
+
+
+              <p className="secureText">
+
+                Secure payment · Cancel anytime
+
               </p>
 
             </div>
 
-            <button
-              onClick={() => setStep("chat")}
-            >
-              →
-            </button>
 
-          </div>
-
-
-          <div className="freeLabel">
-
-            ✦ Your first AI question is free
-
-          </div>
-
-        </section>
-
-      )}
-
-
-      {/* ==================================================
-          CHAT
-      ================================================== */}
-
-      {step === "chat" && profile && (
-
-        <section className="chatPage">
-
-          <div className="progress">
-
-            <span className="active" />
-            <span className="active" />
-            <span className="active" />
-            <span />
-
-          </div>
-
-
-          <div className="chatHeader">
-
-            <div>
-
-              <div className="sectionBadge">
-                03 · ASK ANYTHING
-              </div>
-
-              <h2 className="chatTitle">
-
-                Your numbers.
-                <br />
-
-                <span>Your questions.</span>
-
-              </h2>
-
-            </div>
-
-
-            <div className="chatProfile">
-
-              <div>
-                {profile.name
-                  .charAt(0)
-                  .toUpperCase()}
-              </div>
+            <div className="savedProfile">
 
               <span>
-                {profile.mulank} · {profile.bhagyank}
+                ✓
               </span>
 
-            </div>
-
-          </div>
-
-
-          {/* CHAT */}
-
-          <div className="chatBox">
-
-            <div className="chatTop">
-
-              <div className="chatAvatar">
-                M
-              </div>
-
-              <div>
-
-                <strong>
-                  Mauksh AI
-                </strong>
-
-                <span>
-                  Personal numerology companion
-                </span>
-
-              </div>
-
-              <div className="chatStatus">
-                <i />
-                Online
-              </div>
+              Your numerology profile is already saved.
 
             </div>
 
+          </section>
 
-            <div className="chatMessages">
-
-              {!answer && (
-
-                <>
-
-                  <div className="aiGreeting">
-
-                    <span>✦</span>
-
-                    Hey {profile.name.split(" ")[0]}.
-                    Ask me anything about your
-                    life, career, relationships or money.
-
-                  </div>
-
-
-                  <div className="suggestions">
-
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "Should I change my career this year?"
-                        )
-                      }
-                    >
-                      Should I change my career?
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "What should I focus on financially?"
-                        )
-                      }
-                    >
-                      What should I focus on financially?
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "What does my numerology say about love?"
-                        )
-                      }
-                    >
-                      What about my love life?
-                    </button>
-
-                  </div>
-
-                </>
-
-              )}
-
-
-              {question && (
-
-                <div className="userMessage">
-                  {question}
-                </div>
-
-              )}
-
-
-              {answer && (
-
-                <div className="aiMessage">
-
-                  <div className="aiLabel">
-                    ✦ MAUKSH AI
-                  </div>
-
-                  <p>
-                    {answer}
-                  </p>
-
-                </div>
-
-              )}
-
-            </div>
-
-
-            {!answer && (
-
-              <div className="chatInput">
-
-                <textarea
-                  value={question}
-                  onChange={(e) =>
-                    setQuestion(e.target.value)
-                  }
-                  placeholder="Ask something..."
-                  rows={2}
-                />
-
-                <button
-                  disabled={
-                    !question.trim() ||
-                    loading
-                  }
-                  onClick={askQuestion}
-                >
-
-                  {loading ? (
-                    <span className="loader" />
-                  ) : (
-                    "↑"
-                  )}
-
-                </button>
-
-              </div>
-
-            )}
-
-          </div>
-
-
-          <div className="questionCounter">
-
-            <span>1</span>
-
-            free question · no card required
-
-          </div>
-
-        </section>
-
-      )}
-
-
-      {/* ==================================================
-          PAYWALL
-      ================================================== */}
-
-      {step === "paywall" && profile && (
-
-        <section className="paywallPage">
-
-          <div className="successIcon">
-            ✓
-          </div>
-
-
-          <div className="sectionBadge">
-            YOU'RE IN
-          </div>
-
-
-          <h2 className="sectionTitle">
-
-            That was just
-            <br />
-
-            <span>the beginning.</span>
-
-          </h2>
-
-
-          <p className="sectionDescription">
-
-            Your profile is saved. Keep your
-            personal numerology companion with you
-            whenever you need another perspective.
-
-          </p>
-
-
-          {/* PLAN */}
-
-          <div className="plan">
-
-            <div className="planGlow" />
-
-            <div className="planTop">
-
-              <div>
-
-                <div className="planPill">
-                  MAUKSH AI
-                </div>
-
-                <h3>
-                  Your personal
-                  <br />
-                  numerology companion
-                </h3>
-
-              </div>
-
-
-              <div className="planPrice">
-
-                <strong>
-                  ₹99
-                </strong>
-
-                <span>
-                  / month
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div className="planFeatures">
-
-              <Feature>
-                Personalized AI guidance
-              </Feature>
-
-              <Feature>
-                Your numbers always remembered
-              </Feature>
-
-              <Feature>
-                Career, love, money & life
-              </Feature>
-
-              <Feature>
-                Saved conversations
-              </Feature>
-
-              <Feature>
-                Cancel anytime
-              </Feature>
-
-            </div>
-
-
-            <button
-              className="subscribeButton"
-              onClick={() => {
-                alert(
-                  "Dodo Payments checkout will be connected here."
-                );
-              }}
-            >
-
-              Unlock Mauksh AI
-
-              <span>→</span>
-
-            </button>
-
-
-            <p className="secureText">
-
-              Secure payment · Cancel anytime
-
-            </p>
-
-          </div>
-
-
-          <div className="savedProfile">
-
-            <span>✓</span>
-
-            Your numerology profile is already saved.
-
-          </div>
-
-        </section>
-
-      )}
+        )}
 
     </main>
   );
 }
 
 
-/* ======================================================
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+function Progress({
+  active,
+}: {
+  active: number;
+}) {
+  return (
+    <div className="progress">
+
+      {[1, 2, 3, 4].map(
+        (number) => (
+
+          <span
+            key={number}
+            className={
+              number <= active
+                ? "active"
+                : ""
+            }
+          />
+
+        )
+      )}
+
+    </div>
+  );
+}
+
+
+/* =========================================================
    NUMBER CARD
-====================================================== */
+   ========================================================= */
 
 function NumberCard({
   label,
@@ -926,21 +1089,34 @@ function NumberCard({
     >
 
       <div className="numberLabel">
+
         {label}
+
       </div>
+
 
       <div className="numberValue">
+
         {value}
+
       </div>
+
 
       <div className="numberDescription">
+
         {description}
+
       </div>
 
+
       {featured && (
+
         <div className="featuredBadge">
+
           MAIN
+
         </div>
+
       )}
 
     </div>
@@ -948,9 +1124,9 @@ function NumberCard({
 }
 
 
-/* ======================================================
+/* =========================================================
    FEATURE
-====================================================== */
+   ========================================================= */
 
 function Feature({
   children,
@@ -971,11 +1147,12 @@ function Feature({
 }
 
 
-/* ======================================================
+/* =========================================================
    STYLES
-====================================================== */
+   ========================================================= */
 
 const styles = `
+
 * {
   box-sizing: border-box;
 }
@@ -998,7 +1175,9 @@ textarea {
 
 .app {
   min-height: 100vh;
+
   position: relative;
+
   overflow: hidden;
 
   background:
@@ -1025,9 +1204,9 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    BACKGROUND
-====================================================== */
+   ========================================================= */
 
 .orb {
   position: fixed;
@@ -1072,9 +1251,9 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    HEADER
-====================================================== */
+   ========================================================= */
 
 .header {
   height: 76px;
@@ -1083,12 +1262,16 @@ textarea {
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
   position: relative;
+
   z-index: 10;
 
-  border-bottom: 1px solid rgba(40,35,28,.07);
+  border-bottom:
+    1px solid rgba(40,35,28,.07);
+
+  background:
+    rgba(247,245,239,.65);
 
   backdrop-filter: blur(18px);
 }
@@ -1096,75 +1279,25 @@ textarea {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
 
   text-decoration: none;
-
-  color: #191714;
 }
 
-.brandLogo {
-  width: 36px;
-  height: 36px;
+.maukshLogo {
+  width: 58px;
+  height: 58px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: contain;
+
+  display: block;
 
   border-radius: 50%;
-
-  background: #1d1a16;
-  color: #d2a95c;
-
-  font-family: Georgia, serif;
-  font-size: 19px;
-}
-
-.brandText {
-  font-size: 15px;
-  font-weight: 750;
-  letter-spacing: -.5px;
-}
-
-.brandText span {
-  color: #b17e2f;
-}
-
-.headerPill {
-  padding: 8px 12px;
-
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  border: 1px solid rgba(42,35,25,.09);
-  border-radius: 100px;
-
-  background: rgba(255,255,255,.48);
-
-  color: #777067;
-
-  font-size: 9px;
-  font-weight: 600;
-
-  letter-spacing: .4px;
-}
-
-.liveDot {
-  width: 6px;
-  height: 6px;
-
-  border-radius: 50%;
-
-  background: #84965a;
-
-  box-shadow: 0 0 0 4px rgba(132,150,90,.1);
 }
 
 
-/* ======================================================
+/* =========================================================
    COMMON
-====================================================== */
+   ========================================================= */
 
 .introPage,
 .profilePage,
@@ -1176,6 +1309,7 @@ textarea {
   margin: auto;
 
   position: relative;
+
   z-index: 2;
 }
 
@@ -1184,6 +1318,7 @@ textarea {
   color: #a97830;
 
   font-size: 9px;
+
   font-weight: 750;
 
   letter-spacing: 2px;
@@ -1192,7 +1327,8 @@ textarea {
 .sectionTitle {
   margin: 18px 0 0;
 
-  font-size: clamp(50px, 8vw, 82px);
+  font-size:
+    clamp(50px, 8vw, 82px);
 
   line-height: .94;
 
@@ -1208,27 +1344,35 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    INTRO
-====================================================== */
+   ========================================================= */
 
 .introPage {
-  min-height: calc(100vh - 76px);
+  min-height:
+    calc(100vh - 76px);
 
-  padding: 110px 30px 100px;
+  padding:
+    110px 30px 100px;
 }
 
 .topBadge {
   display: inline-flex;
+
   align-items: center;
+
   gap: 8px;
 
-  padding: 8px 12px;
+  padding:
+    8px 12px;
 
-  border: 1px solid rgba(167,126,55,.2);
+  border:
+    1px solid rgba(167,126,55,.2);
+
   border-radius: 100px;
 
-  background: rgba(255,250,239,.65);
+  background:
+    rgba(255,250,239,.65);
 }
 
 .topBadge span {
@@ -1240,7 +1384,8 @@ textarea {
 
   max-width: 800px;
 
-  font-size: clamp(58px, 10vw, 105px);
+  font-size:
+    clamp(58px, 10vw, 105px);
 
   line-height: .88;
 
@@ -1252,7 +1397,8 @@ textarea {
 .heroDescription {
   max-width: 510px;
 
-  margin: 30px 0 25px;
+  margin:
+    30px 0 25px;
 
   color: #777067;
 
@@ -1264,19 +1410,25 @@ textarea {
 .heroButton {
   height: 56px;
 
-  padding: 0 8px 0 21px;
+  padding:
+    0 8px 0 21px;
 
   display: flex;
+
   align-items: center;
+
   gap: 28px;
 
   border: 0;
+
   border-radius: 100px;
 
   background: #1c1916;
+
   color: white;
 
   font-size: 12px;
+
   font-weight: 700;
 
   cursor: pointer;
@@ -1289,6 +1441,7 @@ textarea {
   height: 40px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1300,7 +1453,8 @@ textarea {
 }
 
 .heroButton:hover {
-  transform: translateY(-2px);
+  transform:
+    translateY(-2px);
 }
 
 .freePill {
@@ -1315,6 +1469,11 @@ textarea {
   color: #b18035;
 }
 
+
+/* =========================================================
+   FLOATING PREVIEW
+   ========================================================= */
+
 .floatingPreview {
   position: absolute;
 
@@ -1325,22 +1484,30 @@ textarea {
 
   padding: 16px;
 
-  border: 1px solid rgba(255,255,255,.7);
+  border:
+    1px solid rgba(255,255,255,.7);
+
   border-radius: 22px;
 
-  background: rgba(255,255,255,.55);
+  background:
+    rgba(255,255,255,.55);
 
   box-shadow:
-    0 30px 80px rgba(50,40,25,.10);
+    0 30px 80px
+    rgba(50,40,25,.10);
 
-  backdrop-filter: blur(25px);
+  backdrop-filter:
+    blur(25px);
 
-  transform: rotate(3deg);
+  transform:
+    rotate(3deg);
 }
 
 .previewTop {
   display: flex;
+
   align-items: center;
+
   gap: 9px;
 }
 
@@ -1350,6 +1517,7 @@ textarea {
   height: 34px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1358,9 +1526,12 @@ textarea {
   border-radius: 11px;
 
   background: #1d1a16;
+
   color: #d4a858;
 
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 }
 
 .previewTop strong,
@@ -1393,7 +1564,8 @@ textarea {
 
   padding: 12px;
 
-  border-radius: 12px 12px 3px 12px;
+  border-radius:
+    12px 12px 3px 12px;
 
   background: #1e1b17;
 
@@ -1409,7 +1581,8 @@ textarea {
 
   padding: 12px;
 
-  border-radius: 12px 12px 12px 3px;
+  border-radius:
+    12px 12px 12px 3px;
 
   background: #f4ecdd;
 
@@ -1433,7 +1606,9 @@ textarea {
   left: 30px;
 
   display: flex;
+
   align-items: center;
+
   gap: 9px;
 
   color: #aaa299;
@@ -1448,12 +1623,13 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    PROGRESS
-====================================================== */
+   ========================================================= */
 
 .progress {
   display: flex;
+
   gap: 5px;
 
   margin-bottom: 48px;
@@ -1473,18 +1649,20 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    PROFILE
-====================================================== */
+   ========================================================= */
 
 .profilePage {
-  padding: 75px 30px 100px;
+  padding:
+    75px 30px 100px;
 }
 
 .sectionDescription {
   max-width: 450px;
 
-  margin: 22px 0 40px;
+  margin:
+    22px 0 40px;
 
   color: #80786e;
 
@@ -1498,15 +1676,20 @@ textarea {
 
   padding: 25px;
 
-  border: 1px solid rgba(45,38,28,.08);
+  border:
+    1px solid rgba(45,38,28,.08);
+
   border-radius: 26px;
 
-  background: rgba(255,255,255,.62);
+  background:
+    rgba(255,255,255,.62);
 
   box-shadow:
-    0 25px 80px rgba(45,35,20,.06);
+    0 25px 80px
+    rgba(45,35,20,.06);
 
-  backdrop-filter: blur(20px);
+  backdrop-filter:
+    blur(20px);
 }
 
 .inputGroup {
@@ -1521,21 +1704,27 @@ textarea {
   color: #5d564e;
 
   font-size: 10px;
+
   font-weight: 650;
 }
 
 .inputGroup input {
   width: 100%;
+
   height: 54px;
 
-  padding: 0 16px;
+  padding:
+    0 16px;
 
-  border: 1px solid #e0d9ce;
+  border:
+    1px solid #e0d9ce;
+
   border-radius: 14px;
 
   outline: none;
 
-  background: rgba(255,255,255,.72);
+  background:
+    rgba(255,255,255,.72);
 
   color: #201d19;
 
@@ -1548,7 +1737,8 @@ textarea {
   border-color: #c19a57;
 
   box-shadow:
-    0 0 0 4px rgba(193,154,87,.08);
+    0 0 0 4px
+    rgba(193,154,87,.08);
 }
 
 .inputGroup input::placeholder {
@@ -1557,23 +1747,30 @@ textarea {
 
 .continueButton {
   width: 100%;
+
   height: 56px;
 
   margin-top: 5px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
-  padding: 0 8px 0 19px;
+  padding:
+    0 8px 0 19px;
 
   border: 0;
+
   border-radius: 14px;
 
   background: #1d1a16;
+
   color: white;
 
   font-size: 11px;
+
   font-weight: 700;
 
   cursor: pointer;
@@ -1584,6 +1781,7 @@ textarea {
   height: 40px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1615,22 +1813,27 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    NUMBERS
-====================================================== */
+   ========================================================= */
 
 .numbersPage {
-  padding: 70px 30px 100px;
+  padding:
+    70px 30px 100px;
 }
 
 .numbersHeader {
   display: flex;
+
   align-items: flex-start;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
 }
 
 .sectionTitle.small {
-  font-size: clamp(47px, 7vw, 70px);
+  font-size:
+    clamp(47px, 7vw, 70px);
 }
 
 .sparkle {
@@ -1638,6 +1841,7 @@ textarea {
   height: 48px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1652,7 +1856,9 @@ textarea {
 
 .numberCards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, 1fr);
 
   gap: 10px;
 
@@ -1666,21 +1872,27 @@ textarea {
 
   padding: 20px;
 
-  border: 1px solid rgba(50,42,32,.08);
+  border:
+    1px solid
+    rgba(50,42,32,.08);
+
   border-radius: 23px;
 
-  background: rgba(255,255,255,.62);
+  background:
+    rgba(255,255,255,.62);
 
   overflow: hidden;
 }
 
 .numberCard.featured {
   background: #1e1b17;
+
   color: white;
 }
 
 .numberLabel {
   font-size: 8px;
+
   font-weight: 750;
 
   letter-spacing: 1.6px;
@@ -1695,7 +1907,9 @@ textarea {
 .numberValue {
   margin-top: 18px;
 
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size: 64px;
 
@@ -1726,7 +1940,8 @@ textarea {
   top: 18px;
   right: 17px;
 
-  padding: 5px 7px;
+  padding:
+    5px 7px;
 
   border-radius: 100px;
 
@@ -1735,10 +1950,16 @@ textarea {
   color: #211d17;
 
   font-size: 6px;
+
   font-weight: 800;
 
   letter-spacing: 1px;
 }
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
 
 .gridCard {
   margin-top: 10px;
@@ -1747,14 +1968,19 @@ textarea {
 
   border-radius: 23px;
 
-  background: rgba(255,255,255,.62);
+  background:
+    rgba(255,255,255,.62);
 
-  border: 1px solid rgba(50,42,32,.08);
+  border:
+    1px solid
+    rgba(50,42,32,.08);
 }
 
 .gridHeader {
   display: flex;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
 }
 
 .gridHeader span {
@@ -1763,6 +1989,7 @@ textarea {
   color: #a7782f;
 
   font-size: 7px;
+
   font-weight: 750;
 
   letter-spacing: 1.6px;
@@ -1786,23 +2013,30 @@ textarea {
   width: 210px;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
 
-  margin: 20px auto 0;
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  margin:
+    20px auto 0;
 }
 
 .gridCell {
   height: 55px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #e7e0d6;
+  border:
+    1px solid #e7e0d6;
 
   color: #888077;
 
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size: 15px;
 }
@@ -1815,18 +2049,26 @@ textarea {
   font-weight: 700;
 }
 
+
+/* =========================================================
+   ASK CARD
+   ========================================================= */
+
 .askCard {
   margin-top: 10px;
 
   padding: 15px;
 
   display: flex;
+
   align-items: center;
+
   gap: 13px;
 
   border-radius: 21px;
 
   background: #1d1a16;
+
   color: white;
 }
 
@@ -1835,6 +2077,7 @@ textarea {
   height: 43px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1870,9 +2113,11 @@ textarea {
   height: 40px;
 
   border: 0;
+
   border-radius: 11px;
 
   background: #302c26;
+
   color: #d4a85a;
 
   font-size: 17px;
@@ -1891,26 +2136,32 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    CHAT
-====================================================== */
+   ========================================================= */
 
 .chatPage {
-  padding: 65px 30px 100px;
+  padding:
+    65px 30px 100px;
 }
 
 .chatHeader {
   display: flex;
+
   align-items: flex-end;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
 
   margin-bottom: 32px;
 }
 
 .chatTitle {
-  margin: 15px 0 0;
+  margin:
+    15px 0 0;
 
-  font-size: clamp(45px, 7vw, 68px);
+  font-size:
+    clamp(45px, 7vw, 68px);
 
   line-height: .94;
 
@@ -1919,17 +2170,24 @@ textarea {
 
 .chatProfile {
   display: flex;
+
   align-items: center;
+
   gap: 8px;
 
-  padding: 6px 11px 6px 6px;
+  padding:
+    6px 11px 6px 6px;
 
-  border: 1px solid #e1dacf;
+  border:
+    1px solid #e1dacf;
+
   border-radius: 100px;
 
-  background: rgba(255,255,255,.6);
+  background:
+    rgba(255,255,255,.6);
 
   font-size: 8px;
+
   color: #777067;
 }
 
@@ -1938,15 +2196,19 @@ textarea {
   height: 28px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   border-radius: 50%;
 
   background: #1d1a16;
+
   color: #d1a75a;
 
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 }
 
 .chatBox {
@@ -1957,17 +2219,21 @@ textarea {
   background: #1e1b17;
 
   box-shadow:
-    0 30px 80px rgba(40,32,22,.15);
+    0 30px 80px
+    rgba(40,32,22,.15);
 }
 
 .chatTop {
   padding: 17px;
 
   display: flex;
+
   align-items: center;
+
   gap: 10px;
 
-  border-bottom: 1px solid #403b34;
+  border-bottom:
+    1px solid #403b34;
 
   color: white;
 }
@@ -2021,7 +2287,8 @@ textarea {
 
   padding: 15px;
 
-  border-radius: 14px 14px 14px 3px;
+  border-radius:
+    14px 14px 14px 3px;
 
   background: #f5f0e7;
 
@@ -2042,15 +2309,19 @@ textarea {
   margin-top: 17px;
 
   display: flex;
+
   flex-wrap: wrap;
 
   gap: 7px;
 }
 
 .suggestions button {
-  padding: 9px 11px;
+  padding:
+    9px 11px;
 
-  border: 1px solid #4a443d;
+  border:
+    1px solid #4a443d;
+
   border-radius: 100px;
 
   background: #29251f;
@@ -2065,11 +2336,13 @@ textarea {
 .userMessage {
   max-width: 70%;
 
-  margin: 18px 0 0 auto;
+  margin:
+    18px 0 0 auto;
 
   padding: 13px;
 
-  border-radius: 14px 14px 3px 14px;
+  border-radius:
+    14px 14px 3px 14px;
 
   background: #b27f30;
 
@@ -2087,7 +2360,8 @@ textarea {
 
   padding: 15px;
 
-  border-radius: 14px 14px 14px 3px;
+  border-radius:
+    14px 14px 14px 3px;
 
   background: #f5f0e7;
 
@@ -2104,6 +2378,7 @@ textarea {
   color: #aa7930;
 
   font-size: 7px;
+
   font-weight: 750;
 
   letter-spacing: 1.2px;
@@ -2114,14 +2389,18 @@ textarea {
 }
 
 .chatInput {
-  margin: 0 14px 14px;
+  margin:
+    0 14px 14px;
 
   padding: 7px;
 
   display: flex;
+
   align-items: flex-end;
 
-  border: 1px solid #48423a;
+  border:
+    1px solid #48423a;
+
   border-radius: 15px;
 
   background: #28241f;
@@ -2135,6 +2414,7 @@ textarea {
   resize: none;
 
   border: 0;
+
   outline: 0;
 
   background: transparent;
@@ -2153,9 +2433,11 @@ textarea {
   height: 38px;
 
   border: 0;
+
   border-radius: 11px;
 
   background: #c69b52;
+
   color: #211d17;
 
   cursor: pointer;
@@ -2171,18 +2453,26 @@ textarea {
 
   display: inline-block;
 
-  border: 2px solid rgba(0,0,0,.2);
-  border-top-color: #211d17;
+  border:
+    2px solid
+    rgba(0,0,0,.2);
+
+  border-top-color:
+    #211d17;
 
   border-radius: 50%;
 
-  animation: spin .7s linear infinite;
+  animation:
+    spin .7s linear infinite;
 }
 
 @keyframes spin {
+
   to {
-    transform: rotate(360deg);
+    transform:
+      rotate(360deg);
   }
+
 }
 
 .questionCounter {
@@ -2196,7 +2486,8 @@ textarea {
 }
 
 .questionCounter span {
-  padding: 4px 7px;
+  padding:
+    4px 7px;
 
   margin-right: 4px;
 
@@ -2208,12 +2499,13 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    PAYWALL
-====================================================== */
+   ========================================================= */
 
 .paywallPage {
-  padding: 75px 30px 100px;
+  padding:
+    75px 30px 100px;
 
   text-align: center;
 }
@@ -2222,9 +2514,11 @@ textarea {
   width: 54px;
   height: 54px;
 
-  margin: 0 auto 22px;
+  margin:
+    0 auto 22px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -2239,6 +2533,7 @@ textarea {
 
 .paywallPage .sectionDescription {
   margin-left: auto;
+
   margin-right: auto;
 }
 
@@ -2247,13 +2542,15 @@ textarea {
 
   max-width: 650px;
 
-  margin: 35px auto 0;
+  margin:
+    35px auto 0;
 
   padding: 27px;
 
   overflow: hidden;
 
-  border: 1px solid #c8a86c;
+  border:
+    1px solid #c8a86c;
 
   border-radius: 28px;
 
@@ -2262,7 +2559,8 @@ textarea {
   text-align: left;
 
   box-shadow:
-    0 30px 90px rgba(54,40,20,.1);
+    0 30px 90px
+    rgba(54,40,20,.1);
 }
 
 .planGlow {
@@ -2276,7 +2574,8 @@ textarea {
 
   border-radius: 50%;
 
-  background: rgba(207,163,85,.18);
+  background:
+    rgba(207,163,85,.18);
 
   filter: blur(25px);
 }
@@ -2285,14 +2584,18 @@ textarea {
   position: relative;
 
   display: flex;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
+
   gap: 20px;
 }
 
 .planPill {
   display: inline-block;
 
-  padding: 6px 8px;
+  padding:
+    6px 8px;
 
   border-radius: 100px;
 
@@ -2301,15 +2604,19 @@ textarea {
   color: #966c2d;
 
   font-size: 7px;
+
   font-weight: 800;
 
   letter-spacing: 1.3px;
 }
 
 .plan h3 {
-  margin: 12px 0 0;
+  margin:
+    12px 0 0;
 
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size: 27px;
 
@@ -2325,7 +2632,9 @@ textarea {
 }
 
 .planPrice strong {
-  font-family: Georgia, serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size: 39px;
 
@@ -2343,17 +2652,22 @@ textarea {
 
   padding-top: 22px;
 
-  border-top: 1px solid #e7ded0;
+  border-top:
+    1px solid #e7ded0;
 
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    1fr 1fr;
 
   gap: 13px;
 }
 
 .feature {
   display: flex;
+
   align-items: center;
+
   gap: 8px;
 
   color: #625b52;
@@ -2366,6 +2680,7 @@ textarea {
   height: 19px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -2382,23 +2697,31 @@ textarea {
 
 .subscribeButton {
   width: 100%;
+
   height: 56px;
 
   margin-top: 25px;
 
-  padding: 0 8px 0 19px;
+  padding:
+    0 8px 0 19px;
 
   display: flex;
+
   align-items: center;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
 
   border: 0;
+
   border-radius: 14px;
 
   background: #1c1916;
+
   color: white;
 
   font-size: 11px;
+
   font-weight: 700;
 
   cursor: pointer;
@@ -2409,6 +2732,7 @@ textarea {
   height: 40px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -2422,7 +2746,8 @@ textarea {
 }
 
 .secureText {
-  margin: 12px 0 0;
+  margin:
+    12px 0 0;
 
   text-align: center;
 
@@ -2446,14 +2771,22 @@ textarea {
 }
 
 
-/* ======================================================
+/* =========================================================
    MOBILE
-====================================================== */
+   ========================================================= */
 
 @media (max-width: 760px) {
 
   .header {
-    padding: 0 18px;
+    height: 68px;
+
+    padding:
+      0 18px;
+  }
+
+  .maukshLogo {
+    width: 48px;
+    height: 48px;
   }
 
   .introPage,
@@ -2471,6 +2804,7 @@ textarea {
 
   .heroTitle {
     font-size: 61px;
+
     letter-spacing: -5px;
   }
 
@@ -2486,9 +2820,11 @@ textarea {
 
     width: 240px;
 
-    margin: 55px auto 0;
+    margin:
+      55px auto 0;
 
-    transform: rotate(2deg);
+    transform:
+      rotate(2deg);
   }
 
   .scrollHint {
@@ -2497,6 +2833,7 @@ textarea {
 
   .sectionTitle {
     font-size: 57px;
+
     letter-spacing: -4px;
   }
 
@@ -2547,6 +2884,7 @@ textarea {
 
 }
 
+
 @media (max-width: 400px) {
 
   .heroTitle {
@@ -2562,20 +2900,28 @@ textarea {
   }
 
 }
+
 `;
 
-// Inject styles
-if (typeof document !== "undefined") {
-  const existing =
-    document.getElementById("mauksh-ai-styles");
 
-  if (!existing) {
-    const style = document.createElement("style");
+/* =========================================================
+   INJECT STYLES
+   ========================================================= */
 
-    style.id = "mauksh-ai-styles";
+if (
+  typeof document !== "undefined" &&
+  !document.getElementById(
+    "mauksh-ai-styles"
+  )
+) {
+  const style =
+    document.createElement("style");
 
-    style.innerHTML = styles;
+  style.id =
+    "mauksh-ai-styles";
 
-    document.head.appendChild(style);
-  }
+  style.innerHTML =
+    styles;
+
+  document.head.appendChild(style);
 }
