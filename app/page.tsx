@@ -17,6 +17,7 @@ type Profile = {
   nameNumber: number;
 };
 
+
 /* =========================================================
    NUMEROLOGY
    ========================================================= */
@@ -25,11 +26,15 @@ function reduceNumber(value: number): number {
   while (value > 9) {
     value = String(value)
       .split("")
-      .reduce((sum, digit) => sum + Number(digit), 0);
+      .reduce(
+        (sum, digit) => sum + Number(digit),
+        0
+      );
   }
 
   return value;
 }
+
 
 function getMulank(dob: string): number {
   if (!dob) return 0;
@@ -44,6 +49,7 @@ function getMulank(dob: string): number {
 
   return reduceNumber(day);
 }
+
 
 function getBhagyank(dob: string): number {
   if (!dob) return 0;
@@ -104,6 +110,7 @@ const NAME_VALUES: Record<string, number> = {
   P: 8,
 };
 
+
 function getNameNumber(name: string): number {
   const cleanName = name
     .toUpperCase()
@@ -134,9 +141,7 @@ function getNameNumber(name: string): number {
    Century digits excluded.
    Zero ignored.
 
-   IMPORTANT:
-   This is calculated internally only.
-   It is NEVER rendered in the UI.
+   NOT SHOWN TO USER.
    ========================================================= */
 
 function getVedicGrid(dob: string): number[] {
@@ -162,7 +167,194 @@ function getVedicGrid(dob: string): number[] {
   )
     .split("")
     .map(Number)
-    .filter((digit) => digit !== 0);
+    .filter(
+      (digit) => digit !== 0
+    );
+}
+
+
+/* =========================================================
+   MARKDOWN ANSWER RENDERER
+   ========================================================= */
+
+function renderBoldText(text: string) {
+  const parts =
+    text.split(/(\*\*.*?\*\*)/g);
+
+  return parts.map(
+    (part, index) => {
+
+      if (
+        part.startsWith("**") &&
+        part.endsWith("**")
+      ) {
+        return (
+          <strong key={index}>
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+
+      return (
+        <span key={index}>
+          {part}
+        </span>
+      );
+    }
+  );
+}
+
+
+function renderAIAnswer(text: string) {
+  const lines = text.split("\n");
+
+  return (
+    <div className="formattedAIAnswer">
+
+      {lines.map(
+        (line, index) => {
+
+          const trimmed =
+            line.trim();
+
+
+          /* Empty line */
+
+          if (!trimmed) {
+            return (
+              <div
+                key={index}
+                className="answerSpacer"
+              />
+            );
+          }
+
+
+          /* Heading */
+
+          if (
+            trimmed.startsWith("### ")
+          ) {
+            return (
+              <h4
+                key={index}
+                className="answerHeading"
+              >
+                {renderBoldText(
+                  trimmed.replace(
+                    /^###\s*/,
+                    ""
+                  )
+                )}
+              </h4>
+            );
+          }
+
+
+          /* ## heading */
+
+          if (
+            trimmed.startsWith("## ")
+          ) {
+            return (
+              <h4
+                key={index}
+                className="answerHeading"
+              >
+                {renderBoldText(
+                  trimmed.replace(
+                    /^##\s*/,
+                    ""
+                  )
+                )}
+              </h4>
+            );
+          }
+
+
+          /* Bullet */
+
+          if (
+            trimmed.startsWith("- ") ||
+            trimmed.startsWith("• ")
+          ) {
+            const bulletText =
+              trimmed.replace(
+                /^[-•]\s*/,
+                ""
+              );
+
+            return (
+              <div
+                key={index}
+                className="answerBullet"
+              >
+
+                <span>
+                  •
+                </span>
+
+                <div>
+                  {renderBoldText(
+                    bulletText
+                  )}
+                </div>
+
+              </div>
+            );
+          }
+
+
+          /* Numbered list */
+
+          if (
+            /^\d+\.\s/.test(trimmed)
+          ) {
+            const match =
+              trimmed.match(
+                /^(\d+)\.\s(.*)$/
+              );
+
+            if (match) {
+              return (
+                <div
+                  key={index}
+                  className="answerBullet"
+                >
+
+                  <span className="numberBullet">
+                    {match[1]}.
+                  </span>
+
+                  <div>
+                    {renderBoldText(
+                      match[2]
+                    )}
+                  </div>
+
+                </div>
+              );
+            }
+          }
+
+
+          /* Normal paragraph */
+
+          return (
+            <p
+              key={index}
+              className="answerParagraph"
+            >
+              {renderBoldText(
+                trimmed
+              )}
+            </p>
+          );
+        }
+      )}
+
+    </div>
+  );
 }
 
 
@@ -171,6 +363,7 @@ function getVedicGrid(dob: string): number[] {
    ========================================================= */
 
 export default function NumerologyAIPage() {
+
   const [step, setStep] =
     useState<Step>("intro");
 
@@ -198,14 +391,23 @@ export default function NumerologyAIPage() {
      ======================================================= */
 
   function createProfile() {
-    if (!name.trim() || !dob) {
+
+    if (
+      !name.trim() ||
+      !dob
+    ) {
       return;
     }
 
+
     const cleanName =
-      name.trim().replace(/\s+/g, " ");
+      name
+        .trim()
+        .replace(/\s+/g, " ");
+
 
     const newProfile: Profile = {
+
       name: cleanName,
 
       dob,
@@ -217,66 +419,82 @@ export default function NumerologyAIPage() {
         getBhagyank(dob),
 
       nameNumber:
-        getNameNumber(cleanName),
+        getNameNumber(
+          cleanName
+        ),
     };
 
 
     /*
-     * Calculate Vedic grid internally.
-     * It is deliberately not displayed.
+     * Calculate internally.
+     * The grid is never rendered.
      */
 
     getVedicGrid(dob);
 
-    setProfile(newProfile);
+
+    setProfile(
+      newProfile
+    );
 
     setStep("numbers");
   }
 
 
   /* =======================================================
-     REAL MAUKSH AI
+     ASK MAUKSH AI
      ======================================================= */
 
   async function askQuestion() {
-    if (!question.trim() || !profile) {
+
+    if (
+      !question.trim() ||
+      !profile
+    ) {
       return;
     }
 
+
     setLoading(true);
+
     setAnswer("");
+
 
     try {
 
-      const response = await fetch(
-        "/api/numerology-ai",
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          "/api/numerology-ai",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-          body: JSON.stringify({
-            name: profile.name,
+            body:
+              JSON.stringify({
+                name:
+                  profile.name,
 
-            dob: profile.dob,
+                dob:
+                  profile.dob,
 
-            mulank:
-              profile.mulank,
+                mulank:
+                  profile.mulank,
 
-            bhagyank:
-              profile.bhagyank,
+                bhagyank:
+                  profile.bhagyank,
 
-            nameNumber:
-              profile.nameNumber,
+                nameNumber:
+                  profile.nameNumber,
 
-            question:
-              question.trim(),
-          }),
-        }
-      );
+                question:
+                  question.trim(),
+              }),
+          }
+        );
 
 
       const data =
@@ -322,6 +540,7 @@ export default function NumerologyAIPage() {
      ======================================================= */
 
   if (step === "intro") {
+
     return (
       <>
         <PageStyles />
@@ -362,9 +581,10 @@ export default function NumerologyAIPage() {
 
             <p className="heroDescription">
 
-              Meet your personal numerology companion.
-              Understand your numbers and get personalized
-              guidance for the questions that matter to you.
+              Meet your personal numerology
+              companion. Understand your numbers
+              and get personalized guidance for
+              the questions that matter to you.
 
             </p>
 
@@ -447,8 +667,8 @@ export default function NumerologyAIPage() {
                   ✦
                 </span>
 
-                Your numbers suggest it's
-                a good time to...
+                Your numbers suggest
+                it's a good time to...
 
               </div>
 
@@ -467,6 +687,7 @@ export default function NumerologyAIPage() {
      ======================================================= */
 
   if (step === "profile") {
+
     return (
       <>
         <PageStyles />
@@ -518,7 +739,9 @@ export default function NumerologyAIPage() {
                   type="text"
                   value={name}
                   onChange={(e) =>
-                    setName(e.target.value)
+                    setName(
+                      e.target.value
+                    )
                   }
                   placeholder="e.g. Shivam Bansal"
                   autoComplete="name"
@@ -537,7 +760,9 @@ export default function NumerologyAIPage() {
                   type="date"
                   value={dob}
                   onChange={(e) =>
-                    setDob(e.target.value)
+                    setDob(
+                      e.target.value
+                    )
                   }
                 />
 
@@ -550,7 +775,9 @@ export default function NumerologyAIPage() {
                   !name.trim() ||
                   !dob
                 }
-                onClick={createProfile}
+                onClick={
+                  createProfile
+                }
               >
 
                 <span>
@@ -592,6 +819,7 @@ export default function NumerologyAIPage() {
     step === "numbers" &&
     profile
   ) {
+
     return (
       <>
         <PageStyles />
@@ -616,8 +844,10 @@ export default function NumerologyAIPage() {
 
                 Hey{" "}
 
-                {profile.name
-                  .split(" ")[0]}.
+                {
+                  profile.name
+                    .split(" ")[0]
+                }.
 
                 <br />
 
@@ -639,14 +869,18 @@ export default function NumerologyAIPage() {
 
               <NumberCard
                 label="MULANK"
-                value={profile.mulank}
+                value={
+                  profile.mulank
+                }
                 description="Your core energy"
               />
 
 
               <NumberCard
                 label="BHAGYANK"
-                value={profile.bhagyank}
+                value={
+                  profile.bhagyank
+                }
                 description="Your life path"
                 featured
               />
@@ -654,14 +888,13 @@ export default function NumerologyAIPage() {
 
               <NumberCard
                 label="NAME NUMBER"
-                value={profile.nameNumber}
+                value={
+                  profile.nameNumber
+                }
                 description="Your expression"
               />
 
             </div>
-
-
-            {/* VEDIC GRID INTENTIONALLY NOT SHOWN */}
 
 
             <button
@@ -718,6 +951,7 @@ export default function NumerologyAIPage() {
     step === "chat" &&
     profile
   ) {
+
     return (
       <>
         <PageStyles />
@@ -750,6 +984,8 @@ export default function NumerologyAIPage() {
 
 
             <div className="chatBox">
+
+              {/* HEADER */}
 
               <div className="chatTop">
 
@@ -788,6 +1024,8 @@ export default function NumerologyAIPage() {
               </div>
 
 
+              {/* MESSAGES */}
+
               <div className="chatMessages">
 
                 <div className="aiGreeting">
@@ -798,8 +1036,10 @@ export default function NumerologyAIPage() {
 
                   Hey{" "}
 
-                  {profile.name
-                    .split(" ")[0]}.
+                  {
+                    profile.name
+                      .split(" ")[0]
+                  }.
 
                   <br />
 
@@ -810,43 +1050,44 @@ export default function NumerologyAIPage() {
                 </div>
 
 
-                {!question && (
-                  <div className="suggestions">
+                {!question &&
+                  !answer && (
+                    <div className="suggestions">
 
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "Should I change my career this year?"
-                        )
-                      }
-                    >
-                      Should I change my career?
-                    </button>
-
-
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "What should I focus on financially?"
-                        )
-                      }
-                    >
-                      What about money?
-                    </button>
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "Should I change my career this year?"
+                          )
+                        }
+                      >
+                        Should I change my career?
+                      </button>
 
 
-                    <button
-                      onClick={() =>
-                        setQuestion(
-                          "What does my numerology say about love?"
-                        )
-                      }
-                    >
-                      What about my love life?
-                    </button>
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "What should I focus on financially?"
+                          )
+                        }
+                      >
+                        What about money?
+                      </button>
 
-                  </div>
-                )}
+
+                      <button
+                        onClick={() =>
+                          setQuestion(
+                            "What does my numerology say about love?"
+                          )
+                        }
+                      >
+                        What about my love life?
+                      </button>
+
+                    </div>
+                  )}
 
 
                 {question && (
@@ -873,22 +1114,25 @@ export default function NumerologyAIPage() {
                 )}
 
 
-                {answer && !loading && (
-                  <div className="aiMessage">
+                {answer &&
+                  !loading && (
+                    <div className="aiMessage">
 
-                    <div className="aiLabel">
-                      ✦ MAUKSH AI
+                      <div className="aiLabel">
+                        ✦ MAUKSH AI
+                      </div>
+
+                      {renderAIAnswer(
+                        answer
+                      )}
+
                     </div>
-
-                    <p>
-                      {answer}
-                    </p>
-
-                  </div>
-                )}
+                  )}
 
               </div>
 
+
+              {/* INPUT */}
 
               {!answer && (
                 <div className="chatInput">
@@ -910,7 +1154,9 @@ export default function NumerologyAIPage() {
                       !question.trim() ||
                       loading
                     }
-                    onClick={askQuestion}
+                    onClick={
+                      askQuestion
+                    }
                   >
 
                     {loading ? (
@@ -925,33 +1171,36 @@ export default function NumerologyAIPage() {
               )}
 
 
-              {/* PAYMENT NEVER APPEARS AUTOMATICALLY */}
+              {/* CONTINUE ONLY AFTER ANSWER */}
 
-              {answer && !loading && (
-                <div className="answerActions">
+              {answer &&
+                !loading && (
+                  <div className="answerActions">
 
-                  <button
-                    className="continueToPlan"
-                    onClick={() =>
-                      setStep("paywall")
-                    }
-                  >
+                    <button
+                      className="continueToPlan"
+                      onClick={() =>
+                        setStep(
+                          "paywall"
+                        )
+                      }
+                    >
 
-                    Continue with Mauksh AI
+                      Continue with Mauksh AI
 
-                    <span>
-                      →
-                    </span>
+                      <span>
+                        →
+                      </span>
 
-                  </button>
+                    </button>
 
 
-                  <p>
-                    Your free preview is complete.
-                  </p>
+                    <p>
+                      Your free preview is complete.
+                    </p>
 
-                </div>
-              )}
+                  </div>
+                )}
 
             </div>
 
@@ -984,6 +1233,7 @@ export default function NumerologyAIPage() {
     step === "paywall" &&
     profile
   ) {
+
     return (
       <>
         <PageStyles />
@@ -1161,11 +1411,13 @@ function Progress({
 }: {
   active: number;
 }) {
+
   return (
     <div className="progress">
 
       {[1, 2, 3].map(
         (number) => (
+
           <span
             key={number}
             className={
@@ -1174,6 +1426,7 @@ function Progress({
                 : ""
             }
           />
+
         )
       )}
 
@@ -1197,6 +1450,7 @@ function NumberCard({
   description: string;
   featured?: boolean;
 }) {
+
   return (
     <div
       className={
@@ -1241,6 +1495,7 @@ function Feature({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <div className="feature">
 
@@ -1260,6 +1515,7 @@ function Feature({
    ========================================================= */
 
 function PageStyles() {
+
   return (
     <style jsx global>{`
 
@@ -1267,15 +1523,18 @@ function PageStyles() {
         box-sizing: border-box;
       }
 
+
       html,
       body {
         margin: 0;
         padding: 0;
       }
 
+
       body {
         background: #f7f5ef;
       }
+
 
       button,
       input,
@@ -1283,8 +1542,10 @@ function PageStyles() {
         font: inherit;
       }
 
+
       button {
-        -webkit-tap-highlight-color: transparent;
+        -webkit-tap-highlight-color:
+          transparent;
       }
 
 
@@ -1294,7 +1555,9 @@ function PageStyles() {
 
       .app {
         min-height: 100vh;
+
         overflow: hidden;
+
         position: relative;
 
         background:
@@ -1327,33 +1590,48 @@ function PageStyles() {
 
       .orb {
         position: fixed;
+
         border-radius: 50%;
+
         filter: blur(80px);
+
         pointer-events: none;
       }
+
 
       .orbOne {
         width: 220px;
         height: 220px;
+
         top: 15%;
         right: -80px;
-        background: rgba(205,160,75,.12);
+
+        background:
+          rgba(205,160,75,.12);
       }
+
 
       .orbTwo {
         width: 180px;
         height: 180px;
+
         bottom: 5%;
         left: -70px;
-        background: rgba(233,212,172,.15);
+
+        background:
+          rgba(233,212,172,.15);
       }
+
 
       .orbThree {
         width: 120px;
         height: 120px;
+
         top: 48%;
         left: 45%;
-        background: rgba(255,255,255,.55);
+
+        background:
+          rgba(255,255,255,.55);
       }
 
 
@@ -1366,35 +1644,45 @@ function PageStyles() {
       .numbersPage,
       .chatPage,
       .paywallPage {
-        width: min(100%, 860px);
+        width:
+          min(100%, 860px);
+
         min-height: 100vh;
+
         margin: auto;
 
         position: relative;
+
         z-index: 2;
       }
+
 
       .sectionBadge,
       .topBadge {
         color: #a97830;
 
         font-size: 9px;
+
         font-weight: 750;
 
         letter-spacing: 2px;
       }
 
+
       .sectionTitle {
-        margin: 18px 0 0;
+        margin:
+          18px 0 0;
 
         font-size:
           clamp(50px, 8vw, 82px);
 
         line-height: .94;
+
         letter-spacing: -5px;
 
         font-weight: 650;
       }
+
 
       .sectionTitle span,
       .heroTitle span,
@@ -1412,9 +1700,12 @@ function PageStyles() {
           95px 30px 100px;
       }
 
+
       .topBadge {
         display: inline-flex;
+
         align-items: center;
+
         gap: 8px;
 
         padding:
@@ -1424,28 +1715,35 @@ function PageStyles() {
           1px solid
           rgba(167,126,55,.18);
 
-        border-radius: 100px;
+        border-radius:
+          100px;
 
         background:
           rgba(255,250,239,.65);
       }
 
-      .heroTitle {
-        margin: 28px 0 0;
 
-        max-width: 800px;
+      .heroTitle {
+        margin:
+          28px 0 0;
+
+        max-width:
+          800px;
 
         font-size:
           clamp(58px, 10vw, 105px);
 
         line-height: .88;
+
         letter-spacing: -7px;
 
         font-weight: 700;
       }
 
+
       .heroDescription {
-        max-width: 510px;
+        max-width:
+          510px;
 
         margin:
           30px 0 25px;
@@ -1453,8 +1751,10 @@ function PageStyles() {
         color: #777067;
 
         font-size: 15px;
+
         line-height: 1.65;
       }
+
 
       .heroButton {
         height: 56px;
@@ -1463,14 +1763,18 @@ function PageStyles() {
           0 8px 0 21px;
 
         display: flex;
+
         align-items: center;
 
         gap: 28px;
 
         border: 0;
-        border-radius: 100px;
+
+        border-radius:
+          100px;
 
         background: #1c1916;
+
         color: white;
 
         cursor: pointer;
@@ -1479,22 +1783,28 @@ function PageStyles() {
           transform .25s ease;
       }
 
+
       .heroButton:hover {
         transform:
           translateY(-2px);
       }
 
+
       .heroButtonText {
         font-size: 12px;
+
         font-weight: 700;
       }
+
 
       .heroArrow {
         width: 40px;
         height: 40px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
         border-radius: 50%;
@@ -1504,6 +1814,7 @@ function PageStyles() {
         font-size: 18px;
       }
 
+
       .freePill {
         margin-top: 13px;
 
@@ -1511,6 +1822,7 @@ function PageStyles() {
 
         font-size: 9px;
       }
+
 
       .freePill span {
         color: #b18035;
@@ -1539,6 +1851,7 @@ function PageStyles() {
         position: absolute;
 
         right: 30px;
+
         top: 190px;
 
         width: 275px;
@@ -1565,11 +1878,15 @@ function PageStyles() {
           rotate(3deg);
       }
 
+
       .previewTop {
         display: flex;
+
         align-items: center;
+
         gap: 9px;
       }
+
 
       .miniAvatar {
         width: 42px;
@@ -1588,18 +1905,22 @@ function PageStyles() {
           rgba(40,35,28,.08);
       }
 
+
       .previewIdentity {
         min-width: 0;
       }
+
 
       .previewTop strong,
       .previewTop small {
         display: block;
       }
 
+
       .previewTop strong {
         font-size: 10px;
       }
+
 
       .previewTop small {
         margin-top: 2px;
@@ -1609,6 +1930,7 @@ function PageStyles() {
         font-size: 7px;
       }
 
+
       .previewOnline {
         margin-left: auto;
 
@@ -1616,6 +1938,7 @@ function PageStyles() {
 
         font-size: 7px;
       }
+
 
       .previewMessage {
         margin-top: 20px;
@@ -1626,11 +1949,14 @@ function PageStyles() {
           12px 12px 3px 12px;
 
         background: #1e1b17;
+
         color: white;
 
         font-size: 9px;
+
         line-height: 1.5;
       }
+
 
       .previewAI {
         margin-top: 8px;
@@ -1641,11 +1967,14 @@ function PageStyles() {
           12px 12px 12px 3px;
 
         background: #f4ecdd;
+
         color: #62594f;
 
         font-size: 9px;
+
         line-height: 1.5;
       }
+
 
       .previewAI span {
         margin-right: 5px;
@@ -1660,10 +1989,12 @@ function PageStyles() {
 
       .progress {
         display: flex;
+
         gap: 5px;
 
         margin-bottom: 48px;
       }
+
 
       .progress span {
         width: 35px;
@@ -1673,6 +2004,7 @@ function PageStyles() {
 
         background: #dfd9ce;
       }
+
 
       .progress span.active {
         background: #ae8038;
@@ -1688,8 +2020,10 @@ function PageStyles() {
           75px 30px 100px;
       }
 
+
       .sectionDescription {
-        max-width: 450px;
+        max-width:
+          450px;
 
         margin:
           22px 0 0;
@@ -1697,18 +2031,25 @@ function PageStyles() {
         color: #80786e;
 
         font-size: 14px;
+
         line-height: 1.7;
       }
 
-      .form {
-        max-width: 620px;
 
-        margin-top: 38px;
+      .form {
+        max-width:
+          620px;
+
+        margin-top:
+          38px;
       }
+
 
       .inputGroup {
-        margin-bottom: 24px;
+        margin-bottom:
+          24px;
       }
+
 
       .inputGroup label {
         display: block;
@@ -1721,15 +2062,19 @@ function PageStyles() {
         color: #625b53;
 
         font-size: 9px;
+
         font-weight: 700;
 
         letter-spacing: 1.4px;
 
-        text-transform: uppercase;
+        text-transform:
+          uppercase;
       }
+
 
       .inputGroup input {
         width: 100%;
+
         height: 60px;
 
         padding:
@@ -1739,7 +2084,8 @@ function PageStyles() {
           1px solid
           #ddd6cb;
 
-        border-radius: 16px;
+        border-radius:
+          16px;
 
         outline: none;
 
@@ -1749,6 +2095,7 @@ function PageStyles() {
         color: #1d1a17;
 
         font-size: 14px;
+
         font-weight: 500;
 
         appearance: none;
@@ -1759,15 +2106,19 @@ function PageStyles() {
           background .2s ease;
       }
 
+
       .inputGroup input:hover {
-        border-color: #cfc5b7;
+        border-color:
+          #cfc5b7;
 
         background:
           rgba(255,255,255,.9);
       }
 
+
       .inputGroup input:focus {
-        border-color: #b8883d;
+        border-color:
+          #b8883d;
 
         background: #fff;
 
@@ -1776,11 +2127,13 @@ function PageStyles() {
           rgba(184,136,61,.08);
       }
 
+
       .inputGroup input::placeholder {
         color: #aaa39b;
 
         font-weight: 400;
       }
+
 
       .inputGroup input[type="date"] {
         color: #1d1a17;
@@ -1793,6 +2146,7 @@ function PageStyles() {
 
       .continueButton {
         width: 100%;
+
         height: 58px;
 
         margin-top: 8px;
@@ -1801,37 +2155,50 @@ function PageStyles() {
           0 7px 0 20px;
 
         display: flex;
+
         align-items: center;
-        justify-content: space-between;
+
+        justify-content:
+          space-between;
 
         border: 0;
-        border-radius: 17px;
+
+        border-radius:
+          17px;
 
         background: #1d1a17;
+
         color: white;
 
         cursor: pointer;
       }
 
+
       .continueButton span {
         font-size: 12px;
+
         font-weight: 700;
       }
+
 
       .continueButton strong {
         width: 44px;
         height: 44px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
-        border-radius: 13px;
+        border-radius:
+          13px;
 
         background: #c89a4d;
 
         font-size: 20px;
       }
+
 
       .continueButton:disabled {
         background: #b9b6b2;
@@ -1839,9 +2206,12 @@ function PageStyles() {
         cursor: not-allowed;
       }
 
+
       .continueButton:disabled strong {
-        background: #ead9b8;
+        background:
+          #ead9b8;
       }
+
 
       .privacyNote {
         margin-top: 15px;
@@ -1850,6 +2220,7 @@ function PageStyles() {
 
         font-size: 9px;
       }
+
 
       .privacyNote span {
         margin-right: 5px;
@@ -1867,35 +2238,46 @@ function PageStyles() {
           70px 30px 100px;
       }
 
+
       .numbersHeader {
         display: flex;
 
-        align-items: flex-start;
+        align-items:
+          flex-start;
 
         justify-content:
           space-between;
       }
+
 
       .sectionTitle.small {
         font-size:
           clamp(47px, 7vw, 70px);
       }
 
+
       .sparkle {
         width: 48px;
         height: 48px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
-        border-radius: 15px;
+        border-radius:
+          15px;
 
-        background: #eadabd;
-        color: #a7782f;
+        background:
+          #eadabd;
+
+        color:
+          #a7782f;
 
         font-size: 22px;
       }
+
 
       .numberCards {
         display: grid;
@@ -1905,13 +2287,16 @@ function PageStyles() {
 
         gap: 10px;
 
-        margin-top: 35px;
+        margin-top:
+          35px;
       }
+
 
       .numberCard {
         position: relative;
 
-        min-height: 175px;
+        min-height:
+          175px;
 
         padding: 20px;
 
@@ -1919,7 +2304,8 @@ function PageStyles() {
           1px solid
           rgba(50,42,32,.08);
 
-        border-radius: 23px;
+        border-radius:
+          23px;
 
         background:
           rgba(255,255,255,.62);
@@ -1927,24 +2313,30 @@ function PageStyles() {
         overflow: hidden;
       }
 
+
       .numberCard.featured {
         background: #1e1b17;
 
         color: white;
       }
 
+
       .numberLabel {
         font-size: 8px;
+
         font-weight: 750;
 
-        letter-spacing: 1.6px;
+        letter-spacing:
+          1.6px;
 
         color: #8c8379;
       }
 
+
       .featured .numberLabel {
         color: #a99d8c;
       }
+
 
       .numberValue {
         margin-top: 18px;
@@ -1954,14 +2346,17 @@ function PageStyles() {
           serif;
 
         font-size: 64px;
+
         line-height: 1;
 
         color: #b27f30;
       }
 
+
       .featured .numberValue {
         color: #d6ad62;
       }
+
 
       .numberDescription {
         margin-top: 13px;
@@ -1971,9 +2366,11 @@ function PageStyles() {
         font-size: 9px;
       }
 
+
       .featured .numberDescription {
         color: #8f877c;
       }
+
 
       .featuredBadge {
         position: absolute;
@@ -1984,12 +2381,16 @@ function PageStyles() {
         padding:
           5px 7px;
 
-        border-radius: 100px;
+        border-radius:
+          100px;
 
-        background: #c39a53;
+        background:
+          #c39a53;
+
         color: #211d17;
 
         font-size: 6px;
+
         font-weight: 800;
 
         letter-spacing: 1px;
@@ -2008,14 +2409,19 @@ function PageStyles() {
         padding: 15px;
 
         display: flex;
+
         align-items: center;
 
         gap: 13px;
 
         border: 0;
-        border-radius: 21px;
 
-        background: #1d1a16;
+        border-radius:
+          21px;
+
+        background:
+          #1d1a16;
+
         color: white;
 
         cursor: pointer;
@@ -2023,29 +2429,39 @@ function PageStyles() {
         text-align: left;
       }
 
+
       .askIcon {
         width: 43px;
         height: 43px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
-        border-radius: 13px;
+        border-radius:
+          13px;
 
-        background: #c69b52;
-        color: #211c16;
+        background:
+          #c69b52;
+
+        color:
+          #211c16;
       }
+
 
       .askText {
         flex: 1;
       }
+
 
       .askText strong {
         display: block;
 
         font-size: 11px;
       }
+
 
       .askText p {
         margin:
@@ -2056,20 +2472,26 @@ function PageStyles() {
         font-size: 8px;
       }
 
+
       .askArrow {
         width: 40px;
         height: 40px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
-        border-radius: 11px;
+        border-radius:
+          11px;
 
-        background: #29251f;
+        background:
+          #29251f;
 
         font-size: 20px;
       }
+
 
       .freeLabel {
         margin-top: 14px;
@@ -2091,6 +2513,7 @@ function PageStyles() {
           70px 30px 100px;
       }
 
+
       .chatTitle {
         margin:
           18px 0 30px;
@@ -2103,6 +2526,7 @@ function PageStyles() {
         letter-spacing: -4px;
       }
 
+
       .chatBox {
         overflow: hidden;
 
@@ -2110,7 +2534,8 @@ function PageStyles() {
           1px solid
           rgba(40,35,28,.08);
 
-        border-radius: 25px;
+        border-radius:
+          25px;
 
         background:
           rgba(255,255,255,.72);
@@ -2120,10 +2545,12 @@ function PageStyles() {
           rgba(30,25,20,.06);
       }
 
+
       .chatTop {
         padding: 16px;
 
         display: flex;
+
         align-items: center;
 
         gap: 11px;
@@ -2133,6 +2560,7 @@ function PageStyles() {
           rgba(40,35,28,.07);
       }
 
+
       .chatAvatar {
         width: 42px;
         height: 42px;
@@ -2141,23 +2569,28 @@ function PageStyles() {
 
         overflow: hidden;
 
-        border-radius: 12px;
+        border-radius:
+          12px;
 
         background: white;
       }
 
+
       .chatIdentity {
         flex: 1;
       }
+
 
       .chatIdentity strong,
       .chatIdentity span {
         display: block;
       }
 
+
       .chatIdentity strong {
         font-size: 11px;
       }
+
 
       .chatIdentity span {
         margin-top: 3px;
@@ -2167,11 +2600,13 @@ function PageStyles() {
         font-size: 8px;
       }
 
+
       .chatStatus {
         color: #8b847c;
 
         font-size: 8px;
       }
+
 
       .chatStatus i {
         width: 6px;
@@ -2186,33 +2621,42 @@ function PageStyles() {
         background: #82935c;
       }
 
+
       .chatMessages {
-        min-height: 320px;
+        min-height:
+          320px;
 
         padding: 20px;
       }
 
+
       .aiGreeting {
-        max-width: 430px;
+        max-width:
+          430px;
 
         color: #625b52;
 
         font-size: 13px;
+
         line-height: 1.7;
       }
+
 
       .aiGreeting span {
         color: #b07d30;
       }
 
+
       .suggestions {
         display: flex;
+
         flex-wrap: wrap;
 
         gap: 7px;
 
         margin-top: 20px;
       }
+
 
       .suggestions button {
         padding:
@@ -2222,15 +2666,19 @@ function PageStyles() {
           1px solid
           #ded7cb;
 
-        border-radius: 100px;
+        border-radius:
+          100px;
 
-        background: #f9f6f0;
+        background:
+          #f9f6f0;
+
         color: #625b52;
 
         font-size: 8px;
 
         cursor: pointer;
       }
+
 
       .userMessage {
         max-width: 80%;
@@ -2246,43 +2694,164 @@ function PageStyles() {
         border-radius:
           16px 16px 4px 16px;
 
-        background: #1d1a17;
+        background:
+          #1d1a17;
+
         color: white;
 
         font-size: 11px;
+
         line-height: 1.5;
       }
 
-      .aiMessage {
-        max-width: 90%;
 
-        padding: 15px;
+      .aiMessage {
+        max-width: 92%;
+
+        padding: 16px;
 
         border-radius:
           16px 16px 16px 4px;
 
-        background: #f2e9d9;
-        color: #554d44;
+        background:
+          #f2e9d9;
+
+        color:
+          #554d44;
 
         font-size: 11px;
+
         line-height: 1.75;
 
-        white-space: pre-wrap;
+        overflow-wrap:
+          break-word;
       }
+
 
       .aiLabel {
-        margin-bottom: 7px;
+        margin-bottom: 10px;
 
-        color: #a97830;
+        color:
+          #a97830;
 
         font-size: 7px;
+
         font-weight: 800;
 
-        letter-spacing: 1.4px;
+        letter-spacing:
+          1.4px;
       }
 
-      .aiMessage p {
-        margin: 0;
+
+      /* =====================================================
+         FORMATTED AI ANSWER
+         ===================================================== */
+
+      .formattedAIAnswer {
+        width: 100%;
+      }
+
+
+      .answerHeading {
+        margin:
+          18px 0 9px;
+
+        color:
+          #2b261f;
+
+        font-size:
+          13px;
+
+        line-height:
+          1.35;
+
+        font-weight:
+          750;
+
+        letter-spacing:
+          -.15px;
+      }
+
+
+      .answerHeading:first-child {
+        margin-top: 0;
+      }
+
+
+      .answerParagraph {
+        margin:
+          0 0 13px;
+
+        color:
+          #554d44;
+
+        font-size:
+          11px;
+
+        line-height:
+          1.8;
+      }
+
+
+      .answerParagraph strong {
+        color:
+          #29241e;
+
+        font-weight:
+          750;
+      }
+
+
+      .answerBullet {
+        display: flex;
+
+        gap: 9px;
+
+        margin:
+          0 0 8px;
+
+        color:
+          #554d44;
+
+        font-size:
+          11px;
+
+        line-height:
+          1.7;
+      }
+
+
+      .answerBullet > span {
+        flex-shrink: 0;
+
+        color:
+          #b27d30;
+
+        font-weight:
+          900;
+      }
+
+
+      .answerBullet strong {
+        color:
+          #29241e;
+
+        font-weight:
+          750;
+      }
+
+
+      .numberBullet {
+        min-width:
+          18px;
+
+        color:
+          #b27d30;
+      }
+
+
+      .answerSpacer {
+        height: 3px;
       }
 
 
@@ -2302,6 +2871,7 @@ function PageStyles() {
           rgba(40,35,28,.07);
       }
 
+
       .chatInput textarea {
         flex: 1;
 
@@ -2313,60 +2883,74 @@ function PageStyles() {
           1px solid
           #ddd6cb;
 
-        border-radius: 14px;
+        border-radius:
+          14px;
 
         outline: none;
 
         background: #fff;
+
         color: #222;
 
         font-size: 11px;
       }
+
 
       .chatInput textarea:focus {
         border-color:
           #b8883d;
       }
 
+
       .chatInput button {
         width: 45px;
         height: 45px;
 
-        align-self: flex-end;
+        align-self:
+          flex-end;
 
         border: 0;
 
-        border-radius: 13px;
+        border-radius:
+          13px;
 
-        background: #1d1a17;
+        background:
+          #1d1a17;
+
         color: white;
 
         cursor: pointer;
       }
 
+
       .chatInput button:disabled {
         opacity: .35;
 
-        cursor: not-allowed;
+        cursor:
+          not-allowed;
       }
+
 
       .loader {
         width: 14px;
         height: 14px;
 
-        display: inline-block;
+        display:
+          inline-block;
 
         border:
           2px solid
           rgba(255,255,255,.35);
 
-        border-top-color: white;
+        border-top-color:
+          white;
 
         border-radius: 50%;
 
         animation:
           spin .7s linear infinite;
       }
+
 
       @keyframes spin {
 
@@ -2388,70 +2972,95 @@ function PageStyles() {
           18px;
       }
 
+
       .continueToPlan {
         width: 100%;
+
         height: 53px;
 
         padding:
           0 7px 0 18px;
 
         display: flex;
+
         align-items: center;
-        justify-content: space-between;
+
+        justify-content:
+          space-between;
 
         border: 0;
 
-        border-radius: 14px;
+        border-radius:
+          14px;
 
-        background: #1d1a17;
+        background:
+          #1d1a17;
+
         color: white;
 
         font-size: 10px;
+
         font-weight: 700;
 
         cursor: pointer;
       }
+
 
       .continueToPlan span {
         width: 39px;
         height: 39px;
 
         display: flex;
+
         align-items: center;
+
         justify-content: center;
 
-        border-radius: 11px;
+        border-radius:
+          11px;
 
-        background: #c89a4d;
+        background:
+          #c89a4d;
 
-        color: #1d1a17;
+        color:
+          #1d1a17;
 
         font-size: 18px;
       }
+
 
       .answerActions p {
         margin:
           10px 0 0;
 
-        text-align: center;
+        text-align:
+          center;
 
-        color: #9c948b;
+        color:
+          #9c948b;
 
         font-size: 8px;
       }
 
+
       .questionCounter {
-        margin-top: 14px;
+        margin-top:
+          14px;
 
-        text-align: center;
+        text-align:
+          center;
 
-        color: #969087;
+        color:
+          #969087;
 
-        font-size: 9px;
+        font-size:
+          9px;
       }
 
+
       .questionCounter strong {
-        color: #a97830;
+        color:
+          #a97830;
       }
 
 
@@ -2464,40 +3073,56 @@ function PageStyles() {
           70px 30px 100px;
       }
 
+
       .successIcon {
         width: 48px;
         height: 48px;
 
         display: flex;
-        align-items: center;
-        justify-content: center;
 
-        margin-bottom: 28px;
+        align-items:
+          center;
+
+        justify-content:
+          center;
+
+        margin-bottom:
+          28px;
 
         border-radius: 50%;
 
-        background: #1d1a17;
-        color: #d1a35b;
+        background:
+          #1d1a17;
+
+        color:
+          #d1a35b;
 
         font-size: 18px;
       }
 
-      .plan {
-        max-width: 600px;
 
-        margin-top: 35px;
+      .plan {
+        max-width:
+          600px;
+
+        margin-top:
+          35px;
 
         padding: 24px;
 
-        border-radius: 27px;
+        border-radius:
+          27px;
 
-        background: #1d1a17;
+        background:
+          #1d1a17;
+
         color: white;
 
         box-shadow:
           0 30px 80px
           rgba(25,22,18,.15);
       }
+
 
       .planTop {
         display: flex;
@@ -2508,59 +3133,82 @@ function PageStyles() {
         gap: 20px;
       }
 
+
       .planPill {
-        display: inline-block;
+        display:
+          inline-block;
 
         padding:
           6px 9px;
 
-        border-radius: 100px;
+        border-radius:
+          100px;
 
-        background: #c89a4d;
-        color: #1d1a17;
+        background:
+          #c89a4d;
+
+        color:
+          #1d1a17;
 
         font-size: 7px;
+
         font-weight: 800;
 
         letter-spacing: 1px;
       }
 
+
       .plan h3 {
         margin:
           15px 0 0;
 
-        font-size: 22px;
-        line-height: 1.05;
+        font-size:
+          22px;
 
-        letter-spacing: -.7px;
+        line-height:
+          1.05;
+
+        letter-spacing:
+          -.7px;
       }
+
 
       .planPrice {
-        text-align: right;
+        text-align:
+          right;
       }
+
 
       .planPrice strong {
         display: block;
 
-        color: #d3a75d;
+        color:
+          #d3a75d;
 
         font-family:
           Georgia,
           serif;
 
-        font-size: 38px;
+        font-size:
+          38px;
       }
+
 
       .planPrice span {
-        color: #938b80;
+        color:
+          #938b80;
 
-        font-size: 8px;
+        font-size:
+          8px;
       }
 
-      .planFeatures {
-        margin-top: 28px;
 
-        display: grid;
+      .planFeatures {
+        margin-top:
+          28px;
+
+        display:
+          grid;
 
         grid-template-columns:
           repeat(2, 1fr);
@@ -2568,82 +3216,125 @@ function PageStyles() {
         gap: 11px;
       }
 
-      .feature {
-        color: #c0b9af;
 
-        font-size: 9px;
+      .feature {
+        color:
+          #c0b9af;
+
+        font-size:
+          9px;
       }
+
 
       .feature span {
-        margin-right: 6px;
+        margin-right:
+          6px;
 
-        color: #c89a4d;
+        color:
+          #c89a4d;
       }
+
 
       .subscribeButton {
         width: 100%;
+
         height: 55px;
 
-        margin-top: 28px;
+        margin-top:
+          28px;
 
         padding:
           0 8px 0 17px;
 
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        display:
+          flex;
+
+        align-items:
+          center;
+
+        justify-content:
+          space-between;
 
         border: 0;
-        border-radius: 15px;
 
-        background: #c89a4d;
-        color: #1d1a17;
+        border-radius:
+          15px;
 
-        font-size: 11px;
-        font-weight: 800;
+        background:
+          #c89a4d;
+
+        color:
+          #1d1a17;
+
+        font-size:
+          11px;
+
+        font-weight:
+          800;
 
         cursor: pointer;
       }
+
 
       .subscribeButton span {
         width: 40px;
         height: 40px;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display:
+          flex;
 
-        border-radius: 11px;
+        align-items:
+          center;
 
-        background: #1d1a17;
+        justify-content:
+          center;
+
+        border-radius:
+          11px;
+
+        background:
+          #1d1a17;
+
         color: white;
 
-        font-size: 18px;
+        font-size:
+          18px;
       }
+
 
       .secureText {
         margin:
           12px 0 0;
 
-        text-align: center;
+        text-align:
+          center;
 
-        color: #797269;
+        color:
+          #797269;
 
-        font-size: 8px;
+        font-size:
+          8px;
       }
+
 
       .savedProfile {
-        margin-top: 18px;
+        margin-top:
+          18px;
 
-        color: #91897f;
+        color:
+          #91897f;
 
-        font-size: 9px;
+        font-size:
+          9px;
       }
 
-      .savedProfile span {
-        margin-right: 5px;
 
-        color: #8c9b63;
+      .savedProfile span {
+        margin-right:
+          5px;
+
+        color:
+          #8c9b63;
       }
 
 
@@ -2661,6 +3352,7 @@ function PageStyles() {
           width: 100%;
         }
 
+
         .introPage {
           padding:
             75px
@@ -2668,23 +3360,31 @@ function PageStyles() {
             80px;
         }
 
-        .heroTitle {
-          font-size: 58px;
 
-          letter-spacing: -4px;
+        .heroTitle {
+          font-size:
+            58px;
+
+          letter-spacing:
+            -4px;
         }
+
 
         .heroDescription {
-          font-size: 14px;
+          font-size:
+            14px;
         }
 
+
         .floatingPreview {
-          position: relative;
+          position:
+            relative;
 
           top: auto;
           right: auto;
 
-          width: 82%;
+          width:
+            82%;
 
           margin:
             90px auto
@@ -2693,6 +3393,7 @@ function PageStyles() {
           transform:
             rotate(2deg);
         }
+
 
         .profilePage,
         .numbersPage,
@@ -2704,30 +3405,49 @@ function PageStyles() {
             80px;
         }
 
-        .sectionTitle {
-          font-size: 52px;
 
-          letter-spacing: -4px;
+        .sectionTitle {
+          font-size:
+            52px;
+
+          letter-spacing:
+            -4px;
         }
+
 
         .numberCards {
-          grid-template-columns: 1fr;
+          grid-template-columns:
+            1fr;
         }
+
 
         .numberCard {
-          min-height: 150px;
+          min-height:
+            150px;
         }
+
 
         .numberValue {
-          font-size: 58px;
+          font-size:
+            58px;
         }
+
 
         .planTop {
-          align-items: flex-start;
+          align-items:
+            flex-start;
         }
 
+
         .planFeatures {
-          grid-template-columns: 1fr;
+          grid-template-columns:
+            1fr;
+        }
+
+
+        .aiMessage {
+          max-width:
+            100%;
         }
 
       }
@@ -2740,16 +3460,23 @@ function PageStyles() {
         .numbersPage,
         .chatPage,
         .paywallPage {
-          padding-left: 22px;
-          padding-right: 22px;
+          padding-left:
+            22px;
+
+          padding-right:
+            22px;
         }
+
 
         .heroTitle {
-          font-size: 50px;
+          font-size:
+            50px;
         }
 
+
         .sectionTitle {
-          font-size: 47px;
+          font-size:
+            47px;
         }
 
       }
