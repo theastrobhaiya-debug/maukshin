@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 type Step =
   | "intro"
@@ -60,6 +59,13 @@ function getBhagyank(dob: string): number {
   return reduceNumber(total);
 }
 
+/*
+ * Temporary name-number calculation.
+ *
+ * We will replace this with your existing
+ * Mauksh Vedic numerology logic when we
+ * connect the backend.
+ */
 function getNameNumber(name: string): number {
   const letters = name
     .toUpperCase()
@@ -128,7 +134,7 @@ export default function NumerologyAIPage() {
 
 
   /* =======================================================
-     ASK QUESTION
+     ASK AI
      ======================================================= */
 
   async function askQuestion() {
@@ -141,13 +147,12 @@ export default function NumerologyAIPage() {
     /*
      * TEMPORARY DEMO RESPONSE.
      *
-     * Later this will call:
+     * Later:
      *
-     * /api/numerology-ai
+     * POST /api/numerology-ai
      *
-     * and use:
-     *
-     * Supabase + OpenAI
+     * Supabase will store the profile,
+     * usage and conversation.
      */
 
     await new Promise((resolve) =>
@@ -163,9 +168,8 @@ export default function NumerologyAIPage() {
     /*
      * Demo only.
      *
-     * Once the real backend is connected,
-     * the server will record that the free
-     * question has been consumed.
+     * Real backend will record the free
+     * question immediately.
      */
 
     setTimeout(() => {
@@ -175,39 +179,19 @@ export default function NumerologyAIPage() {
 
 
   /* =======================================================
-     RENDER
+     PAGE
      ======================================================= */
 
   return (
     <main className="app">
 
-      {/* Background atmosphere */}
+      {/* Soft background atmosphere */}
 
       <div className="orb orbOne" />
+
       <div className="orb orbTwo" />
+
       <div className="orb orbThree" />
-
-
-      {/* =================================================
-          HEADER
-          ================================================= */}
-
-      <header className="header">
-
-        <Link
-          href="/"
-          className="brand"
-        >
-
-          <img
-            src="/assets/Mauksh-logo.jpg"
-            alt="Mauksh"
-            className="maukshLogo"
-          />
-
-        </Link>
-
-      </header>
 
 
       {/* =================================================
@@ -257,31 +241,45 @@ export default function NumerologyAIPage() {
 
             Start free
 
-            <span>→</span>
+            <span>
+              →
+            </span>
 
           </button>
 
 
           <div className="freePill">
 
-            <span>✦</span>
+            <span>
+              ✦
+            </span>
 
             Your first AI question is free
 
           </div>
 
 
-          {/* Floating AI preview */}
+          {/* =================================================
+              Mauksh AI PREVIEW CARD
+              ================================================= */}
 
           <div className="floatingPreview">
 
             <div className="previewTop">
 
+              {/* REAL MAUKSH LOGO */}
+
               <div className="miniAvatar">
-                M
+
+                <img
+                  src="/assets/mauksh-logo.jpg"
+                  alt="Mauksh"
+                />
+
               </div>
 
-              <div>
+
+              <div className="previewIdentity">
 
                 <strong>
                   Mauksh AI
@@ -292,6 +290,7 @@ export default function NumerologyAIPage() {
                 </small>
 
               </div>
+
 
               <span className="previewOnline">
                 ●
@@ -310,7 +309,9 @@ export default function NumerologyAIPage() {
 
             <div className="previewAI">
 
-              <span>✦</span>
+              <span>
+                ✦
+              </span>
 
               Your numbers suggest it's
               a good time to...
@@ -324,7 +325,9 @@ export default function NumerologyAIPage() {
 
             EXPLORE
 
-            <span>↓</span>
+            <span>
+              ↓
+            </span>
 
           </div>
 
@@ -356,7 +359,9 @@ export default function NumerologyAIPage() {
             Let's get to
             <br />
 
-            <span>know you.</span>
+            <span>
+              know you.
+            </span>
 
           </h2>
 
@@ -417,7 +422,9 @@ export default function NumerologyAIPage() {
 
               Reveal my numbers
 
-              <span>→</span>
+              <span>
+                →
+              </span>
 
             </button>
 
@@ -426,7 +433,9 @@ export default function NumerologyAIPage() {
 
           <div className="privacyNote">
 
-            <span>✦</span>
+            <span>
+              ✦
+            </span>
 
             Your information stays private.
 
@@ -464,10 +473,7 @@ export default function NumerologyAIPage() {
 
                   Hey{" "}
 
-                  {profile.name
-                    .split(" ")[0]}
-
-                  .
+                  {profile.name.split(" ")[0]}.
 
                   <br />
 
@@ -542,25 +548,33 @@ export default function NumerologyAIPage() {
 
               <div className="vedicGrid">
 
-                {[3, 1, 9, 6, 7, 5, 2, 8, 4].map(
-                  (num) => (
+                {[
+                  3,
+                  1,
+                  9,
+                  6,
+                  7,
+                  5,
+                  2,
+                  8,
+                  4,
+                ].map((num) => (
 
-                    <div
-                      key={num}
-                      className={
-                        num === profile.mulank ||
-                        num === profile.bhagyank
-                          ? "gridCell selected"
-                          : "gridCell"
-                      }
-                    >
+                  <div
+                    key={num}
+                    className={
+                      num === profile.mulank ||
+                      num === profile.bhagyank
+                        ? "gridCell selected"
+                        : "gridCell"
+                    }
+                  >
 
-                      {num}
+                    {num}
 
-                    </div>
+                  </div>
 
-                  )
-                )}
+                ))}
 
               </div>
 
@@ -611,6 +625,7 @@ export default function NumerologyAIPage() {
             </div>
 
           </section>
+
         )}
 
 
@@ -681,7 +696,12 @@ export default function NumerologyAIPage() {
               <div className="chatTop">
 
                 <div className="chatAvatar">
-                  M
+
+                  <img
+                    src="/assets/mauksh-logo.jpg"
+                    alt="Mauksh"
+                  />
+
                 </div>
 
 
@@ -717,7 +737,9 @@ export default function NumerologyAIPage() {
 
                     <div className="aiGreeting">
 
-                      <span>✦</span>
+                      <span>
+                        ✦
+                      </span>
 
                       Hey{" "}
 
@@ -983,9 +1005,9 @@ export default function NumerologyAIPage() {
                 onClick={() => {
 
                   /*
-                   * NEXT:
+                   * NEXT STEP:
                    *
-                   * Dodo checkout
+                   * Connect Dodo Payments here.
                    */
 
                   alert(
@@ -1227,7 +1249,8 @@ textarea {
   top: 15%;
   right: -80px;
 
-  background: rgba(205,160,75,.17);
+  background:
+    rgba(205,160,75,.17);
 }
 
 .orbTwo {
@@ -1237,7 +1260,8 @@ textarea {
   bottom: 5%;
   left: -70px;
 
-  background: rgba(233,212,172,.22);
+  background:
+    rgba(233,212,172,.22);
 }
 
 .orbThree {
@@ -1247,51 +1271,8 @@ textarea {
   top: 48%;
   left: 45%;
 
-  background: rgba(255,255,255,.7);
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.header {
-  height: 76px;
-
-  padding: 0 30px;
-
-  display: flex;
-  align-items: center;
-
-  position: relative;
-
-  z-index: 10;
-
-  border-bottom:
-    1px solid rgba(40,35,28,.07);
-
   background:
-    rgba(247,245,239,.65);
-
-  backdrop-filter: blur(18px);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-
-  text-decoration: none;
-}
-
-.maukshLogo {
-  width: 58px;
-  height: 58px;
-
-  object-fit: contain;
-
-  display: block;
-
-  border-radius: 50%;
+    rgba(255,255,255,.7);
 }
 
 
@@ -1304,9 +1285,11 @@ textarea {
 .numbersPage,
 .chatPage,
 .paywallPage {
-  width: min(100%, 860px);
+  width:
+    min(100%, 860px);
 
-  margin: auto;
+  margin:
+    0 auto;
 
   position: relative;
 
@@ -1325,7 +1308,8 @@ textarea {
 }
 
 .sectionTitle {
-  margin: 18px 0 0;
+  margin:
+    18px 0 0;
 
   font-size:
     clamp(50px, 8vw, 82px);
@@ -1350,106 +1334,143 @@ textarea {
 
 .introPage {
   min-height:
-    calc(100vh - 76px);
+    100vh;
 
   padding:
-    110px 30px 100px;
+    95px 30px 100px;
 }
 
 .topBadge {
-  display: inline-flex;
+  display:
+    inline-flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 8px;
+  gap:
+    8px;
 
   padding:
     8px 12px;
 
   border:
-    1px solid rgba(167,126,55,.2);
+    1px solid
+    rgba(167,126,55,.2);
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
   background:
     rgba(255,250,239,.65);
 }
 
 .topBadge span {
-  font-size: 12px;
+  font-size:
+    12px;
 }
 
 .heroTitle {
-  margin: 28px 0 0;
+  margin:
+    28px 0 0;
 
-  max-width: 800px;
+  max-width:
+    800px;
 
   font-size:
     clamp(58px, 10vw, 105px);
 
-  line-height: .88;
+  line-height:
+    .88;
 
-  letter-spacing: -7px;
+  letter-spacing:
+    -7px;
 
-  font-weight: 700;
+  font-weight:
+    700;
 }
 
 .heroDescription {
-  max-width: 510px;
+  max-width:
+    510px;
 
   margin:
     30px 0 25px;
 
-  color: #777067;
+  color:
+    #777067;
 
-  font-size: 15px;
+  font-size:
+    15px;
 
-  line-height: 1.65;
+  line-height:
+    1.65;
 }
 
 .heroButton {
-  height: 56px;
+  height:
+    56px;
 
   padding:
     0 8px 0 21px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 28px;
+  gap:
+    28px;
 
-  border: 0;
+  border:
+    0;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
-  background: #1c1916;
+  background:
+    #1c1916;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 12px;
+  font-size:
+    12px;
 
-  font-weight: 700;
+  font-weight:
+    700;
 
-  cursor: pointer;
+  cursor:
+    pointer;
 
-  transition: .25s ease;
+  transition:
+    .25s ease;
 }
 
 .heroButton span {
-  width: 40px;
-  height: 40px;
+  width:
+    40px;
 
-  display: flex;
+  height:
+    40px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 50%;
+  align-items:
+    center;
 
-  background: #c99b4d;
+  justify-content:
+    center;
 
-  font-size: 18px;
+  border-radius:
+    50%;
+
+  background:
+    #c99b4d;
+
+  font-size:
+    18px;
 }
 
 .heroButton:hover {
@@ -1458,36 +1479,48 @@ textarea {
 }
 
 .freePill {
-  margin-top: 13px;
+  margin-top:
+    13px;
 
-  color: #898178;
+  color:
+    #898178;
 
-  font-size: 9px;
+  font-size:
+    9px;
 }
 
 .freePill span {
-  color: #b18035;
+  color:
+    #b18035;
 }
 
 
 /* =========================================================
-   FLOATING PREVIEW
+   FLOATING MAUKSH AI CARD
    ========================================================= */
 
 .floatingPreview {
-  position: absolute;
+  position:
+    absolute;
 
-  right: 30px;
-  top: 190px;
+  right:
+    30px;
 
-  width: 275px;
+  top:
+    190px;
 
-  padding: 16px;
+  width:
+    275px;
+
+  padding:
+    16px;
 
   border:
-    1px solid rgba(255,255,255,.7);
+    1px solid
+    rgba(255,255,255,.7);
 
-  border-radius: 22px;
+  border-radius:
+    22px;
 
   background:
     rgba(255,255,255,.55);
@@ -1504,122 +1537,190 @@ textarea {
 }
 
 .previewTop {
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 9px;
+  gap:
+    9px;
 }
 
-.miniAvatar,
-.chatAvatar {
-  width: 34px;
-  height: 34px;
 
-  display: flex;
+/* REAL MAUKSH LOGO */
 
-  align-items: center;
-  justify-content: center;
+.miniAvatar {
+  width:
+    42px;
 
-  flex-shrink: 0;
+  height:
+    42px;
 
-  border-radius: 11px;
+  display:
+    flex;
 
-  background: #1d1a16;
+  align-items:
+    center;
 
-  color: #d4a858;
+  justify-content:
+    center;
 
-  font-family:
-    Georgia,
-    serif;
+  flex-shrink:
+    0;
+
+  overflow:
+    hidden;
+
+  border-radius:
+    12px;
+
+  background:
+    #ffffff;
+
+  border:
+    1px solid
+    rgba(40,35,28,.08);
+}
+
+.miniAvatar img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    block;
+
+  object-fit:
+    contain;
+}
+
+.previewIdentity {
+  min-width:
+    0;
 }
 
 .previewTop strong,
 .previewTop small {
-  display: block;
+  display:
+    block;
 }
 
 .previewTop strong {
-  font-size: 10px;
+  font-size:
+    10px;
 }
 
 .previewTop small {
-  margin-top: 2px;
+  margin-top:
+    2px;
 
-  color: #8b847a;
+  color:
+    #8b847a;
 
-  font-size: 7px;
+  font-size:
+    7px;
 }
 
 .previewOnline {
-  margin-left: auto;
+  margin-left:
+    auto;
 
-  color: #82935c;
+  color:
+    #82935c;
 
-  font-size: 7px;
+  font-size:
+    7px;
 }
 
 .previewMessage {
-  margin-top: 20px;
+  margin-top:
+    20px;
 
-  padding: 12px;
+  padding:
+    12px;
 
   border-radius:
     12px 12px 3px 12px;
 
-  background: #1e1b17;
+  background:
+    #1e1b17;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 9px;
+  font-size:
+    9px;
 
-  line-height: 1.5;
+  line-height:
+    1.5;
 }
 
 .previewAI {
-  margin-top: 8px;
+  margin-top:
+    8px;
 
-  padding: 12px;
+  padding:
+    12px;
 
   border-radius:
     12px 12px 12px 3px;
 
-  background: #f4ecdd;
+  background:
+    #f4ecdd;
 
-  color: #62594f;
+  color:
+    #62594f;
 
-  font-size: 9px;
+  font-size:
+    9px;
 
-  line-height: 1.5;
+  line-height:
+    1.5;
 }
 
 .previewAI span {
-  margin-right: 5px;
+  margin-right:
+    5px;
 
-  color: #b17d2e;
+  color:
+    #b17d2e;
 }
 
 .scrollHint {
-  position: absolute;
+  position:
+    absolute;
 
-  bottom: 30px;
-  left: 30px;
+  bottom:
+    30px;
 
-  display: flex;
+  left:
+    30px;
 
-  align-items: center;
+  display:
+    flex;
 
-  gap: 9px;
+  align-items:
+    center;
 
-  color: #aaa299;
+  gap:
+    9px;
 
-  font-size: 7px;
+  color:
+    #aaa299;
 
-  letter-spacing: 1.5px;
+  font-size:
+    7px;
+
+  letter-spacing:
+    1.5px;
 }
 
 .scrollHint span {
-  font-size: 12px;
+  font-size:
+    12px;
 }
 
 
@@ -1628,24 +1729,33 @@ textarea {
    ========================================================= */
 
 .progress {
-  display: flex;
+  display:
+    flex;
 
-  gap: 5px;
+  gap:
+    5px;
 
-  margin-bottom: 48px;
+  margin-bottom:
+    48px;
 }
 
 .progress span {
-  width: 35px;
-  height: 3px;
+  width:
+    35px;
 
-  border-radius: 10px;
+  height:
+    3px;
 
-  background: #dfd9ce;
+  border-radius:
+    10px;
+
+  background:
+    #dfd9ce;
 }
 
 .progress span.active {
-  background: #ae8038;
+  background:
+    #ae8038;
 }
 
 
@@ -1659,27 +1769,35 @@ textarea {
 }
 
 .sectionDescription {
-  max-width: 450px;
+  max-width:
+    450px;
 
   margin:
     22px 0 40px;
 
-  color: #80786e;
+  color:
+    #80786e;
 
-  font-size: 14px;
+  font-size:
+    14px;
 
-  line-height: 1.7;
+  line-height:
+    1.7;
 }
 
 .form {
-  max-width: 600px;
+  max-width:
+    600px;
 
-  padding: 25px;
+  padding:
+    25px;
 
   border:
-    1px solid rgba(45,38,28,.08);
+    1px solid
+    rgba(45,38,28,.08);
 
-  border-radius: 26px;
+  border-radius:
+    26px;
 
   background:
     rgba(255,255,255,.62);
@@ -1693,48 +1811,63 @@ textarea {
 }
 
 .inputGroup {
-  margin-bottom: 17px;
+  margin-bottom:
+    17px;
 }
 
 .inputGroup label {
-  display: block;
+  display:
+    block;
 
-  margin-bottom: 8px;
+  margin-bottom:
+    8px;
 
-  color: #5d564e;
+  color:
+    #5d564e;
 
-  font-size: 10px;
+  font-size:
+    10px;
 
-  font-weight: 650;
+  font-weight:
+    650;
 }
 
 .inputGroup input {
-  width: 100%;
+  width:
+    100%;
 
-  height: 54px;
+  height:
+    54px;
 
   padding:
     0 16px;
 
   border:
-    1px solid #e0d9ce;
+    1px solid
+    #e0d9ce;
 
-  border-radius: 14px;
+  border-radius:
+    14px;
 
-  outline: none;
+  outline:
+    none;
 
   background:
     rgba(255,255,255,.72);
 
-  color: #201d19;
+  color:
+    #201d19;
 
-  font-size: 13px;
+  font-size:
+    13px;
 
-  transition: .2s ease;
+  transition:
+    .2s ease;
 }
 
 .inputGroup input:focus {
-  border-color: #c19a57;
+  border-color:
+    #c19a57;
 
   box-shadow:
     0 0 0 4px
@@ -1742,74 +1875,105 @@ textarea {
 }
 
 .inputGroup input::placeholder {
-  color: #b0aaa2;
+  color:
+    #b0aaa2;
 }
 
 .continueButton {
-  width: 100%;
+  width:
+    100%;
 
-  height: 56px;
+  height:
+    56px;
 
-  margin-top: 5px;
+  margin-top:
+    5px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  justify-content: space-between;
+  justify-content:
+    space-between;
 
   padding:
     0 8px 0 19px;
 
-  border: 0;
+  border:
+    0;
 
-  border-radius: 14px;
+  border-radius:
+    14px;
 
-  background: #1d1a16;
+  background:
+    #1d1a16;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 11px;
+  font-size:
+    11px;
 
-  font-weight: 700;
+  font-weight:
+    700;
 
-  cursor: pointer;
+  cursor:
+    pointer;
 }
 
 .continueButton span {
-  width: 40px;
-  height: 40px;
+  width:
+    40px;
 
-  display: flex;
+  height:
+    40px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 10px;
+  align-items:
+    center;
 
-  background: #c99b4d;
+  justify-content:
+    center;
 
-  font-size: 18px;
+  border-radius:
+    10px;
+
+  background:
+    #c99b4d;
+
+  font-size:
+    18px;
 }
 
 .continueButton:disabled {
-  opacity: .35;
+  opacity:
+    .35;
 
-  cursor: not-allowed;
+  cursor:
+    not-allowed;
 }
 
 .privacyNote {
-  margin-top: 17px;
+  margin-top:
+    17px;
 
-  color: #aaa299;
+  color:
+    #aaa299;
 
-  font-size: 9px;
+  font-size:
+    9px;
 }
 
 .privacyNote span {
-  color: #a97a32;
+  color:
+    #a97a32;
 
-  margin-right: 5px;
+  margin-right:
+    5px;
 }
 
 
@@ -1823,9 +1987,11 @@ textarea {
 }
 
 .numbersHeader {
-  display: flex;
+  display:
+    flex;
 
-  align-items: flex-start;
+  align-items:
+    flex-start;
 
   justify-content:
     space-between;
@@ -1837,123 +2003,168 @@ textarea {
 }
 
 .sparkle {
-  width: 48px;
-  height: 48px;
+  width:
+    48px;
 
-  display: flex;
+  height:
+    48px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 15px;
+  align-items:
+    center;
 
-  background: #eadabd;
+  justify-content:
+    center;
 
-  color: #a7782f;
+  border-radius:
+    15px;
 
-  font-size: 22px;
+  background:
+    #eadabd;
+
+  color:
+    #a7782f;
+
+  font-size:
+    22px;
 }
 
 .numberCards {
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 10px;
+  gap:
+    10px;
 
-  margin-top: 35px;
+  margin-top:
+    35px;
 }
 
 .numberCard {
-  position: relative;
+  position:
+    relative;
 
-  min-height: 175px;
+  min-height:
+    175px;
 
-  padding: 20px;
+  padding:
+    20px;
 
   border:
     1px solid
     rgba(50,42,32,.08);
 
-  border-radius: 23px;
+  border-radius:
+    23px;
 
   background:
     rgba(255,255,255,.62);
 
-  overflow: hidden;
+  overflow:
+    hidden;
 }
 
 .numberCard.featured {
-  background: #1e1b17;
+  background:
+    #1e1b17;
 
-  color: white;
+  color:
+    white;
 }
 
 .numberLabel {
-  font-size: 8px;
+  font-size:
+    8px;
 
-  font-weight: 750;
+  font-weight:
+    750;
 
-  letter-spacing: 1.6px;
+  letter-spacing:
+    1.6px;
 
-  color: #8c8379;
+  color:
+    #8c8379;
 }
 
 .featured .numberLabel {
-  color: #a99d8c;
+  color:
+    #a99d8c;
 }
 
 .numberValue {
-  margin-top: 18px;
+  margin-top:
+    18px;
 
   font-family:
     Georgia,
     serif;
 
-  font-size: 64px;
+  font-size:
+    64px;
 
-  line-height: 1;
+  line-height:
+    1;
 
-  color: #b27f30;
+  color:
+    #b27f30;
 }
 
 .featured .numberValue {
-  color: #d6ad62;
+  color:
+    #d6ad62;
 }
 
 .numberDescription {
-  margin-top: 13px;
+  margin-top:
+    13px;
 
-  color: #8c8379;
+  color:
+    #8c8379;
 
-  font-size: 9px;
+  font-size:
+    9px;
 }
 
 .featured .numberDescription {
-  color: #8f877c;
+  color:
+    #8f877c;
 }
 
 .featuredBadge {
-  position: absolute;
+  position:
+    absolute;
 
-  top: 18px;
-  right: 17px;
+  top:
+    18px;
+
+  right:
+    17px;
 
   padding:
     5px 7px;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
-  background: #c39a53;
+  background:
+    #c39a53;
 
-  color: #211d17;
+  color:
+    #211d17;
 
-  font-size: 6px;
+  font-size:
+    6px;
 
-  font-weight: 800;
+  font-weight:
+    800;
 
-  letter-spacing: 1px;
+  letter-spacing:
+    1px;
 }
 
 
@@ -1962,11 +2173,14 @@ textarea {
    ========================================================= */
 
 .gridCard {
-  margin-top: 10px;
+  margin-top:
+    10px;
 
-  padding: 22px;
+  padding:
+    22px;
 
-  border-radius: 23px;
+  border-radius:
+    23px;
 
   background:
     rgba(255,255,255,.62);
@@ -1977,42 +2191,55 @@ textarea {
 }
 
 .gridHeader {
-  display: flex;
+  display:
+    flex;
 
   justify-content:
     space-between;
 }
 
 .gridHeader span {
-  display: block;
+  display:
+    block;
 
-  color: #a7782f;
+  color:
+    #a7782f;
 
-  font-size: 7px;
+  font-size:
+    7px;
 
-  font-weight: 750;
+  font-weight:
+    750;
 
-  letter-spacing: 1.6px;
+  letter-spacing:
+    1.6px;
 }
 
 .gridHeader strong {
-  display: block;
+  display:
+    block;
 
-  margin-top: 5px;
+  margin-top:
+    5px;
 
-  font-size: 13px;
+  font-size:
+    13px;
 }
 
 .gridIcon {
-  color: #ae8038 !important;
+  color:
+    #ae8038 !important;
 
-  font-size: 20px !important;
+  font-size:
+    20px !important;
 }
 
 .vedicGrid {
-  width: 210px;
+  width:
+    210px;
 
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     repeat(3, 1fr);
@@ -2022,31 +2249,42 @@ textarea {
 }
 
 .gridCell {
-  height: 55px;
+  height:
+    55px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
-  justify-content: center;
+  align-items:
+    center;
+
+  justify-content:
+    center;
 
   border:
-    1px solid #e7e0d6;
+    1px solid
+    #e7e0d6;
 
-  color: #888077;
+  color:
+    #888077;
 
   font-family:
     Georgia,
     serif;
 
-  font-size: 15px;
+  font-size:
+    15px;
 }
 
 .gridCell.selected {
-  background: #ead7b2;
+  background:
+    #ead7b2;
 
-  color: #8d6324;
+  color:
+    #8d6324;
 
-  font-weight: 700;
+  font-weight:
+    700;
 }
 
 
@@ -2055,84 +2293,122 @@ textarea {
    ========================================================= */
 
 .askCard {
-  margin-top: 10px;
+  margin-top:
+    10px;
 
-  padding: 15px;
+  padding:
+    15px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 13px;
+  gap:
+    13px;
 
-  border-radius: 21px;
+  border-radius:
+    21px;
 
-  background: #1d1a16;
+  background:
+    #1d1a16;
 
-  color: white;
+  color:
+    white;
 }
 
 .askIcon {
-  width: 43px;
-  height: 43px;
+  width:
+    43px;
 
-  display: flex;
+  height:
+    43px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 13px;
+  align-items:
+    center;
 
-  background: #c69b52;
+  justify-content:
+    center;
 
-  color: #211c16;
+  border-radius:
+    13px;
 
-  font-size: 18px;
+  background:
+    #c69b52;
+
+  color:
+    #211c16;
+
+  font-size:
+    18px;
 }
 
 .askText {
-  flex: 1;
+  flex:
+    1;
 }
 
 .askText strong {
-  display: block;
+  display:
+    block;
 
-  font-size: 11px;
+  font-size:
+    11px;
 }
 
 .askText p {
-  margin: 4px 0 0;
+  margin:
+    4px 0 0;
 
-  color: #938b80;
+  color:
+    #938b80;
 
-  font-size: 8px;
+  font-size:
+    8px;
 }
 
 .askCard button {
-  width: 40px;
-  height: 40px;
+  width:
+    40px;
 
-  border: 0;
+  height:
+    40px;
 
-  border-radius: 11px;
+  border:
+    0;
 
-  background: #302c26;
+  border-radius:
+    11px;
 
-  color: #d4a85a;
+  background:
+    #302c26;
 
-  font-size: 17px;
+  color:
+    #d4a85a;
 
-  cursor: pointer;
+  font-size:
+    17px;
+
+  cursor:
+    pointer;
 }
 
 .freeLabel {
-  margin-top: 13px;
+  margin-top:
+    13px;
 
-  color: #a27b3c;
+  color:
+    #a27b3c;
 
-  text-align: center;
+  text-align:
+    center;
 
-  font-size: 8px;
+  font-size:
+    8px;
 }
 
 
@@ -2146,14 +2422,17 @@ textarea {
 }
 
 .chatHeader {
-  display: flex;
+  display:
+    flex;
 
-  align-items: flex-end;
+  align-items:
+    flex-end;
 
   justify-content:
     space-between;
 
-  margin-bottom: 32px;
+  margin-bottom:
+    32px;
 }
 
 .chatTitle {
@@ -2163,48 +2442,67 @@ textarea {
   font-size:
     clamp(45px, 7vw, 68px);
 
-  line-height: .94;
+  line-height:
+    .94;
 
-  letter-spacing: -4px;
+  letter-spacing:
+    -4px;
 }
 
 .chatProfile {
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 8px;
+  gap:
+    8px;
 
   padding:
     6px 11px 6px 6px;
 
   border:
-    1px solid #e1dacf;
+    1px solid
+    #e1dacf;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
   background:
     rgba(255,255,255,.6);
 
-  font-size: 8px;
+  font-size:
+    8px;
 
-  color: #777067;
+  color:
+    #777067;
 }
 
 .chatProfile div {
-  width: 28px;
-  height: 28px;
+  width:
+    28px;
 
-  display: flex;
+  height:
+    28px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 50%;
+  align-items:
+    center;
 
-  background: #1d1a16;
+  justify-content:
+    center;
 
-  color: #d1a75a;
+  border-radius:
+    50%;
+
+  background:
+    #1d1a16;
+
+  color:
+    #d1a75a;
 
   font-family:
     Georgia,
@@ -2212,11 +2510,14 @@ textarea {
 }
 
 .chatBox {
-  overflow: hidden;
+  overflow:
+    hidden;
 
-  border-radius: 25px;
+  border-radius:
+    25px;
 
-  background: #1e1b17;
+  background:
+    #1e1b17;
 
   box-shadow:
     0 30px 80px
@@ -2224,95 +2525,164 @@ textarea {
 }
 
 .chatTop {
-  padding: 17px;
+  padding:
+    17px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 10px;
+  gap:
+    10px;
 
   border-bottom:
-    1px solid #403b34;
+    1px solid
+    #403b34;
 
-  color: white;
+  color:
+    white;
+}
+
+
+/* REAL MAUKSH LOGO IN CHAT */
+
+.chatAvatar {
+  width:
+    38px;
+
+  height:
+    38px;
+
+  overflow:
+    hidden;
+
+  background:
+    white;
+
+  border-radius:
+    11px;
+}
+
+.chatAvatar img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    block;
+
+  object-fit:
+    contain;
 }
 
 .chatTop strong,
 .chatTop span {
-  display: block;
+  display:
+    block;
 }
 
 .chatTop strong {
-  font-size: 10px;
+  font-size:
+    10px;
 }
 
 .chatTop span {
-  margin-top: 3px;
+  margin-top:
+    3px;
 
-  color: #8f887f;
+  color:
+    #8f887f;
 
-  font-size: 7px;
+  font-size:
+    7px;
 }
 
 .chatStatus {
-  margin-left: auto;
+  margin-left:
+    auto;
 
-  color: #898077;
+  color:
+    #898077;
 
-  font-size: 7px !important;
+  font-size:
+    7px !important;
 }
 
 .chatStatus i {
-  display: inline-block;
+  display:
+    inline-block;
 
-  width: 5px;
-  height: 5px;
+  width:
+    5px;
 
-  margin-right: 4px;
+  height:
+    5px;
 
-  border-radius: 50%;
+  margin-right:
+    4px;
 
-  background: #91a15f;
+  border-radius:
+    50%;
+
+  background:
+    #91a15f;
 }
 
 .chatMessages {
-  min-height: 330px;
+  min-height:
+    330px;
 
-  padding: 22px;
+  padding:
+    22px;
 }
 
 .aiGreeting {
-  max-width: 470px;
+  max-width:
+    470px;
 
-  padding: 15px;
+  padding:
+    15px;
 
   border-radius:
     14px 14px 14px 3px;
 
-  background: #f5f0e7;
+  background:
+    #f5f0e7;
 
-  color: #4d463e;
+  color:
+    #4d463e;
 
-  font-size: 10px;
+  font-size:
+    10px;
 
-  line-height: 1.7;
+  line-height:
+    1.7;
 }
 
 .aiGreeting span {
-  color: #ad7c31;
+  color:
+    #ad7c31;
 
-  margin-right: 5px;
+  margin-right:
+    5px;
 }
 
 .suggestions {
-  margin-top: 17px;
+  margin-top:
+    17px;
 
-  display: flex;
+  display:
+    flex;
 
-  flex-wrap: wrap;
+  flex-wrap:
+    wrap;
 
-  gap: 7px;
+  gap:
+    7px;
 }
 
 .suggestions button {
@@ -2320,138 +2690,191 @@ textarea {
     9px 11px;
 
   border:
-    1px solid #4a443d;
+    1px solid
+    #4a443d;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
-  background: #29251f;
+  background:
+    #29251f;
 
-  color: #a9a097;
+  color:
+    #a9a097;
 
-  font-size: 8px;
+  font-size:
+    8px;
 
-  cursor: pointer;
+  cursor:
+    pointer;
 }
 
 .userMessage {
-  max-width: 70%;
+  max-width:
+    70%;
 
   margin:
     18px 0 0 auto;
 
-  padding: 13px;
+  padding:
+    13px;
 
   border-radius:
     14px 14px 3px 14px;
 
-  background: #b27f30;
+  background:
+    #b27f30;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 10px;
+  font-size:
+    10px;
 
-  line-height: 1.5;
+  line-height:
+    1.5;
 }
 
 .aiMessage {
-  max-width: 80%;
+  max-width:
+    80%;
 
-  margin-top: 10px;
+  margin-top:
+    10px;
 
-  padding: 15px;
+  padding:
+    15px;
 
   border-radius:
     14px 14px 14px 3px;
 
-  background: #f5f0e7;
+  background:
+    #f5f0e7;
 
-  color: #4d463e;
+  color:
+    #4d463e;
 
-  font-size: 10px;
+  font-size:
+    10px;
 
-  line-height: 1.7;
+  line-height:
+    1.7;
 }
 
 .aiLabel {
-  margin-bottom: 7px;
+  margin-bottom:
+    7px;
 
-  color: #aa7930;
+  color:
+    #aa7930;
 
-  font-size: 7px;
+  font-size:
+    7px;
 
-  font-weight: 750;
+  font-weight:
+    750;
 
-  letter-spacing: 1.2px;
+  letter-spacing:
+    1.2px;
 }
 
 .aiMessage p {
-  margin: 0;
+  margin:
+    0;
 }
 
 .chatInput {
   margin:
     0 14px 14px;
 
-  padding: 7px;
+  padding:
+    7px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: flex-end;
+  align-items:
+    flex-end;
 
   border:
-    1px solid #48423a;
+    1px solid
+    #48423a;
 
-  border-radius: 15px;
+  border-radius:
+    15px;
 
-  background: #28241f;
+  background:
+    #28241f;
 }
 
 .chatInput textarea {
-  flex: 1;
+  flex:
+    1;
 
-  padding: 10px;
+  padding:
+    10px;
 
-  resize: none;
+  resize:
+    none;
 
-  border: 0;
+  border:
+    0;
 
-  outline: 0;
+  outline:
+    0;
 
-  background: transparent;
+  background:
+    transparent;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 10px;
+  font-size:
+    10px;
 }
 
 .chatInput textarea::placeholder {
-  color: #716a62;
+  color:
+    #716a62;
 }
 
 .chatInput button {
-  width: 38px;
-  height: 38px;
+  width:
+    38px;
 
-  border: 0;
+  height:
+    38px;
 
-  border-radius: 11px;
+  border:
+    0;
 
-  background: #c69b52;
+  border-radius:
+    11px;
 
-  color: #211d17;
+  background:
+    #c69b52;
 
-  cursor: pointer;
+  color:
+    #211d17;
+
+  cursor:
+    pointer;
 }
 
 .chatInput button:disabled {
-  opacity: .35;
+  opacity:
+    .35;
 }
 
 .loader {
-  width: 13px;
-  height: 13px;
+  width:
+    13px;
 
-  display: inline-block;
+  height:
+    13px;
+
+  display:
+    inline-block;
 
   border:
     2px solid
@@ -2460,7 +2883,8 @@ textarea {
   border-top-color:
     #211d17;
 
-  border-radius: 50%;
+  border-radius:
+    50%;
 
   animation:
     spin .7s linear infinite;
@@ -2476,26 +2900,34 @@ textarea {
 }
 
 .questionCounter {
-  margin-top: 13px;
+  margin-top:
+    13px;
 
-  text-align: center;
+  text-align:
+    center;
 
-  color: #a29a91;
+  color:
+    #a29a91;
 
-  font-size: 8px;
+  font-size:
+    8px;
 }
 
 .questionCounter span {
   padding:
     4px 7px;
 
-  margin-right: 4px;
+  margin-right:
+    4px;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
-  background: #eadfc9;
+  background:
+    #eadfc9;
 
-  color: #936c2e;
+  color:
+    #936c2e;
 }
 
 
@@ -2507,56 +2939,78 @@ textarea {
   padding:
     75px 30px 100px;
 
-  text-align: center;
+  text-align:
+    center;
 }
 
 .successIcon {
-  width: 54px;
-  height: 54px;
+  width:
+    54px;
+
+  height:
+    54px;
 
   margin:
     0 auto 22px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
-  justify-content: center;
+  align-items:
+    center;
 
-  border-radius: 18px;
+  justify-content:
+    center;
 
-  background: #e5ead8;
+  border-radius:
+    18px;
 
-  color: #70814b;
+  background:
+    #e5ead8;
 
-  font-size: 19px;
+  color:
+    #70814b;
+
+  font-size:
+    19px;
 }
 
 .paywallPage .sectionDescription {
-  margin-left: auto;
+  margin-left:
+    auto;
 
-  margin-right: auto;
+  margin-right:
+    auto;
 }
 
 .plan {
-  position: relative;
+  position:
+    relative;
 
-  max-width: 650px;
+  max-width:
+    650px;
 
   margin:
     35px auto 0;
 
-  padding: 27px;
+  padding:
+    27px;
 
-  overflow: hidden;
+  overflow:
+    hidden;
 
   border:
-    1px solid #c8a86c;
+    1px solid
+    #c8a86c;
 
-  border-radius: 28px;
+  border-radius:
+    28px;
 
-  background: #fffdf9;
+  background:
+    #fffdf9;
 
-  text-align: left;
+  text-align:
+    left;
 
   box-shadow:
     0 30px 90px
@@ -2564,50 +3018,69 @@ textarea {
 }
 
 .planGlow {
-  position: absolute;
+  position:
+    absolute;
 
-  width: 170px;
-  height: 170px;
+  width:
+    170px;
 
-  top: -90px;
-  right: -40px;
+  height:
+    170px;
 
-  border-radius: 50%;
+  top:
+    -90px;
+
+  right:
+    -40px;
+
+  border-radius:
+    50%;
 
   background:
     rgba(207,163,85,.18);
 
-  filter: blur(25px);
+  filter:
+    blur(25px);
 }
 
 .planTop {
-  position: relative;
+  position:
+    relative;
 
-  display: flex;
+  display:
+    flex;
 
   justify-content:
     space-between;
 
-  gap: 20px;
+  gap:
+    20px;
 }
 
 .planPill {
-  display: inline-block;
+  display:
+    inline-block;
 
   padding:
     6px 8px;
 
-  border-radius: 100px;
+  border-radius:
+    100px;
 
-  background: #eee1c5;
+  background:
+    #eee1c5;
 
-  color: #966c2d;
+  color:
+    #966c2d;
 
-  font-size: 7px;
+  font-size:
+    7px;
 
-  font-weight: 800;
+  font-weight:
+    800;
 
-  letter-spacing: 1.3px;
+  letter-spacing:
+    1.3px;
 }
 
 .plan h3 {
@@ -2618,17 +3091,22 @@ textarea {
     Georgia,
     serif;
 
-  font-size: 27px;
+  font-size:
+    27px;
 
-  line-height: 1.05;
+  line-height:
+    1.05;
 
-  font-weight: 500;
+  font-weight:
+    500;
 }
 
 .planPrice {
-  text-align: right;
+  text-align:
+    right;
 
-  white-space: nowrap;
+  white-space:
+    nowrap;
 }
 
 .planPrice strong {
@@ -2636,138 +3114,195 @@ textarea {
     Georgia,
     serif;
 
-  font-size: 39px;
+  font-size:
+    39px;
 
-  font-weight: 500;
+  font-weight:
+    500;
 }
 
 .planPrice span {
-  color: #81786f;
+  color:
+    #81786f;
 
-  font-size: 9px;
+  font-size:
+    9px;
 }
 
 .planFeatures {
-  margin-top: 25px;
+  margin-top:
+    25px;
 
-  padding-top: 22px;
+  padding-top:
+    22px;
 
   border-top:
-    1px solid #e7ded0;
+    1px solid
+    #e7ded0;
 
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     1fr 1fr;
 
-  gap: 13px;
+  gap:
+    13px;
 }
 
 .feature {
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 8px;
+  gap:
+    8px;
 
-  color: #625b52;
+  color:
+    #625b52;
 
-  font-size: 9px;
+  font-size:
+    9px;
 }
 
 .feature span {
-  width: 19px;
-  height: 19px;
+  width:
+    19px;
 
-  display: flex;
+  height:
+    19px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  flex-shrink: 0;
+  align-items:
+    center;
 
-  border-radius: 50%;
+  justify-content:
+    center;
 
-  background: #efe5d2;
+  flex-shrink:
+    0;
 
-  color: #98702f;
+  border-radius:
+    50%;
 
-  font-size: 8px;
+  background:
+    #efe5d2;
+
+  color:
+    #98702f;
+
+  font-size:
+    8px;
 }
 
 .subscribeButton {
-  width: 100%;
+  width:
+    100%;
 
-  height: 56px;
+  height:
+    56px;
 
-  margin-top: 25px;
+  margin-top:
+    25px;
 
   padding:
     0 8px 0 19px;
 
-  display: flex;
+  display:
+    flex;
 
-  align-items: center;
+  align-items:
+    center;
 
   justify-content:
     space-between;
 
-  border: 0;
+  border:
+    0;
 
-  border-radius: 14px;
+  border-radius:
+    14px;
 
-  background: #1c1916;
+  background:
+    #1c1916;
 
-  color: white;
+  color:
+    white;
 
-  font-size: 11px;
+  font-size:
+    11px;
 
-  font-weight: 700;
+  font-weight:
+    700;
 
-  cursor: pointer;
+  cursor:
+    pointer;
 }
 
 .subscribeButton span {
-  width: 40px;
-  height: 40px;
+  width:
+    40px;
 
-  display: flex;
+  height:
+    40px;
 
-  align-items: center;
-  justify-content: center;
+  display:
+    flex;
 
-  border-radius: 10px;
+  align-items:
+    center;
 
-  background: #c69b52;
+  justify-content:
+    center;
 
-  color: #211c16;
+  border-radius:
+    10px;
 
-  font-size: 18px;
+  background:
+    #c69b52;
+
+  color:
+    #211c16;
+
+  font-size:
+    18px;
 }
 
 .secureText {
   margin:
     12px 0 0;
 
-  text-align: center;
+  text-align:
+    center;
 
-  color: #aaa197;
+  color:
+    #aaa197;
 
-  font-size: 7px;
+  font-size:
+    7px;
 }
 
 .savedProfile {
-  margin-top: 18px;
+  margin-top:
+    18px;
 
-  color: #8c847a;
+  color:
+    #8c847a;
 
-  font-size: 8px;
+  font-size:
+    8px;
 }
 
 .savedProfile span {
-  margin-right: 5px;
+  margin-right:
+    5px;
 
-  color: #7e9254;
+  color:
+    #7e9254;
 }
 
 
@@ -2777,48 +3312,48 @@ textarea {
 
 @media (max-width: 760px) {
 
-  .header {
-    height: 68px;
-
-    padding:
-      0 18px;
-  }
-
-  .maukshLogo {
-    width: 48px;
-    height: 48px;
-  }
-
   .introPage,
   .profilePage,
   .numbersPage,
   .chatPage,
   .paywallPage {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left:
+      18px;
+
+    padding-right:
+      18px;
   }
 
   .introPage {
-    padding-top: 75px;
+    padding-top:
+      75px;
   }
 
   .heroTitle {
-    font-size: 61px;
+    font-size:
+      61px;
 
-    letter-spacing: -5px;
+    letter-spacing:
+      -5px;
   }
 
   .heroDescription {
-    font-size: 14px;
+    font-size:
+      14px;
   }
 
   .floatingPreview {
-    position: relative;
+    position:
+      relative;
 
-    top: auto;
-    right: auto;
+    top:
+      auto;
 
-    width: 240px;
+    right:
+      auto;
+
+    width:
+      240px;
 
     margin:
       55px auto 0;
@@ -2828,58 +3363,73 @@ textarea {
   }
 
   .scrollHint {
-    display: none;
+    display:
+      none;
   }
 
   .sectionTitle {
-    font-size: 57px;
+    font-size:
+      57px;
 
-    letter-spacing: -4px;
+    letter-spacing:
+      -4px;
   }
 
   .numberCards {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .numberCard {
-    min-height: 135px;
+    min-height:
+      135px;
   }
 
   .numberValue {
-    margin-top: 10px;
+    margin-top:
+      10px;
   }
 
   .chatHeader {
-    display: block;
+    display:
+      block;
   }
 
   .chatProfile {
-    width: fit-content;
+    width:
+      fit-content;
 
-    margin-top: 18px;
+    margin-top:
+      18px;
   }
 
   .chatTitle {
-    font-size: 50px;
+    font-size:
+      50px;
   }
 
   .userMessage,
   .aiMessage {
-    max-width: 90%;
+    max-width:
+      90%;
   }
 
   .planTop {
-    display: block;
+    display:
+      block;
   }
 
   .planPrice {
-    margin-top: 18px;
+    margin-top:
+      18px;
 
-    text-align: left;
+    text-align:
+      left;
   }
 
   .planFeatures {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
 }
@@ -2888,15 +3438,18 @@ textarea {
 @media (max-width: 400px) {
 
   .heroTitle {
-    font-size: 53px;
+    font-size:
+      53px;
   }
 
   .sectionTitle {
-    font-size: 50px;
+    font-size:
+      50px;
   }
 
   .chatTitle {
-    font-size: 45px;
+    font-size:
+      45px;
   }
 
 }
